@@ -1,6 +1,6 @@
-= NGS 2016 Workshop Hand-on Docs
+= NGS 2017 Post-Conference Workshop Docs
 
-This repository contains the source files for the NGS 2016 post-conference workshop documentation.
+This repository contains the source files for the NGS 2017 Post-Conference Workshop documentation.
 
 To generate the `index.html` file with the documentation do:
 
