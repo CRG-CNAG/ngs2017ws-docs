@@ -1,4 +1,4 @@
-= NGS 2017 Post-Conference Workshop Docs
+= NGS 2017 Post-Conference Workshop
 
 This repository contains the source files for the NGS 2017 Post-Conference Workshop documentation.
 
