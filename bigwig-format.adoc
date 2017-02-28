@@ -1,0 +1,64 @@
+= BigWig
+:bigwig: https://genome.ucsc.edu/goldenpath/help/bigWig.html
+:bedgraph: https://genome.ucsc.edu/goldenpath/help/bedgraph.html
+:wiggle: https://genome.ucsc.edu/goldenpath/help/wiggle.html
+
+The `bigWig` format is for display of dense, continuous data. `BigWig` data can be displayed in the UCSC Genome Browser as a graph. `BigWig` files are created initially from `bedGraph` or `wiggle` type files. The resulting `bigWig` files are in an indexed binary format. The main advantage of the `bigWig` files is that only the portions of the files needed to display a particular region are transferred to UCSC, so for large data sets `bigWig` is considerably faster than regular files. The `bigWig` file remains on your web accessible server (http, https, or ftp), not on the UCSC server. Only the portion that is needed for the chromosomal position you are currently viewing is locally cached as a "sparse file".
+
+We will see an example of BigWig usage in the section <<RNA-seq data visualization in the UCSC Genome Browser>>.
+
+== BedGraph
+
+The `bedGraph` format allows display of continuous-valued data. This display type is useful for values like probability scores and transcriptome data. It is also widely used to define the data lines that are displayed in a track of the UCSC genome browser. The `bedGraph` format is also an older format used to display sparse data or data that contains elements of varying size.
+
+The `bedGraph` format is line-oriented. `BedGraph` data could be preceeded by a track definition line, which adds a number of options for controlling the default display of this track.
+
+Following the track definition line are the track data in four column BED format.
+
+----
+chromA  chromStartA  chromEndA  dataValueA
+chromB  chromStartB  chromEndB  dataValueB
+----
+
+`BedGraph` data values can be integer or real, positive or negative values. Chromosome positions are specified as 0-relative. The first chromosome position is 0. The last position in a chromosome of length N would be N - 1. Only positions specified have data. All positions specified in the input data must be in numerical order.
+
+== Wiggle
+
+The `wiggle` (WIG) format is an older format for display of dense, continuous data such as GC percent, probability scores, and transcriptome data. `Wiggle` data elements must be equally sized.
+
+For speed and efficiency, `wiggle` data is compressed and stored internally in 128 unique bins. This compression means that there is a minor loss of precision when data is exported from a `wiggle` track in the UCSC table browser. The `bedGraph` format should be used if it is important to retain exact data when exporting.
+
+`Wiggle` format is line-oriented. For `wiggle` custom tracks in the UCSC browser, the first line must be a track definition line, which designates the track as a `wiggle` track and adds a number of options for controlling the default display.
+`Wiggle` format is composed of declaration lines and data lines, and require a separate `wiggle` track definition line. There are two options for formatting `wiggle` data: `variableStep` and `fixedStep`. These formats were developed to allow the file to be written as compactly as possible.
+
+- `variableStep` is for data with irregular intervals between new data points and is the more commonly used `wiggle` format. The `variableStep` section begins with a declaration line and is followed by two columns containing chromosome positions and data values:
+
+----
+variableStep  chrom=chrN  [span=windowSize]
+chromStartA  dataValueA
+chromStartB  dataValueB
+----
+
+- `fixedStep` is for data with regular intervals between new data values and is the more compact `wiggle` format. The `fixedStep` section begins with a declaration line and is followed by a single column of data values:
+
+----
+fixedStep  chrom=chrN  start=position  step=stepInterval  [span=windowSize]
+dataValue1
+dataValue2
+----
+
+`Wiggle` track data values can be integer or real, positive or negative values. Chromosome positions are specified as 1-relative. For a chromosome of length N, the first position is 1 and the last position is N. Only positions specified have data. All positions specified in the input data must be in numerical order.
+
+== Extracting Data from the bigWig Format
+
+Because the bigWig files are indexed binary files, they can be difficult to extract data from. Consequently, the following programs developed at the UCSC can be used to extract data from bigWig files:
+
+[cols="l,1",options="autowidth"]
+|===
+| bigWigToBedGraph     | this program converts a bigWig file to ASCII bedGraph format.
+| bigWigToWig 		     | this program converts a bigWig file to wig format.
+| bigWigSummary        | this program extracts summary information from a bigWig file.
+| bigWigAverageOverBed | this program computes the average score of a bigWig over each bed, which may have introns.
+| bigWigInfo           | this program prints out information about a bigWig file.
+|===
+

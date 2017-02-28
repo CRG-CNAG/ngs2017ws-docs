@@ -1,0 +1,51 @@
+= NGS 2016 Workshop Hands-on image:NGS_LOGO.png[Logo,120,120,float="right"]
+:hide-uri-scheme:
+:nofooter:
+:icons: font
+ifeval::["{backend}" == "html5"]
+:stylesdir: ./css
+:stylesheet: crg.css
+:linkcss:
+:imagesdir: ./assets/
+:source-highlighter: highlight.js
+:highlightjs-theme: github
+:toc: left
+:cheatsheet: cheatsheet.adoc#,here
+endif::[]
+ifeval::["{backend}" == "pdf"]
+:cheatsheet: cheatsheet,at the end of this document
+endif::[]
+
+The RNA-seq data comes from brain samples (CNS) of mouse embryos at day 14 and day 18, done in 2 bioreplicates (1% of the original reads randomly sampled).
+
+The following mouse references are used:
+
+- [crg]#mm9# genome assembly
+- [crg]#Ensembl v.65# gene annotation [crg]#{tilde}# long genes only
+
+NOTE: A cheatsheet with basic Linux and Cluster commands is available <<{cheatsheet}>>.
+
+:sectnums:
+
+include::cluster.adoc[tags=access]
+
+:leveloffset: +1
+
+include::rna-seq-data.adoc[]
+
+include::gene-annotation.adoc[]
+
+include::file-formats.adoc[]
+
+include::nextflow.adoc[]
+
+include::grape.adoc[]
+
+include::data-visualization.adoc[]
+
+ifeval::["{backend}" == "pdf"]
+[[cheatsheet]]
+include::cheatsheet.adoc[]
+endif::[]
+
+:leveloffset: -1

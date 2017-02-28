@@ -1,0 +1,44 @@
+= FASTQ
+:stem:
+:fastq-encoding: https://en.wikipedia.org/wiki/FASTQ_format#Encoding
+
+FASTQ is a text-based format for storing biological sequences and their corresponding quality scores.
+
+Have a look at one of the FASTQ files for the workshop:
+
+[source,cmd]
+----
+zcat ~ngs00/data/mouse_cns_E18_rep1_1.fastq.gz | head -4
+----
+----
+@HWI-ST985:73:C08BWACXX:8:1101:1920:2006 1:N:0: <1>
+NTGCTCGGCCTCTTTCAGCTGTTTCTGCAGCTGCTGAATATCACTGTCTCTCTTCTCTACTTCTTTCTCTAAAGCCTGCATTTCGTGGTGAACTTTTCCCT <2>
++ <3>
+#1=DDFFFHHHHHJJHIIJJJJJJJJJJJIIJGIJJJGIFIGEIGIGHIIIJJIJJIJIJIJJJJIJHJJHHIIIHHHGHHDFBCDCDBCCDDDDDDDDDD <4>
+----
+<1> sequence id - begins with the `@` character and is followed by a sequence identifier and an optional description
+<2> raw sequence
+<3> begins with the `+` character and is optionally followed by the same sequence identifier (and any description) again
+<4> quality - encodes the quality values for the sequence and must contain the same number of symbols
+
+NOTE: The fourth line can also begin with `@` depending on the quality encoding (see below)
+
+== Quality encoding
+
+A quality value Q is an integer mapping of p (i.e., the probability that the corresponding base call is incorrect). The most used
+formula is the *Phred* quality score:
+
+[asciimath]
+++++
+Q_(phred) = -10log_10(p)
+++++
+
+[cols="5*^"]
+|===
+| offset | max Phred score range | max ASCII range | real-world Phred score range | real-world ASCII range
+
+|33 | 0 - 93 | 33 - 126 | 0 - 40 | 33 - 73
+|64 | 0 - 62 | 64 - 126 | 0 - 40 | 64 - 104
+|===
+
+{fastq-encoding}[FASTQ quality encoding on Wikipedia^]

@@ -1,0 +1,187 @@
+= RNA-seq data analysis
+:experimental:
+:UCSC_genome_browser: http://genome.ucsc.edu
+
+Create a directory dedicated to the analyses:
+
+[source,bash]
+----
+mkdir analysis
+----
+
+And move into it:
+
+[source,bash]
+----
+cd analysis
+----
+
+Load the environment:
+
+[source,bash]
+----
+. ~/rnaseq/.rnaseqenv
+----
+
+== RPKM distribution
+
+Have a look at the distribution of RPKM values:
+
+[source,bash]
+----
+rpkm_distribution.R -i ../quantifications/encode.mouse.gene.FPKM.idr_NA.tsv -l -p 0 -m ../data/quantifications.index.tsv -f age
+----
+
+To look at the plot:
+
+[source,bash]
+----
+evince boxplot.log_T.psd_0.out.pdf
+----
+
+== Clustering analysis
+
+Perform hierarchical clustering to check replicability:
+
+[source,bash]
+----
+matrix_to_dist.R -i ../quantifications/encode.mouse.gene.FPKM.idr_NA.tsv --log10 -c pearson -o stdout | ggheatmap.R -i stdin --row_metadata ../data/quantifications.index.tsv --col_dendro --row_dendro -B 10 --matrix_palette=~/rnaseq/bin/terrain.colors.3.txt --rowSide_by age --matrix_fill_limits 0.85,1 -o cns.heatmap.pdf
+----
+
+Look at the clustering.
+
+== Differential gene expression
+
+Run the DE with the edgeR package (be careful takes read counts and not rpkm values as input):
+
+[source,bash]
+----
+edgeR.analysis.R -i ../quantifications/encode.mouse.gene.expected_count.idr_NA.tsv -m ../data/quantifications.index.tsv -f age
+----
+
+Write a list of the genes overexpressed after 18 days, according to edgeR analysis:
+
+[source,bash]
+----
+awk '$NF<0.01 && $4>2{print $1"\tover18"}' edgeR.cpm1.n2.out.tsv > edgeR.0.01.overE18.txt
+----
+
+Write a list of the genes overexpressed after 14 days, according to edgeR analysis:
+
+[source,bash]
+----
+awk '$NF<0.01 && $4<-2 {print $1"\tover14"}' edgeR.cpm1.n2.out.tsv > edgeR.0.01.overE14.txt
+----
+
+Count how many overexpressed genes there are in each stage:
+
+[source,bash]
+----
+wc -l edgeR.0.01.over*.txt
+----
+
+Show the results in a heatmap:
+
+[source,bash]
+----
+(echo -e "gene\tedgeR"; cat edgeR.0.01.over*.txt) > gene.edgeR.tsv
+cut -f1 gene.edgeR.tsv | tail -n+2 | selectMatrixRows.sh - ../quantifications/encode.mouse.gene.FPKM.idr_NA.tsv | ggheatmap.R -W 5 -H 9 --col_metadata ../data/quantifications.index.tsv --colSide_by age --col_labels labExpId --row_metadata gene.edgeR.tsv --merge_row_mdata_on gene --rowSide_by edgeR --row_labels none -l -p 0.1 --col_dendro --row_dendro -o heatmap.edgeR.pdf
+----
+
+== GO enrichment
+
+Prepare a file with the list of all the genes in the annotation:
+
+[source,bash]
+----
+awk '{split($10,a,"\""); print a[2]}' ~/rnaseq/refs/mm65.long.ok.gtf | sort -u > universe.txt
+----
+
+Launch the GO enrichment script for the Biological Processes, Molecular Function and Cellular Components in the set of genes overexpressed in E14:
+
+[source,bash]
+----
+cut -f1 edgeR.0.01.overE14.txt | GO_enrichment.R -u universe.txt -G stdin -c BP -o edgeR.overE14 -s mouse
+cut -f1 edgeR.0.01.overE14.txt | GO_enrichment.R -u universe.txt -G stdin -c MF -o edgeR.overE14 -s mouse
+cut -f1 edgeR.0.01.overE14.txt | GO_enrichment.R -u universe.txt -G stdin -c CC -o edgeR.overE14 -s mouse
+----
+
+The results can be visualized in the browser, pasting the following paths in the search line:
+
+[source,bash]
+----
+firefox ~/rnaseq/analysis/edgeR.overE14.BP.html
+firefox ~/rnaseq/analysis/edgeR.overE14.MF.html
+firefox ~/rnaseq/analysis/edgeR.overE14.CC.html
+----
+
+You can repeat the same for the genes overexpressed in E18:
+
+[source,bash]
+----
+cut -f1 edgeR.0.01.overE18.txt | GO_enrichment.R -u universe.txt -G stdin -c BP -o edgeR.overE18 -s mouse
+cut -f1 edgeR.0.01.overE18.txt | GO_enrichment.R -u universe.txt -G stdin -c MF -o edgeR.overE18 -s mouse
+cut -f1 edgeR.0.01.overE18.txt | GO_enrichment.R -u universe.txt -G stdin -c CC -o edgeR.overE18 -s mouse
+----
+
+Make bigWig file with RNAseq signal
+-----------------------------------
+
+Create a bash script called `run_bigwig.sh` with the following:
+
+[source,bash]
+----
+#!/bin/bash -e
+
+# load env
+. ~/rnaseq/.rnaseqenv
+
+# load module
+module load BEDTools/2.21.0-goolf-1.4.10-no-OFED
+module load KentUtils/308-goolf-1.4.10-no-OFED
+
+
+# create bedgraph from mappings
+genomeCoverageBed -split -bg -ibam alignments/mouse_cns_E18_rep1_Aligned.sortedByCoord.out.bam > alignments/mouse_cns_E18_rep1_bedGraph.bed
+# generate bigwig from bedgraph
+bedGraphToBigWig alignments/mouse_cns_E18_rep1_bedGraph.bed ~/rnaseq/refs/mouse_genome_mm9.fa.fai alignments/mouse_cns_E18_rep1.bw
+----
+
+Submit the job to the cluster:
+
+[source,bash]
+----
+qsub -cwd -q RNAseq -N bigwig_rnaseq_course -e logs -o logs ./run_bigwig.sh
+----
+
+== Visualize your results in the UCSC genome browser
+
+Add the gene expression track to the genome browser in bigWig format.
+The bigWig files must be either uploaded or linked (if they are present somewhere online)
+
+Go to the USCS genome browser web page:
+
+{UCSC_genome_browser}[^]
+
+On the main menu, click on btn:[Genomes].
+Click on btn:[Add custom track].
+Make sure the assembly information is as follows:
+
+[source,html]
+----
+clade: Mammal, genome: Mouse, assembly: July 2007 (NCBI/mm9)
+----
+
+Paste the track specifications for each file in the box `Paste URLs or data`:
+
+[source,track]
+----
+track name=mouse_cns_E14_rep1.bw type=bigWig visibility=2 autoScale=off maxHeightPixels=30 color=0,149,347 viewLimits=0:30 bigDataUrl=http://genome.crg.es/~epalumbo/rnaseq/2015nov/mouse_cns_E14_rep1_Aligned.sortedByCoord.out.bw
+track name=mouse_cns_E14_rep2.bw type=bigWig visibility=2 autoScale=off maxHeightPixels=30 color=0,149,347 viewLimits=0:30 bigDataUrl=http://genome.crg.es/~epalumbo/rnaseq/2015nov/mouse_cns_E14_rep2_Aligned.sortedByCoord.out.bw
+track name=mouse_cns_E18_rep1.bw type=bigWig visibility=2 autoScale=off maxHeightPixels=30 color=69,139,0 viewLimits=0:30 bigDataUrl=http://genome.crg.es/~epalumbo/rnaseq/2015nov/mouse_cns_E18_rep1_Aligned.sortedByCoord.out.bw
+track name=mouse_cns_E18_rep2.bw type=bigWig visibility=2 autoScale=off maxHeightPixels=30 color=69,139,0 viewLimits=0:30 bigDataUrl=http://genome.crg.es/~epalumbo/rnaseq/2015nov/mouse_cns_E18_rep2_Aligned.sortedByCoord.out.bw
+----
+
+Click btn:[Submit]
+
+Go to the genome browser to look at some genes and their RNA-seq signal

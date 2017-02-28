@@ -1,0 +1,422 @@
+= RNA-seq data visualization in the UCSC Genome Browser
+:source-highlighter: highlight.js
+:highlightjs-theme: github
+
+
+The http://genome.ucsc.edu/cgi-bin/hgGateway[UC Santa Cruz Genome Browser^] provides a great way to visualize genomic data in context.
+
+NOTE: http://www.ensembl.org/index.html[ENSEMBL^] is a similar tool, however we'll focus on the UCSC Browser in this tutorial.
+
+NOTE: UCSC has a European mirror http://genome-euro.ucsc.edu/cgi-bin/hgGateway[here^]
+
+The UCSC Browser contains many publicly available datasets (ENCODE data, ESTs, RefSeq, GENCODE gene models, etc.) organized in tracks. This is its "core" set of tracks, which can be turned on and off at will (see <<Track display>> below).
+
+You can also add your own data to it, via <<Custom Tracks>> and <<Track Hubs>>.
+
+In this part of the tutorial, we'll learn how to use the UCSC Browser to visualize the data you've just generated with GRAPE (BAMs and bigWigs).
+
+== Basics
+
+TIP: A lot of UCSC training resources are available http://genome.ucsc.edu/training/index.html[here^].
+
+=== Accessing a locus / genome position
+
+We'll be looking at the top two differentially expressed genes in our dataset:
+
+[cols="3*", options="header"]
+|===
+|ENSEMBL id
+|Genome position (mm9)
+|Differential expression
+
+|`ENSMUSG00000052187`
+|`chr7:111,000,259-111,001,754`
+|E14 > E18
+
+|`ENSMUSG00000032936`
+|`chr9:107,838,251-107,852,022`
+|E14 < E18
+|===
+
+You can input ENSEMBL ids, gene symbols or genome positions into the search box at the top of the page. Hit enter and you'll be taken to the region of your gene of interest, which will be highlighted in the image.
+
+=== Track display
+Each track can be displayed with different levels of detail. These are, in ascending order:
+
+* hide
+* dense
+* squish
+* pack
+* full
+
+You can access these settings either through individual *drop-down track menus* below the genome image:
+
+image:AC114783.5.png[UCSC-drop-down1,300,300, align="center"]
+
+or by *right-clicking* the corresponding area on the image:
+
+image:AC114783.6.png[UCSC-drop-down2,350,350, align="center"]
+
+Some track types (bigWigs, BAMs) have much more detailed configuration options:
+
+image:AC114783.8.png[bigWig-config,600,350, align="center"]
+
+
+
+== Visualizing your own data
+
+* If not done already, set custom shell environment:
++
+[source,cmd]
+----
+source ~ngs00/env/.ngsenv
+----
+
+=== Custom Tracks
+
+The easiest way to load your data into the UCSC Browser is through a http://genome.ucsc.edu/goldenPath/help/customTrack.html[Custom Track^].
+
+First, we need to make this data accessible from the web, so that UCSC can download it. In your home directory you will find a `public_docs/` folder, which is reachable through HTTP at this address: http://public-docs.crg.es/NGS/[`http://public-docs.crg.es/NGS/$USER`^] (replace `$USER` with your `ngsXX` username, or type
+
+[source,cmd]
+----
+echo http://public-docs.crg.es/NGS/$USER
+----
+
+in your terminal, and paste the output in your Web browser).
+
+
+* Make Custom Track directory (web-accessible through `\http://public-docs.crg.es/NGS/$USER/custom_tracks/`)
++
+[source,cmd]
+----
+mkdir -p $customTrackDir
+----
+
+* Copy GRAPE output files there (bigWigs + BAMs)
++
+[source,cmd]
+----
+awk '$5~/GenomeAlignment|^PlusRawSignal|^MinusRawSignal/{print $3}' $grapeDb | while read f; do
+# copy data files:
+rsync -av $f $customTrackDir/
+# copy BAM indices as well:
+[[ "$f" =~ bam$ ]] && rsync -av $f.bai $customTrackDir/
+done
+----
+
+Can you see the files in your Web Browser?
+
+* Open the http://genome.ucsc.edu/cgi-bin/hgGateway[Genome Browser^]
+
+* Make sure you're using the correct genome assembly (mouse/mm9)
+
+* Click on "add custom tracks"
+
+* Go back to you terminal and convert local datafile paths to global web URLs:
++
+[source,cmd]
+----
+cd $customTrackDir
+for file in `ls . |grep -v .bai`; do
+echo "http://public-docs.crg.es/NGS/$USER/custom_tracks/$file"
+done
+----
++
+Copy the output
+
+* Switch to your Web Browser, paste the URLs into the "Paste URLs or data:" text box and clisk "Submit". Your data will then be fetched by UCSC servers.
+
+* Check out our two gene examples:
+
+[cols="3*", options="header"]
+|===
+|ENSEMBL id
+|Genome position (mm9)
+|Differential expression
+
+|`ENSMUSG00000052187`
+|`chr7:111,000,259-111,001,754`
+|E14 > E18
+
+|`ENSMUSG00000032936`
+|`chr9:107,838,251-107,852,022`
+|E14 < E18
+|===
+
+Custom tracks are viewable only on the machine from which they were uploaded and are automatically discarded *48 hours* after the last time they are accessed, unless they are saved in a http://genome.ucsc.edu/goldenPath/help/hgSessionHelp.html#CTs[Session^] (in which case UCSC will erase them after *4 months*). For a permanent solution, use <<Track Hubs>> instead.
+
+Another important limitation is that the track display options need to be *configured individually*, which is cumbersome if you have multiple datasets.
+
+
+=== Track Hubs
+
+==== Overview
+
+http://genome.cse.ucsc.edu/goldenPath/help/hgTrackHubHelp.html[Track Hubs^] are Custom Tracks on steroids:
+
+[options="header"]
+|=======================
+|     |Custom Tracks      | Track Hubs
+|*Configure tracks by groups*  | No  | Yes
+|*Where is the data?*  | Uploaded to UCSC servers (except binary indexed files)    | Stays on your server
+|*Accepted file types* | All most common (BED, GTF, etc.) | Only binary indexed (bigWig, bigBed, BAM+BAI)
+|*How long will it live?*     |48h     | "Forever"
+|*On exotic genome assemblies?*    |No | Yes (http://genomewiki.ucsc.edu/index.php/Assembly_Hubs[Assembly hubs^])
+|=======================
+
+
+Although originally developed at UCSC, they are also http://www.ensembl.org/info/website/adding_trackhubs.html[supported by ENSEMBL^].
+
+
+Track Hubs are very powerful: they allow you to reach the same level of sophistication as some "core" ENCODE tracks such as http://genome.ucsc.edu/cgi-bin/hgTrackUi?g=wgEncodeCshlLongRnaSeq[this one^]:
+
+image:AC114783.7.png[UCSC-mouseEncode-longRNAtracks,650,650, align="center"]
+
+They are relatively complex to set up, though.
+
+==== Introduction to quickTrackHub
+
+Here we will use the https://github.com/julienlag/quickTrackHub[`quickTrackHub`^] framework to make this task easier.
+
+* The idea is to group similar tracks together, based on their associated metadata (represented in their file names). Let's see what our grouping options are:
++
+image:grouping.png[grouping,550,550, align="center"]
++
+We can organize our tracks the following way:
++
+** One `superTrack` per *[blue]#file type#* :
+*** BAM: `ReadAligns`
+*** bigWig: `ReadSignal`
+** Split each superTrack into `composite` dimensions:
+*** (*[purple]#tissue#* , *[red]#lifeStage#*) (matrix's `X` dimension)
+*** *[green]#replicate#* (matrix's `Y` dimension)
+*** *[fuchsia]#strand#* (for bigWigs only)
+
+* `quickTrackHub` will:
+** Read a Track Hub Definition File (JSON) that contain:
+*** Basic track settings (genome assembly, URL, name, visibility, etc.)
+*** Track grouping instructions
+*** Filename parsing instructions (_i.e._ how to extract metadata from filenames)
++
+[source,json]
+.trackHubDefinition.json example
+----
+{
+	"longLabel" : "ENCODE GRAPE sample data track hub, user ngs00",
+	"track" : "crgGrapeSample-ngs00",
+	"trackHubAssociatedEmail" : "your.email@yourinstitution.org",
+	"webPublicDir" : "http://public-docs.crg.es/NGS/ngs00/track_hub",
+	"superTracks" : [
+		{
+			"track" : "ENCODE_GRAPE_sample",
+			"longLabel" : "ENCODE GRAPE sample superTrack",
+			"visibility": "dense"
+		},
+		{
+			"track" : "ReadAligns",
+			"parent" : "ENCODE_GRAPE_sample",
+			"longLabel" : "Read alignments (BAMs)",
+			"visibility" : "dense",
+			"type" : "bam",
+			"fileNameMatch" : {
+				"fileExtension" : "bam"
+			},
+			"compositeDimensions" : {
+				"x" : [
+					"lifeStage",
+					"tissue"
+				],
+				"y" : [
+					"replicate"
+				]
+			}
+		},
+		{
+			"track" : "ReadSignal",
+			"parent" : "ENCODE_GRAPE_sample",
+			"longLabel" : "Read signal (BigWigs)",
+			"visibility" : "dense",
+			"type" : "bigWig",
+			"autoScale" : "on",
+			"alwaysZero" : "on",
+			"maxHeightPixels" : "128:28:11",
+			"fileNameMatch" : {
+				"fileExtension" : "bw"
+			},
+			"compositeDimensions" : {
+				"x" : [
+					"lifeStage",
+					"tissue"
+				],
+				"y" : [
+					"replicate"
+				],
+				"a" : [
+					"strand"
+				]
+			}
+		}
+	],
+	"dataFilesList" : "/users/ngs00/public_docs/track_hub/dataFiles.list",
+	"dataFileNameParsingInstructions" :	{
+		"fieldSeparator" : "_",
+		"fields" : {
+			"genome" : 0,
+			"tissue" : 1,
+			"lifeStage" : 2,
+			"replicate" : 3,
+			"strand" : 5,
+			"fileExtension" : -1
+		}
+	}
+}
+----
+** Output the corresponding Track Hub file and directory structure that will be parsed by UCSC.
+
+==== quickTrackHub in practice
+
+* First, create a new public subdirectory for the Track Hub
++
+[source,cmd]
+----
+mkdir -p $trackHubDir
+----
+* Copy the Custom Track data files there and rename them.
++
+NOTE: GRAPE's native output filenames are not (yet) `quickTrackHub`-compliant, this is why we need this renaming extra step.
++
+[source,cmd]
+----
+for f in `find $customTrackDir/ -type f`; do
+# perform some string substitution magic to rename the files
+outFile=$(basename $f)
+outFile=${outFile/mouse/mm9}
+outFile=${outFile//.Unique./_Unique_}
+# copy/rename data files:
+rsync -av $f $trackHubDir/$outFile
+# copy/rename BAM indices as well:
+[[ "$f" =~ bam$ ]] && rsync -av $f.bai $trackHubDir/$outFile.bai
+done
+----
+* Download `quickTrackHub` from its github repository to your home directory:
++
+[source,cmd]
+----
+cd $HOME
+git clone https://github.com/julienlag/quickTrackHub.git
+----
+* Make the script executable:
++
+[source,cmd]
+----
+chmod u+x $HOME/quickTrackHub/quickTrackHub.pl
+----
+* Download the `hubCheck` utility from UCSC (somewhat useful for Track Hub debugging purposes), and place it into `$HOME/bin/`
++
+[source,cmd]
+----
+mkdir -p $HOME/bin/
+----
++
+[source,cmd]
+----
+wget http://hgdownload.cse.ucsc.edu/admin/exe/linux.x86_64/hubCheck -O $HOME/bin/hubCheck
+----
+* Make it executable
++
+[source,cmd]
+----
+chmod u+x $HOME/bin/hubCheck
+----
+* `cd` to public Track Hub directory
++
+[source,cmd]
+----
+cd $trackHubDir
+----
+* Copy the template Track Hub Definition JSON file to your public Track Hub directory
++
+[source,cmd]
+----
+cp $HOME/quickTrackHub/trackHubDefinition.json .
+----
+* Open and edit the JSON file:
++
+[source,cmd]
+----
+gedit trackHubDefinition.json &
+----
+** Find and replace all instances of `ngsXX` in the file with your username.
+** Replace `your.email@yourinstitution.org` with your email address (Optional).
+** Save
+* Generate the list of files (BAMS + bigWigs) to include in the Track Hub:
++
+[source,cmd]
+----
+find . -type f | grep "\.bam\|\.bw" | grep -v "\.bai" > dataFiles.list
+----
+* Make the Track Hub:
++
+[source,cmd]
+----
+quickTrackHub.pl trackHubDefinition.json
+----
+
+
+* Load the Track Hub in the UCSC Browser
++
+Your hub's URL is output by the following command:
++
+[source,cmd]
+----
+echo http://public-docs.crg.es/NGS/$USER/track_hub/hub.txt
+----
++
+
+There are *two ways* to load your Track Hub:
+
+** Load manually:
+
+*** Click on the "track hub" button below the genome image in the UCSC Browser
+
+*** Select the "My Hubs" tab
+*** In the "URL" box, paste the URL of your hub (`\http://public-docs.crg.es/NGS/$USER/track_hub/hub.txt`)
+*** Click on "Add Hub"
+*** You should be redirected to the mm9 Browser Gateway
+
+** Load directly through URL:
++
+Get the direct link via:
++
+[source,cmd]
+----
+echo "http://genome.ucsc.edu/cgi-bin/hgTracks?db=mm9&hubUrl=http://public-docs.crg.es/NGS/$USER/track_hub/hub.txt"
+----
++
+And copy/paste the output in your browser.
++
+TIP: Use this direct link to share your Track Hub with collaborators.
++
+The settings of your Track Hub are accessible here (below the genome image):
++
+image:AC114783.9.png[trackHubsettings,650,650, align="center"]
+* Look at our two favorite differentially expressed genes:
++
+[cols="3*", options="header"]
+|===
+|ENSEMBL id
+|Genome position (mm9)
+|Differential expression
+
+|`ENSMUSG00000052187`
+|`chr7:111,000,259-111,001,754`
+|E14 > E18
+
+|`ENSMUSG00000032936`
+|`chr9:107,838,251-107,852,022`
+|E14 < E18
+|===
+
+* Tune the track display parameters so as to visualize better the differential expression.
+

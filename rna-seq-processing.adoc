@@ -1,0 +1,224 @@
+= RNAseq data processing
+
+Have a look at the `.rnaseqenv` file to see how the environment for the course has been configured.
+We will use the `rnaseq` folder under your `HOME` as the base folder for the tutorial. Be sure you are
+inside that folder before doing any processing. Use the `pwd` command to check your current folder
+and `cd` to move to the `rnaseq` folder, e.g.:
+
+[source,bash]
+----
+bash-4.1$ pwd
+/users/rg/epalumbo
+bash-4.1$ cd ~/rnaseq
+bash-4.1$ pwd
+/users/rg/epalumbo/rnaseq
+----
+
+Once you are inside the `rnaseq` folder, create a folder for storing the log files:
+
+[source,bash]
+----
+mkdir logs
+----
+
+== Fastq files and read QC
+
+Have a look at one of our fastq files:
+
+[source,bash]
+----
+zcat ~/rnaseq/data/mouse_cns_E14_rep1_1.fastq.gz | head -4
+----
+
+Create a folder for the fastqc output:
+
+[source,bash]
+----
+mkdir fastqc
+----
+
+Create a bash script called `run_fastqc.sh`.
+
+This script should contain the following command:
+
+[source,bash]
+----
+#!/bin/bash -e
+
+# load env
+. ~/rnaseq/.rnaseqenv
+
+# load module
+module load FastQC/0.11.2
+
+# run fastqc
+fastqc -o fastqc -f fastq ~/rnaseq/data/mouse_cns_E18_rep1_1.fastq.gz
+----
+
+Submit the job to the cluster:
+
+[source,bash]
+----
+qsub -cwd -q RNAseq -l virtual_free=8G -N fastqc_rnaseq_course -e logs -o logs ./run_fastqc.sh
+----
+
+To monitor the status of the job, type `qstat`.
+
+You are able to display the fastqc results on the browser. Type the following in the terminal to open a browser showing your FastQC results:
+
+[source,bash]
+----
+firefox ~/rnaseq/fastqc/mouse_cns_E18_rep1_1_fastqc.html
+----
+
+If you have an instance of firefox running in your local machine you need to modify the command as follows in order to be able to open the file:
+
+[source,bash]
+----
+firefox --new-instance ~/rnaseq/fastqc/mouse_cns_E18_rep1_1_fastqc.html
+----
+
+== Mapping
+Create a folder for the alignment steps:
+
+[source,bash]
+----
+mkdir alignments
+----
+
+Create a bash script called `run_star.sh` with the following:
+
+[source,bash]
+----
+#!/bin/bash -e
+
+# load env
+. ~/rnaseq/.rnaseqenv
+
+# load modules
+module load pigz/2.3.1-goolf-1.4.10-no-OFED
+module load STAR/2.4.2a-goolf-1.4.10-no-OFED
+
+# run the mapping step
+STAR --runThreadN 2 --genomeDir ~/rnaseq/refs/mouse_genome_mm9_STAR_index --readFilesIn ~/rnaseq/data/mouse_cns_E18_rep1_1.fastq.gz ~/rnaseq/data/mouse_cns_E18_rep1_2.fastq.gz --outSAMunmapped Within --outFilterType BySJout --outSAMattributes NH HI AS NM MD --readFilesCommand pigz -p2 -dc --outSAMtype BAM SortedByCoordinate --quantMode TranscriptomeSAM --outFileNamePrefix alignments/mouse_cns_E18_rep1_
+----
+
+Submit the job to the cluster:
+
+[source,bash]
+----
+qsub -cwd -q RNAseq -l virtual_free=32G -pe smp 2 -N mapping_rnaseq_course -e logs -o logs ./run_star.sh
+----
+
+When finished we can look at the bam file:
+
+[source,bash]
+----
+samtools view -h ~/rnaseq/alignments/mouse_cns_E18_rep1_Aligned.sortedByCoord.out.bam | more
+----
+
+or at the mapping statistics that come with STAR:
+
+[source,bash]
+----
+cat ~/rnaseq/alignments/mouse_cns_E18_rep1_Log.final.out
+----
+
+[source,bash]
+----
+                                 Started job on |       Sep 15 17:12:35
+                             Started mapping on |       Sep 15 17:16:32
+                                    Finished on |       Sep 15 17:17:38
+       Mapping speed, Million of reads per hour |       40.91
+
+                          Number of input reads |       750067
+                      Average input read length |       202
+                                    UNIQUE READS:
+                   Uniquely mapped reads number |       646593
+                        Uniquely mapped reads % |       86.20%
+                          Average mapped length |       200.63
+                       Number of splices: Total |       335381
+            Number of splices: Annotated (sjdb) |       330288
+                       Number of splices: GT/AG |       331908
+                       Number of splices: GC/AG |       2842
+                       Number of splices: AT/AC |       399
+               Number of splices: Non-canonical |       232
+                      Mismatch rate per base, % |       0.20%
+                         Deletion rate per base |       0.01%
+                        Deletion average length |       1.93
+                        Insertion rate per base |       0.01%
+                       Insertion average length |       1.44
+                             MULTI-MAPPING READS:
+        Number of reads mapped to multiple loci |       26254
+             % of reads mapped to multiple loci |       3.50%
+        Number of reads mapped to too many loci |       887
+             % of reads mapped to too many loci |       0.12%
+                                  UNMAPPED READS:
+       % of reads unmapped: too many mismatches |       0.00%
+                 % of reads unmapped: too short |       10.04%
+                     % of reads unmapped: other |       0.14%
+----
+
+And get some general statistics about mapping:
+
+[source,bash]
+----
+# load env
+source ~/rnaseq/.rnaseqenv
+
+# load pysam module
+module load pysam
+
+# get mapping statistics
+BAMstats.py -i ~/rnaseq/alignments/mouse_cns_E18_rep1_Aligned.sortedByCoord.out.bam
+
+# unload all modules
+module purge
+----
+
+
+== Transcript and gene expression quantification
+
+Create a folder for the quantifications:
+
+[source,bash]
+----
+mkdir quantifications
+----
+
+Create a bash script called `run_rsem.sh` with the following:
+
+[source,bash]
+----
+#!/bin/bash -e
+
+# load env
+. ~/rnaseq/.rnaseqenv
+
+# load module
+module load RSEM/1.2.21-goolf-1.4.10-no-OFED
+
+# get quantifications with RSEM
+rsem-calculate-expression --bam --estimate-rspd --no-bam-output --seed 12345 -p 2 --paired-end --forward-prob 0 alignments/mouse_cns_E18_rep1_Aligned.toTranscriptome.out.bam ~/rnaseq/refs/mouse_genome_mm9_RSEM_index/RSEMref quantifications/mouse_cns_E18_rep1
+----
+
+Submit the job to the cluster:
+
+[source,bash]
+----
+qsub -cwd -q RNAseq -l virtual_free=16G -pe smp 2 -N isoforms_rnaseq_course -e logs -o logs ./run_rsem.sh
+----
+
+To obtain a matrix of gene FPKM values:
+
+[source,bash]
+----
+cat ~/rnaseq/data/quantifications.index.txt | retrieve_element_rpkms.py -o encode -O mouse -e gene -v FPKM -d quantifications
+----
+
+To obtain a matrix of gene read counts:
+
+[source,bash]
+----
+cat ~/rnaseq/data/quantifications.index.txt | retrieve_element_rpkms.py -o encode -O mouse -e gene -v expected_count -d quantifications
+----

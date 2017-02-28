@@ -1,0 +1,374 @@
+= Nextflow
+
+Nextflow is a framework that simplifies writing complex parallel computational
+pipelines in a portable and reproducible manner. Parallelization is automatically managed
+by the framework and it is implicitly defined by the processes input and output declarations.
+
+The built-in support for https://www.docker.com[Docker] containers technology and the https://www.github.com[Github]
+sharing platform enables pipelines to be deployed, along with all their dependencies, across
+multiple platforms without any modifications, making it possible to share them and replicate
+their results in a predictable manner.
+
+
+== Installing Nextflow
+
+Nextflow is a command line tool. It only requires a Unix-like operating system and a Java 7/8 available
+in the running environment.
+
+It can be installed with the following command:
+
+[source,cmd]
+----
+curl -fsSL get.nextflow.io | bash
+mv nextflow ~/bin
+----
+
+To check the installed version use the command below:
+
+[source,cmd]
+----
+nextflow info
+----
+----
+  Version: 0.17.3 build 3495
+  Modified: 18-02-2016 11:00 UTC (12:00 CEST)
+  System: Mac OS X 10.10.5
+  Runtime: Groovy 2.4.5 on Java HotSpot(TM) 64-Bit Server VM 1.8.0_40-b27
+  Encoding: UTF-8 (UTF-8)
+----
+
+
+
+== Basic script
+
+Write a basic script to count the number of transcripts and exons in a gene annotation file.
+
+[source]
+----
+#!/usr/bin/env nextflow
+echo true
+annotation = Channel.fromPath('/users/ngs00/refs/mm65.long.ok.gtf')
+
+process count {
+
+  input:
+  file 'annotation.gtf' from annotation
+
+  '''
+  grep Sec23a annotation.gtf > Sec23a.gff
+  awk '$3=="transcript"' Sec23a.gff | wc -l
+  awk '$3=="exon"' Sec23a.gff | wc -l
+  '''
+}
+----
+
+This examples introduces the basic syntax of a Nextflow process and shows how to execute
+any existing piece of code or script available in the hosting environment.
+
+Save the code showed above in a file named `tutorial1.nf`, then run it using the following
+command:
+
+[source,cmd]
+----
+nextflow run tutorial1.nf
+----
+
+== Using parameters
+
+Parameters allow the same script to be used specifying different input values.
+
+By convention Nextflow parameters are defined at the top of the script file
+providing a default value for each of them.
+
+[source]
+----
+#!/usr/bin/env nextflow
+echo true
+
+params.gene = 'Sec23a'
+params.annot = '/users/ngs00/refs/mm65.long.ok.gtf'
+
+annotation = Channel.fromPath(params.annot)
+
+process count {
+  input:
+  file 'annotation.gtf' from annotation
+
+  shell:
+  '''
+  grep !{params.gene} annotation.gtf > gff
+  awk '$3=="transcript"' gff | wc -l
+  awk '$3=="exon"' gff | wc -l
+  '''
+}
+----
+
+The actual parameter value can be provided on the launch command line as an extra option
+prefixing the parameter name with `--` and then specifying a value e.g. `--gene Sec1`.
+
+Save the above code in a file named `tutorial2.nf`, then execute it providing a different
+gene name or an annotation file as shown below:
+
+[source,cmd]
+----
+nextflow run tutorial2.nf --gene Sec1
+:
+nextflow run tutorial2.nf --annot /users/ngs00/refs/gencode.vM7.annotation.gtf --gene Sec23b
+----
+
+
+== Parallel execution
+
+Nextflow processes are implicitly executed in a parallel manner whenever multiple inputs
+are provided. The following example executes a parallel task for each pair of gene name and annotation
+file specified.
+
+[source]
+----
+#!/usr/bin/env nextflow
+echo true
+
+params.gene = 'Sec23a'
+params.annot = '/users/ngs00/refs/mm65.long.ok.gtf'
+
+annotation = Channel.fromPath(params.annot)
+genes = params.gene.tokenize(', ')
+
+process count {
+  input:
+  file 'annotation.gtf' from annotation
+  each gene from genes
+
+  shell:
+  '''
+  echo !{gene}
+  grep !{gene} annotation.gtf > gff
+  awk '$3=="transcript"' gff | wc -l
+  awk '$3=="exon"' gff | wc -l
+  '''
+}
+----
+
+Save the above content to a file named `tutorial3.nf`, then run it proving more than an
+annotation file as shown below:
+
+[source,cmd]
+----
+nextflow run tutorial3.nf --annot '/users/ngs00/refs/*.gtf'
+:
+nextflow run tutorial3.nf --gene Sec23a,Tulp1,Trex1
+:
+----
+
+Each of file matching the specified glob pattern will trigger the execution
+of a parallel `count` process. The same happens when specifying multiple gene names.
+
+NOTE: The `each` clause results in the execution of a parallel task for all the combinations
+of annotation files with the specified gene names.
+
+
+== Collect results
+
+This example shows how collect the output produced by multiple parallel processes
+into a file and prints the resulting content.
+
+[source]
+----
+#!/usr/bin/env nextflow
+
+params.gene = 'Sec23a'
+params.annot = '/users/ngs00/refs/mm65.long.ok.gtf'
+
+annotation = Channel.fromPath(params.annot)
+genes = params.gene.tokenize(', ')
+
+process count {
+  input:
+  each gene from genes
+  file annot from annotation
+
+  output:
+  stdout into result
+
+  shell:
+  '''
+  echo !{annot.baseName}
+  echo !{gene}
+  grep !{gene} !{annot} > gff
+  awk '$3=="transcript"' gff | wc -l
+  awk '$3=="exon"' gff | wc -l
+  '''
+}
+
+result
+    .map { str -> str.readLines().join(',') }  // <1>
+    .collectFile(newLine: true)  // <2>
+    .println { it.text }  // <3>
+----
+
+
+<1> The `map` operator transforms the multi-lines output into a comma-separated string.
+<2> The `collectFile` operator gathers the produced strings and append them into a file.
+<3> The `println` operator prints the file content.
+
+Save the above script to a file named `tutorial4.nf`, then run it by using the
+following command in your shell terminal:
+
+[source,cmd]
+----
+nextflow run tutorial4.nf --annot '/users/ngs00/refs/*.gtf' --gene Sec23a,Tulp1
+----
+
+It will output a text similar to the one below following:
+
+----
+gencode.vM9.annotation,Tulp1,12,71
+gencode.vM7.annotation,Sec23a,5,47
+mm65.long.ok,Sec23a,5,47
+gencode.v22.annotation,Sec23a,0,0
+gencode.v22.annotation,Tulp1,0,0
+gencode.vM7.annotation,Tulp1,12,71
+mm65.long.ok,Tulp1,12,71
+dmel-all-no-analysis-r6.05,Tulp1,0,0
+dmel-all-no-analysis-r6.05,Sec23a,0,0
+gencode.vM9.annotation,Sec23a,5,47
+----
+
+
+== Use a computing cluster
+
+When a pipeline runs many computing intensive tasks a batch scheduler is required
+to submit the job executions to a cluster of computers.
+
+Nextflow manages the execution with the batch scheduler in a transparent manner
+without any change in the pipeline code. It only requires a few settings in the
+pipeline configuration file:
+
+[source]
+----
+process {
+    executor = 'sge'
+    queue = 'NGS'
+    memory = '1 GB'
+}
+----
+
+Save the content showed above in a file named `nextflow.config`, then launch
+the script execution as before:
+
+[source,cmd]
+----
+nextflow run tutorial4.nf -bg --annot '/users/ngs00/refs/*.gtf' --gene Sec23a,Tulp1,Trex > log
+----
+
+You can check tasks are submitted to the cluster using the following command:
+
+[source,cmd]
+----
+qstat
+----
+
+The following platforms are currently supported:
+
+* Sun/Open Grid Engine
+* Univa Grid Engine
+* Linux SLURM
+* IBM LSF
+* Torque/PBS
+
+== Resume pipeline execution
+
+Launch the script execution as shown below:
+
+[source,cmd]
+----
+nextflow run tutorial4.nf --annot '/users/ngs00/refs/*.gtf' --gene Sec23a -resume
+----
+
+The `-resume` command line option will force to skip the execution of tasks that have
+been already executed successfully.
+
+It will print an output similar to the following:
+
+----
+N E X T F L O W  ~  version 0.17.3
+Launching tutorial4.nf
+[warm up] executor > sge
+[85/145369] Cached process > count (2)
+[35/054b18] Cached process > count (1)
+[4a/36a5d1] Cached process > count (3)
+gencode.vM7.annotation,Sec23a,5,47
+mm65.long.ok,Sec23a,5,47
+----
+
+If you add other genes by using the `--gene` option only the tasks required by the new input
+will be executed. For example:
+
+[source,cmd]
+----
+nextflow run tutorial4.nf --annot '/users/ngs00/refs/*.gtf' --gene Sec23a,Tulp2,Trex2 -resume
+----
+
+Only the tasks for which a new input is specified will be executed.
+
+
+== Integration with GitHub
+
+Nextflow provides built-in support for the https://git-scm.com/[Git] tool and the https://github.com[GitHub] source code management 
+plaftorm. This makes it possible to share and deploy a pipeline hosted in the GitHub 
+platform with ease. 
+
+For the sake of this tutorial we will use https://github.com/nextflow-io/rnatoy[RNA-Toy], 
+a proof of concept RNA-Seq pipeline implemented with Nextflow.
+
+The pipeline uses the following tools: 
+
+* http://bowtie-bio.sourceforge.net/bowtie2/index.shtml[Bowtie2] 
+* https://ccb.jhu.edu/software/tophat/index.shtml[TopHat2] 
+* http://cole-trapnell-lab.github.io/cufflinks/[Cufflinks] 
+
+In order to setup the required pipeline dependencies we will use http://modules.sourceforge.net/[Environment Modules].
+
+Add the following setting in your `nextflow.config` file: 
+
+----
+process { 
+  module = 'Boost/1.55.0-goolf-1.4.10-no-OFED-Python-2.7.6:Python/2.7.8-goolf-1.4.10-no-OFED:Bowtie2/2.2.8-goolf-1.4.10-no-OFED:TopHat/2.1.0-goolf-1.4.10-no-OFED:Cufflinks/2.2.1-goolf-1.4.10-no-OFED'
+} 
+----
+
+Launch the pipeline execution using the following command: 
+
+[source,cmd]
+----
+nextflow run nextflow-io/rnatoy
+----
+
+The above command will automatically pull the pipeline from the GitHub repository and run it  
+using a dataset included in the pipeline itself. 
+
+Users can provide its own dataset specifying it on the launch command line.
+
+== Docker containers 
+
+In the previous example we still needed to configure one by one the tools used by the pipeline 
+by loading the corresponding environment modules. 
+
+Nextflow provides built-in support for https://www.docker.com/[Docker] containers that 
+allows binary dependencies to be deployed automatically when the pipeline is executed.  
+
+Having the Docker engine installed, the previous example can be executed simply using 
+the following command:
+
+[source,cmd]
+----
+nextflow run nextflow-io/rnatoy -with-docker 
+----
+
+The `-with-docker` command line option instructs Nextflow to pull the Docker image defined 
+in the pipeline execution file. The image contains all the binary dependencies required to 
+run the pipeline script (i.e. Bowtie, TopHat, Cufflinks, etc.) thus it is not need 
+to configure them manually. 
+
+This greatly simplify the pipeline deployment process and guarantee consistent results over time and 
+across different platforms. 

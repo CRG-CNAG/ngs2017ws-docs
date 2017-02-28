@@ -1,0 +1,31 @@
+= BED
+:bed-format: https://genome.ucsc.edu/FAQ/FAQformat.html#format1
+
+BED (Browser Extensible Data) format provides a flexible way to represent genomic regions. It is also widely used to define the
+data lines that are displayed in an annotation track of the UCSC genome browser. BED lines have three required fields and nine
+additional optional fields. For this reason there are several BEDn format (e.g. BED9, BED12) depending on the number of optional
+fields. The number of fields per line must be consistent throughout any single file.
+
+The first three required BED fields are:
+
+[cols="1,l,1",options="autowidth"]
+|===
+| [red]#{counter:index}# | chrom      | The name of the chromosome (e.g. chr3, chrY, chr2_random) or scaffold (e.g. scaffold10671).
+| [red]#{counter:index}# | chromStart | The starting position of the feature in the chromosome or scaffold. The first base in a chromosome is numbered 0.
+| [red]#{counter:index}# | chromEnd   | The ending position of the feature in the chromosome or scaffold. The chromEnd base is not included in the display of the feature. For example, the first 100 bases of a chromosome are defined as chromStart=0, chromEnd=100, and span the bases numbered 0-99.
+|===
+
+The 9 additional optional BED fields are:
+
+[cols="1,l,1",options="autowidth"]
+|===
+| [red]#{counter:index}# | name        | Defines the name of the BED line.
+| [red]#{counter:index}# | score       | A score between 0 and 1000.
+| [red]#{counter:index}# | strand      | Defines the strand - either `+` or `-`.
+| [red]#{counter:index}# | thickStart  | The starting position at which the feature is drawn thickly (for example, the start codon in gene displays). When there is no thick part, thickStart and thickEnd are usually set to the chromStart position.
+| [red]#{counter:index}# | thickEnd    | The ending position at which the feature is drawn thickly (for example, the stop codon in gene displays).
+| [red]#{counter:index}# | itemRgb     | An RGB value of the form R,G,B (e.g. 255,0,0).
+| [red]#{counter:index}# | blockCount  | The number of blocks (exons) in the BED line.
+| [red]#{counter:index}# | blockSizes  | A comma-separated list of the block sizes. The number of items in this list should correspond to blockCount.
+| [red]#{counter:index}# | blockStarts | A comma-separated list of block starts. All of the blockStart positions should be calculated relative to chromStart. The number of items in this list should correspond to blockCount.
+|===

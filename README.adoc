@@ -1,0 +1,10 @@
+= NGS 2016 Workshop Hand-on Docs
+
+This repository contains the source files for the NGS 2016 post-conference workshop documentation.
+
+To generate the `index.html` file with the documentation do:
+
+[source,bash]
+----
+make html
+----

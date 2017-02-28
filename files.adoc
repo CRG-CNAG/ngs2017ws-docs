@@ -1,0 +1,42 @@
+= Writing and editing files
+:experimental:
+:vim-beginners-guide: http://www.howtogeek.com/102468/a-beginners-guide-to-editing-text-files-with-vi
+
+There are several ways to write and edit files.
+The most commonly used text editors are `vi`, `emacs` and `gedit`.
+
+== Gedit
+
+Gedit is a text editor with graphical user interface. To create a new file in the current folder just call `gedit` with the name of the file:
+
+[source,bash]
+----
+gedit file.txt
+----
+
+When you are done, save the file (by pressing kbd:[Ctrl+S] or by selecting menu:File[Save]) and close Gedit.
+
+== Vi
+
+Vi is a text editor with a command mode interface. See {vim-beginners-guide}[this article^] for a beginner's guide.
+
+To create a new file in the current folder just call `vi` with the name of the file:
+
+[source,bash]
+----
+vi file.txt
+----
+
+Vi has several modes which are specified in the bottom part of screen.
+When you just open the editor you cannot write on the file, because it is the command mode.
+To start writing, press kbd:[i], and you will notice that the status in the bottom of the screen changed to `INSERT`.
+Now you can paste the text by right-click with the mouse and paste, or by pressing kbd:[SHIFT+Insert].
+To go back to command mode press kbd:[ESC].
+To save, make sure you are in command mode and type:
+
+[source,vim]
+----
+:wq
+----
+
+To undo, press kbd:[u] when you are in command mode.

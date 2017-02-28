@@ -1,0 +1,76 @@
+= GTF
+:gff-format: https://genome.ucsc.edu/FAQ/FAQformat.html#format3
+
+GTF (Gene Transfer Format) is a refinement to {gff-format}[GFF^] that tightens the specification. The first eight GTF fields are the same as GFF. The group field has been expanded into a list of attributes. Each attribute consists of a `type`/`value` pair. Attributes must end in a semi-colon, and be separated from any following attribute by exactly one space.
+
+The attribute list must begin with the two mandatory attributes:
+
+[cols="10l,90"]
+|===
+| gene_id       | A globally unique identifier for the genomic source of the sequence.
+| transcript_id | A globally unique identifier for the predicted transcript.
+|===
+
+Check the nineth GTF field of the sample annotation of the workshop:
+
+[source,cmd]
+----
+cut -f9 ~ngs00/refs/mm65.long.ok.gtf | head -1
+----
+----
+gene_id "ENSMUSG00000076490"; transcript_id "ENSMUST00000103291"; exon_number "1"; gene_name "Trbc1"; gene_type "IG_C_gene"; transcript_name "Trbc1-201"; protein_id "ENSMUSP00000100099"; transcript_type "IG_C_gene";
+----
+
+Look at the first line:
+[]
+----
+head -1 ~ngs00/refs/mm65.long.ok.gtf | tr '\t' '\n'
+----
+----
+chr6 <1>
+ENSEMBL <2>
+CDS <3>
+41488217 <4>
+41488591 <5>
+. <6>
++ <7>
+2 <8>
+gene_id "ENSMUSG00000076490"; transcript_id "ENSMUST00000103291"; exon_number "1"; gene_name "Trbc1"; gene_type "IG_C_gene"; transcript_name "Trbc1-201"; protein_id "ENSMUSP00000100099"; transcript_type "IG_C_gene"; <9>
+----
+<1> `seqname` - The name of the sequence. Must be a chromosome or scaffold.
+<2> `source`  - The program that generated this feature.
+<3> `feature` - The name of this type of feature. Some examples of standard feature types are `CDS`, `start_codon`, `stop_codon`, and `exon`.
+<4> `start`   - The starting position of the feature in the sequence (`1-based`).
+<5> `end`     - The ending position of the feature (inclusive).
+<6> `score`   - A score between 0 and 1000.
+<7> `strand`  - Valid entries include `+`, `-`, or `.` (for don't know/don't care).
+<8> `frame`   - If the feature is a coding exon, frame should be a number between 0-2 that represents the reading frame of the first base. If the feature is not a coding exon, the value should be `.`.
+<9> `group`   - All lines with the same group are linked together into a single item. Note the `gene_id` and `transcript_id` mandatory attributes.
+
+== Feature types
+
+The third field in the GFF specification represents feature type for the line. In addition to the standard features mentioned above there can be `intron`, `gene` and `transcript`.
+
+Look for the first of each feature in the sample annotation of the workshop:
+
+[source,cmd,subs="+quotes"]
+----
+awk '$3=="intron"' ~ngs00/refs/mm65.long.ok.gtf | head -1
+----
+----
+chr17	ENSEMBL	#intron#	46893352	46893968	.	-	.	gene_id "ENSMUSG00000036858"; transcript_id "ENSMUST00000041012"; exon_number "3"; gene_name "Ptcra"; gene_type "IG_C_gene"; transcript_name "Ptcra-201"; transcript_type "IG_C_gene";
+----
+[source,cmd,subs="+quotes"]
+----
+awk '$3=="gene"' ~ngs00/refs/mm65.long.ok.gtf | head -1
+----
+----
+chr4	ENSEMBL	#gene#	116791824	116798271	.	-	.	gene_id "ENSMUSG00000073771"; transcript_id "ENSMUSG00000073771"; gene_type "protein_coding"; gene_status "NULL"; gene_name "Btbd19"; transcript_type "protein_coding"; transcript_status "NULL"; transcript_name "Btbd19";
+----
+[source,cmd,subs="+quotes"]
+----
+awk '$3=="transcript"' ~ngs00/refs/mm65.long.ok.gtf | head -1
+----
+----
+chr13	ENSEMBL	transcript	19305972	19308487	.	+	.	gene_id "ENSMUSG00000076749"; transcript_id "ENSMUST00000103558"; exon_number "1"; gene_name "Gm17004"; gene_type "IG_C_gene"; transcript_name "Gm17004-201"; transcript_type "IG_C_gene";
+----

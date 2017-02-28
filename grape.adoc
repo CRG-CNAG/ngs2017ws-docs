@@ -1,0 +1,258 @@
+[[grape]]
+= GRAPE
+:user: ngs00
+:grape-github: https://github.com/guigolab/grape-nf
+
+This section of the workshop is a step by step tutorial on how to run the Grape pipeline on the workshop sample data.
+
+== Get the pipeline
+
+The pipeline codebase is on {grape-github}[Github^]. The Grape repository is configured to fullfil Nextflow requirements for pipeline sharing. In order to get the latest version of the pipeline run the following command:
+
+[source,cmd]
+----
+nextflow pull guigolab/grape-nf
+----
+
+----
+Checking guigolab/grape-nf ...
+ downloaded from https://github.com/guigolab/grape-nf.git
+----
+
+The pipeline has been cloned from the github repository and saved in:
+
+[listing,subs="attributes"]
+----
+~/.nextflow/assets/guigolab/grape-nf/
+----
+
+You can see the help message of the pipeline by running:
+
+[source,cmd]
+----
+nextflow run grape-nf --help
+----
+
+[listing%nowrap]
+include::https://raw.githubusercontent.com/guigolab/grape-nf/master/docs/src/quickstart.adoc[lines=131..158]
+
+NOTE: since the pipeline has beed already pulled to the local system we can omit the repository owner name (`guigolab`) when running the pipeline.
+
+== Setup
+
+We need to create a base directory for the pipeline run. Create a folder named `grape` in your home folder and go inside the folder:
+
+[source,cmd]
+----
+mkdir grape && cd grape
+----
+
+=== Input data
+
+include::https://raw.githubusercontent.com/guigolab/grape-nf/master/docs/src/quickstart.adoc[lines=162..173]
+
+Here is an example:
+
+----
+mouse_cns_E14_rep1	mouse_cns_E14_rep1	mouse_cns_E14_rep1_1.fastq.gz	fastq	FqRd1
+mouse_cns_E14_rep1	mouse_cns_E14_rep1	mouse_cns_E14_rep1_2.fastq.gz	fastq	FqRd2
+----
+
+You can have have a look at the input index file for the workshop:
+
+[source,cmd,subs='attributes']
+----
+cat /users/{user}/data/index.tsv
+----
+
+=== Pipeline configuration
+
+Create a `nextflow.config` file in the current directory with the following content:
+
+[source,subs='attributes,verbatim']
+----
+params { // <1>
+	index = '/users/{user}/data/index.tsv'
+	genome = '/users/{user}/refs/mouse_genome_mm9.fa'
+	annotation = '/users/{user}/refs/mm65.long.ok.gtf'
+	genomeIndex = '/users/{user}/refs/mouse_genome_mm9_STAR_index'
+	steps = 'mapping,bigwig'
+}
+
+trace.enabled = true // <2>
+timeline.enabled = true // <3>
+
+process { // <4>
+	executor = 'sge'
+	queue    = 'NGS'
+	penv = 'smp'
+}
+
+includeConfig "/users/{user}/ngs.config" // <5>
+----
+<1> Parameter definitions. It could also be done from the command line (e.g. `--genome /users/{user}/refs/mouse_genome_mm9.fa`).
+<2> Enable process execution tracing
+<3> Enable HTML timeline generation
+<4> Process options for running in the workshop HPC cluster
+<5> Include an external configuration file
+
+== Run
+
+Grape uses Nextflow profiles to define the set of tools to be used for the pipeline run. To date three main profiles are available:
+
+[cols="l,1", options="autowidth"]
+|===
+| gemflux  | GEM for mapping, custom scripts for RNAseq Signal and Contig and FluxCapacitor for genes and transcripts expression quantification
+| starrsem | STAR for mapping and RNAseq Signal, custom script for Contig and RSEM for gene and transcripts expression quantification
+| starflux | STAR for mapping and RNAseq Signal, custom script for Contig and FluxCapacitor for gene and transcripts expression
+						 quantification
+|===
+
+Profiles can be specified explicitly on the command line. There is also a `standard` profile used as the default when no profile is specified. For Grape, it is the same as `starrsem` plus an additional configuration option and we are going to use this profile. It looks like:
+
+[source]
+----
+include::https://raw.githubusercontent.com/guigolab/grape-nf/master/nextflow.config[lines=36..47]
+----
+
+The `bamSort` options tells the pipeline to use `samtools` for sorting the mapping output file.
+
+In order to run the pipeline, use this command:
+
+[source,cmd]
+----
+nextflow -bg run grape-nf > pipeline.log
+----
+
+=== Monitor the run
+
+The status of the pipeline run can be monitored by looking at the `pipeline.log` files we specified above.
+
+[source,cmd,subs="attributes"]
+----
+tail -f ~/grape/pipeline.log
+----
+[subs="specialchars,attributes,quotes,replacements,macros,post_replacements"]
+----
+...
+===============
+Output files db -> /nfs/users/ngs00/grape/pipeline.db
+===============
+
+[warm up] executor > sge
+[c3/ecc8e6] Submitted process > fastaIndex (mouse_genome_mm9-SAMtools-0.1.19)
+[26/3dba1e] Submitted process > mapping (mouse_cns_E14_rep1-STAR-2.4.0j)
+[49/30e442] Submitted process > mapping (mouse_cns_E18_rep2-STAR-2.4.0j)
+[#00/681c79#] Submitted process > mapping (mouse_cns_E18_rep1-STAR-2.4.0j)
+[d0/1f18c1] Submitted process > mapping (mouse_cns_E14_rep2-STAR-2.4.0j)
+icon:circle-o-notch[pulse]
+----
+
+The highlighted string specifies the prefix of the process folder. It is relative to the pipeline working folder which, by default, is `work` inside the base folder. To get the full name of the folder you need to use bash `autocompletion` feature. Type the path to the folder, include the prefix and press kbd:[TAB]. For the previous example process:
+
+[source,cmd,subs="specialchars,attributes,quotes,replacements,macros,post_replacements"]
+----
+ls /nfs/users/ngs00/grape/work/00/681c79kbd:[TAB]
+----
+----
+ls /nfs/users/ngs00/grape/work/00/681c79f509a8b084d19a57f6abf784/
+----
+
+If the run finishes without errors the `pipeline.log` file ends with a success message:
+
+[subs="+replacements"]
+----
+...
+
+-----------------------
+Pipeline run completed.
+-----------------------
+----
+
+== Results
+
+The path and metadata of output files generated by the pipeline run are written inside a `TAB` separated file, named `pipeline.db`. The file can be found inside the pipeline working folder.
+
+The first 5 columns follow the same schema as the input index file. Here is a description of the remaining columns:
+
+[cols="1,l,1",options="autowidth"]
+|===
+| [red]#{counter:index-qs}# | read configuration | the configuration of the reads (e.g. `Paired-End`)
+| [red]#{counter:index-qs}# | strandness         | the strandness of the experiments, automaticalliy inferred from the
+																								   mapping files (e.g. `MATE2_SENSE`)
+|===
+
+Have a look at the generated db file:
+
+[source,cmd]
+----
+less -S ~/grape/pipeline.db
+----
+
+For this run, the 5th field of the db file can have one of the following values:
+
+[cols="l,1",options="autowidth"]
+|===
+| GenomeAlignments        | genomic mapping file (references are chromosomes, e.g. `chr1`)
+| TranscriptomeAlignments | transcriptomic mapping file (references are transcripts, e.g. `ENSMUST00000160944`)
+| PlusRawSignal           | RNA-seq signal for the plus strand from uniquely mapped reads
+| MinusRawSignal          | RNA-seq signal for the minus strand from uniquely mapped reads
+| MultiplePlusRawSignal   | RNA-seq signal for the plus strand from all mapped reads
+| MultipleMinusRawSignal  | RNA-seq signal for the minus strand from all mapped reads
+|===
+
+=== Mapping
+
+When the mapping steps are done, we can have a look at the mapping files. We can get the genomic `BAM` file for the experiment `mouse_cns_E18_rep1`
+
+[source,cmd]
+----
+BAM=$(awk '$1=="mouse_cns_E18_rep1" && $5=="GenomeAlignments"{print $3}' ~/grape/pipeline.db)
+----
+
+We can explore the contents of the mapping file:
+
+[source,cmd]
+----
+samtools view -h $BAM | less
+----
+
+or get the mapping statistics collected by STAR:
+
+[source,cmd]
+----
+cat $(dirname $BAM)/Log.final.out
+----
+----
+                                 Started job on |	Apr 04 12:28:45
+                             Started mapping on |	Apr 04 12:31:08
+                                    Finished on |	Apr 04 12:31:43
+       Mapping speed, Million of reads per hour |	77.15
+
+                          Number of input reads |	750067
+                      Average input read length |	202
+                                    UNIQUE READS:
+                   Uniquely mapped reads number |	645130
+                        Uniquely mapped reads % |	86.01%
+                          Average mapped length |	200.58
+                       Number of splices: Total |	346827
+            Number of splices: Annotated (sjdb) |	341765
+                       Number of splices: GT/AG |	343268
+                       Number of splices: GC/AG |	2924
+                       Number of splices: AT/AC |	404
+               Number of splices: Non-canonical |	231
+                      Mismatch rate per base, % |	0.19%
+                         Deletion rate per base |	0.01%
+                        Deletion average length |	1.92
+                        Insertion rate per base |	0.01%
+                       Insertion average length |	1.45
+                             MULTI-MAPPING READS:
+        Number of reads mapped to multiple loci |	27454
+             % of reads mapped to multiple loci |	3.66%
+        Number of reads mapped to too many loci |	847
+             % of reads mapped to too many loci |	0.11%
+                                  UNMAPPED READS:
+       % of reads unmapped: too many mismatches |	0.00%
+                 % of reads unmapped: too short |	10.06%
+                     % of reads unmapped: other |	0.15%
+----

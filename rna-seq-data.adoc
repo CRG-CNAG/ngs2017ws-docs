@@ -1,0 +1,29 @@
+= RNAseq data
+:user: ngs00
+
+All the data needed for the workshop can be found in:
+
+[subs="attributes"]
+----
+/users/{user}
+----
+
+You can see the contents of the directory:
+
+[source,cmd]
+----
+ls -l ~ngs00
+----
+----
+total 158
+drwxr-xr-x 3 ngs00 ngs   79 Apr  1 18:06 bin
+drwxrwxr-x 2 ngs00 ngs  403 Mar 30 12:20 data
+drwxr-xr-x 2 ngs00 ngs   25 Apr  4 13:55 env
+drwxr-xr-x 3 ngs00 ngs  401 Apr  5 10:17 grape
+drwxr-xr-x 4 ngs00 ngs  488 Apr  4 15:12 nextflow
+-rw-r--r-- 1 ngs00 ngs 1887 Apr  1 15:55 ngs.config
+drwxr-xr-x 4 ngs00 ngs   93 Apr  5 10:49 public_docs
+drwxr-xr-x 3 ngs00 ngs  187 Apr  4 11:15 quickTrackHub
+drwxrwxr-x 3 ngs00 ngs  204 Apr  5 09:31 refs
+drwxr-xr-x 3 ngs00 ngs  121 Apr  4 12:11 rnatoy
+----

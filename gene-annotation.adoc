@@ -1,0 +1,37 @@
+= Reference gene annotation
+:experimental:
+:base-dir: ~ngs00
+
+Look at the mouse gene annotation (ensembl v65, long genes):
+
+[source,cmd,subs="attributes+"]
+----
+more {base-dir}/refs/mm65.long.ok.gtf
+----
+
+Type kbd:[q] to exit the view.
+
+Store information about gene Sec23a in a separate file:
+
+[source,cmd,subs="attributes+"]
+----
+grep Sec23a {base-dir}/refs/mm65.long.ok.gtf > Sec23a.gff
+----
+
+Count the number of transcripts of this gene:
+
+[source,cmd]
+----
+awk '$3=="transcript"' Sec23a.gff | wc -l
+----
+
+Count the number of exons of this gene:
+
+[source,cmd]
+----
+awk '$3=="exon"' Sec23a.gff | wc -l
+----
+
+What is the biotype of the gene?
+
+What is the biotype of each transcript of this gene?

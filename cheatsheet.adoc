@@ -1,0 +1,18 @@
+= NGS 2016 Workshop Cheatsheet
+:sectnums:
+:hide-uri-scheme:
+:nofooter:
+:icons: font
+:stylesdir: ./css
+:stylesheet: crg.css
+:linkcss:
+
+:leveloffset: +1
+
+include::linux-commands.adoc[]
+
+include::files.adoc[]
+
+include::cluster.adoc[]
+
+:leveloffset: -1

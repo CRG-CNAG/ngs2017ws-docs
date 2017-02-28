@@ -1,0 +1,100 @@
+= SAM
+:sam-specs: https://samtools.github.io/hts-specs/SAMv1.pdf
+:cram-specs: https://samtools.github.io/hts-specs/CRAMv3.pdf
+
+Sequence Alignment/Map format is a TAB-delimited text format for storing sequence
+alignment information. See {sam-specs}[here^] for the full format specification.
+
+== Header
+
+SAM can have an optional header section. If present it should prior to the alignments.
+Header lines start with `@`, while alignment lines do not.
+
+=== @HD
+
+The `HD` header line describes the header with format version (`VN`) and sorting order of alignments (`SO`).
+
+----
+@HD     VN:1.4  SO:coordinate
+----
+
+=== @SQ
+
+The `@SQ` header line describe the reference sequence dictionary.  The order of `@SQ` lines defines the alignment sorting order.
+
+----
+@SQ     SN:chr1 LN:197195432
+@SQ     SN:chr10        LN:129993255
+...
+----
+
+=== @PG
+
+The `@PG` line describes the program used to generate the file. It contains the program id (`ID`), name (`PN`), version (`VN`) and command line (`CL`).
+
+----
+@PG     ID:STAR PN:STAR VN:STAR_2.4.2a  CL:STAR   --runThreadN 2   --genomeDir refs/mouse_genome_mm9_STAR_index   --readFilesIn data/mouse_cns_E14_rep1_1.fastq.gz   data/mouse_cns_E14_rep1_2.fastq.gz      --readFilesCommand pigz   -p2   -dc      --outFileNamePrefix mouse_cns_E14_rep1   --outSAMtype BAM   SortedByCoordinate      --outSAMattributes NH   HI   AS   NM   MD      --outSAMunmapped Within   --outFilterType BySJout   --quantMode TranscriptomeSAM
+----
+
+== Alignments
+
+Each alignment line represents the linear alignment of a sequence. Each line
+has 11 mandatory fields. These fields always appear in the same order and must be present, but their values
+can be `0` or `{asterisk}` (depending on the field) if the corresponding information is unavailable. Each line can also have optional extra fields.
+
+.Alignment fields in the SAM format
+----
+HWI-ST985:73:C08BWACXX:6:1103:3691:25179 <1>
+99 <2>
+chr1 <3>
+3157636 <4>
+255 <5>
+101M <6>
+= <7>
+3157698 <8>
+163 <9>
+GTTTGGTAAGAAAAACAACTTAATTACTACTTCAGAATTTATTTCATTTTTTTTCTAAAGAGTAAGAAGGAAGATTCTATGTTCACATATTTTGGTGCTCA <10>
+BB@FFFDFFHHHGJJIIJJJJIHIIIJJIIJJJCHFGHHJDHIJIJIJIJJJJIIGGHGHAE>EEHGHFFEFFEECCCDDEDEEEDDDDEEEEDBBDCCCC <11>
+NH:i:1  HI:i:1  AS:i:200  NM:i:0  MD:Z:101 <12>
+----
+<1> sequence id
+<2> flag
+<3> reference sequence name
+<4> alignment position (`1-based`)
+<5> mapping quality
+<6> CIGAR string
+<7> reference sequence name of the primary alignment of the mate (`=` if it is the same as the current alignment)
+<8> position of the primary alignment of the mate
+<9> observed fragment length
+<10> sequence
+<11> quality
+<12> optional fields
+
+== BAM
+
+BAM is a BGZF compressed version of the SAM format. BGZF is block compression implemented on top of the standard gzip
+file format. The goal of BGZF is to provide good compression while allowing efficient random access to the BAM file for
+indexed queries. The BGZF format is ‘gunzip compatible’, in the sense that a compliant gunzip utility can decompress a BGZF
+compressed file.
+
+=== Random access
+
+BGZF files support random access through the BAM file index. Indexing aims to achieve fast retrieval of alignments overlapping a specified region without going through the whole alignments. BAM must be sorted by the [red]#reference ID and then the leftmost coordinate# before. The standard format for indexing BAM files is the [crg]#BAI# format.
+
+The BAI format is based on an underlying binning scheme. Each bin represents a contiguous genomic region which is either fully contained in or non-overlapping with another bin; each alignment is associated with a bin which represents the smallest
+region containing the entire alignment. To find the alignments that overlap a specified region, we need to get the bins that overlap the region, and then test each alignment in the bins to check overlap.
+
+Many programs need an accompanying BAI index for every input BAM. They usually assume the index is located next to the input file in the filesystem and has the same name as the input file, with the `.bai` extension appended. E.g.:
+
+----
+mouse_cns_E18_rep1_m4_n10_toGenome.bam
+mouse_cns_E18_rep1_m4_n10_toGenome.bam.bai
+----
+
+We will have a look at the contents of a BAM file in the <<GRAPE>> section.
+
+== CRAM
+
+CRAM is a framework technology with highly efficient and tunable reference-based compression of sequence data  and a data format
+that is directly available for computational use. It supports different compression formats (gzip, bzip2, CRAM records). CRAM records
+use a wide range of lossless and lossy encoding strategies. See {cram-specs}[here^] for the full format specification.
