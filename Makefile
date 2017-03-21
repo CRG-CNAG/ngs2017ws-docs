@@ -1,6 +1,8 @@
 .PHONY: all html check_deploy deploy clean deepclean
 
-GEMS = env
+ifndef GEMS
+	GEMS = env
+endif
 HTML_FILE = index.html
 PDF_FILE = hands-on.pdf
 CHEATSHEET_HTML = cheatsheet.html
