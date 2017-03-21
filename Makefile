@@ -1,7 +1,7 @@
 .PHONY: all html check_deploy deploy clean deepclean
 
 ifndef GEMS
-	GEMS = env
+GEMS = env
 endif
 HTML_FILE = index.html
 PDF_FILE = hands-on.pdf
