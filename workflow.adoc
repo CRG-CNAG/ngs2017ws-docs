@@ -1,0 +1,13 @@
+= Worflow Description
+
+== 2-pass mapping to the reference
+
+== Split'N'Trim and reassign mapping qualities
+
+== Base Recalibration
+
+== Variant Calling
+
+== Variant Filtering
+
+== Variant Post-processing

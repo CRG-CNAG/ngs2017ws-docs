@@ -1,0 +1,35 @@
+= Nextflow Implementaton
+
+== PART 1: Data preparation
+
+=== Process 1A: Create STAR genome index file
+
+=== Process 1B: Create a FASTA genome index (.fai) with samtools for GATK
+
+=== Process 1C: Create a FASTA genome sequence dictionary with Picard for GATK
+
+=== Process 1D: Create a file containing the filtered and recoded set of variants
+
+== PART 2: STAR RNA-Seq Mapping
+
+=== Process 2: Align RNA-Seq reads to the genome with STAR
+
+== PART 3: GATK Prepare Mapped Reads
+
+=== Process 3: Split reads that contain Ns in their CIGAR string
+
+== PART 4: GATK Base Quality Score Recalibration Workflow
+
+=== Process 4: Base recalibrate to detect systematic errors in base quality scores, select unique alignments and index
+
+== PART 5: GATK Variant Calling
+
+=== Process 5: Call variants with GATK HaplotypeCaller
+
+== PART 6: Post-process variants file and prepare for Allele-Specific Expression and RNA Editing Analysis
+
+=== Process 6A: Post-process the VCF result
+
+=== Process 6B: Prepare variants file for allele specific expression (ASE) analysis
+
+=== Process 6C: Allele-Specific Expression analysis with GATK ASEReadCounter
