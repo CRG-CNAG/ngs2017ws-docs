@@ -1,4 +1,4 @@
-.PHONY: all html check_deploy deploy clean deepclean
+.PHONY: all html check_deploy deploy clean deepclean draft set-draft
 
 ifndef GEMS
 GEMS = env
@@ -14,12 +14,17 @@ CHEATSHEET = cheatsheet.adoc
 DEPLOY_LIST = deploy-list.txt
 PDF = pdf
 PDF_STYLE = crg
+ATTRS = -a allow-uri-read
 
 all: html pdf
 
+draft: set-draft html 	
+set-draft:
+	$(eval ATTRS += -a draft)
+
 html: $(HTML_FILE) $(CHEATSHEET_HTML)
 $(HTML_FILE): setup $(README)
-	@GEM_HOME=$(GEMS) $(GEMS)/bin/asciidoctor $(README) -a allow-uri-read -o $(HTML_FILE)
+	@GEM_HOME=$(GEMS) $(GEMS)/bin/asciidoctor $(README) $(ATTRS) -o $(HTML_FILE)
 	@echo == Written file $(HTML_FILE)
 
 $(CHEATSHEET_HTML): setup $(CHEATSHEET)
@@ -29,7 +34,7 @@ $(CHEATSHEET_HTML): setup $(CHEATSHEET)
 pdf: $(PDF_FILE) $(CHEATSHEET_PDF)
 $(PDF_FILE): setup $(README)
 	@GEM_HOME=$(GEMS) $(GEMS)/bin/asciidoctor-pdf $(README) -a pdf-stylesdir=$(PDF)/style -a pdf-style=$(PDF_STYLE) -a pdf-fontsdir=$(PDF)/font
-		@echo == Written file $(PDF_FILE)
+	@echo == Written file $(PDF_FILE)
 
 $(CHEATSHEET_PDF): setup $(CHEATSHEET)
 	@GEM_HOME=$(GEMS) $(GEMS)/bin/asciidoctor-pdf $(CHEATSHEET) -a pdf-stylesdir=$(PDF)/style -a pdf-style=$(PDF_STYLE) -a pdf-fontsdir=$(PDF)/font
@@ -57,6 +62,10 @@ endif
 
 deploy: html $(DEPLOY_LIST) check_deploy
 	rsync -ar --files-from=$(DEPLOY_LIST) . $(RNASEQ_DEPLOY_DIR)
+
+deploy-draft: draft $(DEPLOY_LIST) check_deploy
+	rsync -ar --files-from=$(DEPLOY_LIST) . $(RNASEQ_DEPLOY_DIR)
+
 
 clean:
 	rm -f $(HTML_FILE) $(CHEATSHEET_HTML) $(PDF_FILE) $(CHEATSHEET_PDF) $(DEPLOY_LIST)

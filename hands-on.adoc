@@ -1,7 +1,9 @@
-= NGS 2016 Workshop Hands-on image:NGS_LOGO.png[Logo,120,120,float="right"]
+= NGS {year} Workshop image:NGS_LOGO.png[Logo,120,120,float="right"]
+:year: 2017
 :hide-uri-scheme:
 :nofooter:
 :icons: font
+:toclevels: 3
 ifeval::["{backend}" == "html5"]
 :stylesdir: ./css
 :stylesheet: crg.css
@@ -9,39 +11,40 @@ ifeval::["{backend}" == "html5"]
 :imagesdir: ./assets/
 :source-highlighter: highlight.js
 :highlightjs-theme: github
+ifndef::draft[]
 :toc: left
+endif::draft[]
 :cheatsheet: cheatsheet.adoc#,here
 endif::[]
 ifeval::["{backend}" == "pdf"]
 :cheatsheet: cheatsheet,at the end of this document
 endif::[]
+ifdef::draft[]
+:toc: preamble
 
-The RNA-seq data comes from brain samples (CNS) of mouse embryos at day 14 and day 18, done in 2 bioreplicates (1% of the original reads randomly sampled).
+image::draft.png[DRAFT,150,150,float="right",align="center"]
+include::todo.adoc[leveloffset=+1]
+endif::draft[]
 
-The following mouse references are used:
+This workshop will introduce the best practices proposed to tackle the problem of irreproducible NGS data analyses and allow to make large omics workflows portable across HPC clusters and cloud environments.
 
-- [crg]#mm9# genome assembly
-- [crg]#Ensembl v.65# gene annotation [crg]#{tilde}# long genes only
+The practical session will go through the step by step implementation of a pipeline for standard [crg]#Variant Calling Analyses with RNA-seq data#. For this purpose attendess wiil use Nextflow, a framework for computational pipelines that simplifies the development and deployment of NGS pipelines in a portable manner across different execution environments.
+
+WARNING: Add dataset description
 
 NOTE: A cheatsheet with basic Linux and Cluster commands is available <<{cheatsheet}>>.
 
 :sectnums:
 
-include::cluster.adoc[tags=access]
-
 :leveloffset: +1
-
-include::rna-seq-data.adoc[]
-
-include::gene-annotation.adoc[]
-
-include::file-formats.adoc[]
 
 include::nextflow.adoc[]
 
-include::grape.adoc[]
+include::workflow.adoc[]
 
-include::data-visualization.adoc[]
+include::implementation.adoc[]
+
+include::scaling-up.adoc[]
 
 ifeval::["{backend}" == "pdf"]
 [[cheatsheet]]
