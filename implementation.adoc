@@ -2,9 +2,9 @@
 
 == PART 1: Data preparation
 
-=== Process 1A: Create STAR genome index file
-
 === Process 1B: Create a FASTA genome index (.fai) with samtools for GATK
+
+=== Process 1A: Create STAR genome index file
 
 === Process 1C: Create a FASTA genome sequence dictionary with Picard for GATK
 
