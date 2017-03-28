@@ -38,6 +38,8 @@ NOTE: A cheatsheet with basic Linux and Cluster commands is available <<{cheatsh
 
 :leveloffset: +1
 
+include::nano.adoc[]
+
 include::nextflow.adoc[]
 
 include::workflow.adoc[]
