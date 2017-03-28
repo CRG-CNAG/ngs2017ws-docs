@@ -1,4 +1,0 @@
----
-BUNDLE_PATH: "env"
-BUNDLE_BIN: "env/bin"
-BUNDLE_DISABLE_SHARED_GEMS: "true"
