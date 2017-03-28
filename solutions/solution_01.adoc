@@ -6,9 +6,13 @@
  *  Parse the input parameters
  */
 
-genome_file     = file(params.genome)
-variants_file   = file(params.variants)
-blacklist_file  = file(params.blacklist)
-reads_ch        = Channel.fromFilePairs(params.reads)
-GATK            = params.gatk
+genome_file     =  file(params.genome) <1>
+variants_file   =  file(params.variants) <1>
+blacklist_file  =  file(params.blacklist) <1>
+reads_ch        =  Channel.fromFilePairs(params.reads) <2>
+GATK            =  params.gatk <3>
 ----
+
+<1> Specifiy file objects/file handles using `file()`.
+<2> Create a channel using https://www.nextflow.io/docs/latest/channel.html#fromfilepairs[fromFilePairs()].
+<3> A basic Nextflow variable can be simply defined.

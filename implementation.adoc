@@ -36,33 +36,33 @@ We edit can edit this file to specify the default parameters.
 
 ----
 /*
- * Define the default parameters
+ * Define the default parameters <1>
  */
 
-params.genome     = "$baseDir/data/genome.fa"
+params.genome     = "$baseDir/data/genome.fa" <2>
 params.variants   = "$baseDir/data/known_variants.vcf.gz"
 params.blacklist  = "$baseDir/data/blacklist.bed"
-params.reads      = "$baseDir/data/reads/rep1_{1,2}.fq.gz"
-params.results    = "results"
-params.gatk       = '/usr/local/bin/GenomeAnalysisTK.jar'
+params.reads      = "$baseDir/data/reads/rep1_{1,2}.fq.gz" <3>
+params.results    = "results" <4>
+params.gatk       = '/usr/local/bin/GenomeAnalysisTK.jar' <5>
 ----
 
 TIP: With `nano` you can paste the above text into your `main.nf` script with the `shift`+`insert` keys.
 
-1. The `/\*` and `*/` specify comment lines which are ignored by Nextflow.
+<1> The `/\*`, `*` and `*/` specify comment lines which are ignored by Nextflow.
 
-2. The variable `$baseDir` specifies the base directory of the pipeline, in this case the directory ngs2017-nf.
+<2> The variable `$baseDir` specifies the base directory of the pipeline, in this case the directory `ngs2017-nf`.
 
-3. The `reads` parameter uses parameter expansion to specify the forward (`rep1_1.fq.gz`) and reverse (`rep1_2.fq.gz`) reads are pairs of the same sample.
+<3> The `reads` parameter uses parameter expansion to specify the forward (`rep1_1.fq.gz`) and reverse (`rep1_2.fq.gz`) reads are pairs of the same sample.
 
-4. The `results` parameter is used to specify a directory called `results`.
+<4> The `results` parameter is used to specify a directory called `results`.
 
-5. The `gatk` parameter specifies the location of the GATK file.
+<5> The `gatk` parameter specifies the location of the GATK jar file.
 
 
 Once you have the default parameters in the `main.nf` file, you can save and run the pipeline for the first time.
 
-TIP: With `nano`, you can save and the file with `Ctrl+O` then `Enter` followed by `Ctrl+X`.
+TIP: With `nano` you can save and the file with `Ctrl+O`, then `Enter`, followed by `Ctrl+X`.
 
 We run the pipeline with the following command:
 
@@ -79,9 +79,9 @@ Launching `main.nf` [nauseous_wright] - revision: 83a0a5415a
 
 ***
 === Problem #1
-Great, now lets putting the data into https://www.nextflow.io/docs/latest/channel.html[channels]. Open the `main.nf` file and copy the lines below.
+Great, now let get our data into variables and https://www.nextflow.io/docs/latest/channel.html[channels]. Open the `main.nf` file and copy the lines below.
 
-This time you must fill the `BLANK` spaces with the correct constructors from the https://www.nextflow.io/docs/latest/channel.html#channel-factory[channel factory].
+This time you must fill the `BLANK` spaces with the correct constructors.
 
 ----
 /*
@@ -95,24 +95,25 @@ reads_ch        = BLANK
 GATK            = BLANK
 ----
 
-TIP: The first three should specify channels containing a single `file`. For the reads channel, we can use a contructor for pairs of files. The final one, `GATK` is simply a creating a Nextflow variable specifying the relative path of the GATK file and does not need a constructor.
+TIP: The first three should specify file objects containing a single `file`. For the reads channel, we can use a ttps://www.nextflow.io/docs/latest/channel.html#channel-factory[channel contructor] for pairs of files. The final one, `GATK` is simply a creating a Nextflow variable specifying the relative path of the GATK file and does not need a constructor.
 
 
 *link:solutions/solution_01.adoc[Problem #1 Solution]*
 
-Now we have our input channels set up we can move onto our first process.
 
 ***
 
-=== Process 1A: Create a FASTA genome index with samtools for GATK
+==== Process 1A: Create a FASTA genome index with samtools for GATK
 
-Processes are defined using `process` followed by the process name.
+Now we have our inputs set up we can move onto our first process. 
 
-Processes form the basis of Nextflow pipelines.
+In our first process we will create a genome index using http://www.htslib.org/[samtools]
 
-.Problem #2,
-Your aim is to insert the correct input channel name from above into
-the input step (written as BLANK) of the process and run the pipeline.
+Copy the code below and paste it at the end of `main.nf`.
+
+=== Problem #2
+Your aim is to insert the correct input name from above into
+the input step (written as `BLANK`) of the process and run the pipeline.
 
 ----
 /*
@@ -134,32 +135,100 @@ process '1A_prepare_genome_samtools' { <1>
 }
 ----
 
-In plain english this could be written as:
+In plain english the process could be written as:
 
 
 <1> A **process** called 1A_prepare_genome_samtools
 
-<2> takes as **input** the genome file
+<2> takes as **input** the genome file from `BLANK`
 
-<3> creates as **output** the generated genome index file
+<3> and creates as **output** a genome index file which goes into channel `genome_index_ch`
 
-<4> **script**: given the genome file create the genome index using samtools
+<4> **script**: using samtools create the genome index from the genome file
 
 *link:solutions/solution_02.adoc[Problem #2 Solution]*
 
-Now we have out first prcocess finished!
+Now we have out first process finished!
 
 ***
 
-=== Process 1B: Create a FASTA genome sequence dictionary with Picard for GATK
+==== Process 1B: Create a FASTA genome sequence dictionary with Picard for GATK
 
-=== Process 1C: Create STAR genome index file
+Our first process created the genome index for GATK using samtools. For the next process we must do something very similar, this time creating a genome sequence dictionary using https://broadinstitute.github.io/picard/[Picard].
 
-=== Process 1D: Create a file containing the filtered and recoded set of variants
+=== Problem #3
 
-== PART 2: STAR RNA-Seq Mapping
+Fill in the `BLANK` words for both the input and output sections. 
 
-=== Process 2: Align RNA-Seq reads to the genome with STAR
+----
+/*
+ * Process 1B: Create a FASTA genome sequence dictionary with Picard for GATK
+ */
+
+process '1B_prepare_genome_picard' {
+
+  input:
+      file genome BLANK BLANK
+      
+  output:
+      file "${genome.baseName}.dict" BLANK BLANK
+
+  script:
+  """
+  PICARD=`which picard.jar`
+  java -jar \$PICARD CreateSequenceDictionary R= $genome O= ${genome.baseName}.dict
+  """
+}
+----
+
+NOTE: `.baseName` returns the filename without the file suffix. If `"${genome}"` is `human.fa`, then `"${genome.baseName}.dict"` is `human.dict`.
+
+***
+
+*link:solutions/solution_03.adoc[Problem #3 Solution]*
+
+==== Process 1C: Create STAR genome index file
+
+Next we must create a genome index for the https://github.com/alexdobin/STAR[STAR] mapping software. 
+
+=== Problem #4
+
+This is a similar exercise except this time both `input` and `output` sections have been left completely `BLANK`and must be completed.
+
+----
+/*
+ * Process 1C: Create the genome index file for STAR
+ */
+
+process '1C_prepare_star_genome_index' {
+
+  input:
+      BLANK
+      
+  output:
+      BLANK
+
+  script:
+  """
+  mkdir genome_dir
+
+  STAR --runMode genomeGenerate \
+       --genomeDir genome_dir \
+       --genomeFastaFiles ${genome} \
+       --runThreadN ${task.cpus}
+  """
+}
+----
+
+TIP: The output of the STAR genomeGenerate command is `genome_dir`.
+
+*link:solutions/solution_04.adoc[Problem #4 Solution]*
+
+==== Process 1D: Create a file containing the filtered and recoded set of variants
+
+=== PART 2: STAR RNA-Seq Mapping
+
+==== Process 2: Align RNA-Seq reads to the genome with STAR
 
 == PART 3: GATK Prepare Mapped Reads
 

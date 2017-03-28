@@ -6,28 +6,23 @@
  * Process 1A: Create a FASTA genome index with samtools
  */
 
-process '1A_prepare_genome_samtools' { <1>
+process '1A_prepare_genome_samtools' { 
 
   input:
-      file genome from genome_file <2>
+      file genome from genome_file <1>
 
   output:
-      file "${genome}.fai" into genome_index_ch <3>
+      file "${genome}.fai" into genome_index_ch 
 
   script:
   """
-  samtools faidx ${genome} <4>
+  samtools faidx ${genome}
   """
 }
 ----
 
 
-<1> The process is named `1A_prepare_genome_samtools`.
 
-<2> The solution creates a variable `genome` from the
-`genome_file` channel we created in the previous step.
+<1> The solution is to use the
+**`genome_file`** channel we created in the previous step.
 
-<3> The output is file called `${genome}.fai` which becomes an element of a new channel called `genome_index_ch`.
-
-<4> The script section calls for the execution of the `samtools` program with the
-argument `faidx` for fasta index and the `${genome}` as the input.
