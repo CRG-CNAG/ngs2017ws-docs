@@ -2,34 +2,37 @@
 
 == PART 1: Data preparation
 
-A first step in any pipleine is to prepare the input data.
+A first step in any pipeline is to prepare the input data. You will find 
+all the data required to run the pipeline in the folder `data` 
+within the `ngs2017-nf` repository directory. 
 
-You will find all the data required to run the pipeline in the
-folder `data` within the `ngs2017-nf` repository.
+There are four data inputs that we will use in this tutorial:
 
-There are 4 data inputs that we will use in this tutorial:
-
-.Genome File (`data/genome.fa`)
+. *Genome File* (`data/genome.fa`)
 * Human chromosome 22 in FASTA file format
 
-.Read Files (`data/reads/`)
+. *Read Files* (`data/reads/`)
 * Sample 1: 50 bp paired-end reads (`rep1_1.fq.gz` and `rep1_2.fq.gz`).
 
-.Variants File (`data/known_variants.vcf.gz`)
+. *Variants File* (`data/known_variants.vcf.gz`)
 * Known variants, gunzipped as a Variant Calling File (VCF) format.
 
-.Blacklist File (`data/blacklist.bed`)
+. *Blacklist File* (`data/blacklist.bed`)
 * Genomic locations which are known to produce artifacts and spurious variants in Browser Extensible Data (BED) format.
 
-=== Specify the input data with parameters.
+
+***
+
+
+=== Getting Started: Specify the input data with parameters.
 We can begin writing the pipeline by creating and editing a text file called `main.nf`
 from the `ngs2017-nf` repository directory with your favourite text editor. In this example we are using nano:
 
 ----
-nano main.nf
+$ nano main.nf
 ----
 
-From here we edit can edit this file to specify the default parameters.
+We edit can edit this file to specify the default parameters.
 
 ----
 /*
@@ -46,29 +49,16 @@ params.gatk       = '/usr/local/bin/GenomeAnalysisTK.jar'
 
 TIP: With `nano` you can paste the above text into your `main.nf` script with the `shift`+`insert` keys.
 
-The `/\*` and `*/` specify comment lines which are ignored by Nextflow.
+1. The `/\*` and `*/` specify comment lines which are ignored by Nextflow.
 
-The varible `$baseDir` specifies the base directory of the pipeline, in this case the directory ngs2017-nf.
+2. The variable `$baseDir` specifies the base directory of the pipeline, in this case the directory ngs2017-nf.
 
-Each of the parameter words specified after the `params.` can also be
-specified at run time on the command line using `--` followed by th word.
-For example, if you wished to run the pipeline with a different genome file,
-you could run:
+3. The `reads` parameter uses parameter expansion to specify the forward (`rep1_1.fq.gz`) and reverse (`rep1_2.fq.gz`) reads are pairs of the same sample.
 
-----
-nextflow run main.nf --genome alternative_genome.fa
-----
+4. The `results` parameter is used to specify a directory called `results`.
 
-The `reads` parameter uses parameter expansion to specify the forward (`rep1_1.fq.gz`) and reverse (`rep1_2.fq.gz`) reads are pairs of the same sample.
+5. The `gatk` parameter specifies the location of the GATK file.
 
-.Parameter expansion
-[NOTE]
-See http://https://www.nextflow.io/docs/latest/getstarted.html[here] for
-a more detailed example of how parameter expansion can be used.
-
-The `results` parameter is used to specify a directory called `results`.
-
-The `gatk` parameter specifies the location of the GATK file.
 
 Once you have the default parameters in the `main.nf` file, you can save and run the pipeline for the first time.
 
@@ -77,22 +67,21 @@ TIP: With `nano`, you can save and the file with `Ctrl+O` then `Enter` followed 
 We run the pipeline with the following command:
 
 ----
-nextflow run main.nf
-----
-
-You see should the pipeline launch and then exit.
-
-----
 $ nextflow run main.nf
+----
+
+You should see the pipeline launch and then exit.
+
+----
 N E X T F L O W  ~  version 0.24.1
 Launching `main.nf` [nauseous_wright] - revision: 83a0a5415a
 ----
 
-Great, now lets start using the data by putting them into channels.
+***
+=== Problem #1
+Great, now lets putting the data into https://www.nextflow.io/docs/latest/channel.html[channels]. Open the `main.nf` file and copy the lines below.
 
-.Problem #1
-Open the `main.nf` file again and this time you must fill the `BLANK` spaces with
-the correct channel contructors.
+This time you must fill the `BLANK` spaces with the correct constructors from the https://www.nextflow.io/docs/latest/channel.html#channel-factory[channel factory].
 
 ----
 /*
@@ -106,97 +95,61 @@ reads_ch        = BLANK
 GATK            = BLANK
 ----
 
-TIP: The first three specify channels containing a single `file`. For the reads channel, we can use a [special contructor] for pairs. The final one, `GATK` is simply a creating a Nextflow string specifying the relative path of the GATK file.
+TIP: The first three should specify channels containing a single `file`. For the reads channel, we can use a contructor for pairs of files. The final one, `GATK` is simply a creating a Nextflow variable specifying the relative path of the GATK file and does not need a constructor.
 
 
-.Problem #1 Solution
-----
-/*
- *  Parse the input parameters
- */
-
-genome_file     = file(params.genome)
-variants_file   = file(params.variants)
-blacklist_file  = file(params.blacklist)
-reads_ch        = Channel.fromFilePairs(params.reads)
-GATK            = params.gatk
-----
+*link:solutions/solution_01.adoc[Problem #1 Solution]*
 
 Now we have our input channels set up we can move onto our first process.
 
+***
 
-=== Process 1A: Create a FASTA genome index (`.fai`) with samtools for GATK
+=== Process 1A: Create a FASTA genome index with samtools for GATK
 
 Processes are defined using `process` followed by the process name.
 
-Processes form the heart of Nextflow pipelines and are linked together by channels.
+Processes form the basis of Nextflow pipelines.
 
 .Problem #2,
 Your aim is to insert the correct input channel name from above into
 the input step (written as BLANK) of the process and run the pipeline.
 
 ----
- *
- * Process 1A: Create a FASTA genome index (.fai) with samtools for GATK
+/*
+ * Process 1A: Create a FASTA genome index with samtools
  */
 
-process '1A_prepare_genome_samtools' {
-  tag "$genome.baseName"
+process '1A_prepare_genome_samtools' { <1>
 
-  input:
-      file genome from BLANK
-
+  input: 
+      file genome from BLANK <2>
+      
   output:
-      file "${genome}.fai" into genome_index_ch
-
+      file "${genome}.fai" into genome_index_ch <3>
+      
   script:
   """
-  samtools faidx ${genome}
+  samtools faidx ${genome} <4>
   """
 }
 ----
 
-We can see that the process is named `1A_prepare_genome_samtools`.
-
-It takes a file as input, which becomes referenced by the `${genome}`
-variable in the script section.
-
-The output is file called ${genome}.fai (for FASTA index) which becomes
-part of a new channel called `genome_index_ch`.
-
-The script section calls for the execution of the `samtools` program with the
-argument `faidx` for fasta index and the ${genome} as the input.
-
-.Solution #2,
-----
- *
- * Process 1A: Create a FASTA genome index (.fai) with samtools for GATK
- */
-
-process '1A_prepare_genome_samtools' {
-  tag "$genome.baseName"
-
-  input:
-      file genome from genome_file
-
-  output:
-      file "${genome}.fai" into genome_index_ch
-
-  script:
-  """
-  samtools faidx ${genome}
-  """
-}
-----
-
-We can see above that the solution is to take the genome file from the
-`genome_file` channel we created.
-
-Next step is to
+In plain english this could be written as:
 
 
+<1> A **process** called 1A_prepare_genome_samtools
 
+<2> takes as **input** the genome file
 
+<3> creates as **output** the generated genome index file
+
+<4> **script**: given the genome file create the genome index using samtools
+
+*link:solutions/solution_02.adoc[Problem #2 Solution]*
+
+Now we have out first prcocess finished!
+
+***
 
 === Process 1B: Create a FASTA genome sequence dictionary with Picard for GATK
 

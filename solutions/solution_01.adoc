@@ -1,0 +1,14 @@
+= Problem 1
+
+.Solution
+----
+/*
+ *  Parse the input parameters
+ */
+
+genome_file     = file(params.genome)
+variants_file   = file(params.variants)
+blacklist_file  = file(params.blacklist)
+reads_ch        = Channel.fromFilePairs(params.reads)
+GATK            = params.gatk
+----
