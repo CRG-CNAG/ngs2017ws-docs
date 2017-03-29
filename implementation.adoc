@@ -95,7 +95,7 @@ reads_ch        = BLANK
 GATK            = BLANK
 ----
 
-TIP: The first three should specify file objects containing a single `file`. For the reads channel, we can use a https://www.nextflow.io/docs/latest/channel.html#channel-factory[channel contructor] for pairs of files. The final one, `GATK` is simply a creating a Nextflow variable specifying the relative path of the GATK file and does not need a constructor.
+TIP: The first three should specify file objects containing a single `file`. For the reads channel, we can use a https://www.nextflow.io/docs/latest/channel.html#channel-factory[channel constructor] for pairs of files. The final one, `GATK` is simply a creating a Nextflow variable specifying the relative path of the GATK file and does not need a constructor.
 
 
 *link:solutions/solution_01.adoc[Problem #1 Solution]*
