@@ -5,7 +5,7 @@
 /*
  * Define the default parameters
  */
-params.genome     = "$baseDir/data/genome.fa" 
+params.genome     = "$baseDir/data/genome.fa"
 params.variants   = "$baseDir/data/known_variants.vcf.gz"
 params.blacklist  = "$baseDir/data/blacklist.bed"
 params.reads      = "$baseDir/data/reads/rep1_{1,2}.fq.gz"
@@ -26,11 +26,11 @@ GATK            =  params.gatk
 /*
  * Process 1A: Create a FASTA genome index with samtools
  */
-process '1A_prepare_genome_samtools' { 
+process '1A_prepare_genome_samtools' {
   input:
       file genome from genome_file
   output:
-      file "${genome}.fai" into genome_index_ch 
+      file "${genome}.fai" into genome_index_ch
   script:
   """
   samtools faidx ${genome}
@@ -76,13 +76,13 @@ process '1C_prepare_star_genome_index' {
  */
 
 process '1D_prepare_vcf_file' {
-  input: 
+  input:
       file(variantsFile) from variants_file
       file(blacklisted) from blacklist_file
   output:
       set file("${variantsFile.baseName}.filtered.recode.vcf.gz"), \
           file("${variantsFile.baseName}.filtered.recode.vcf.gz.tbi") into prepared_vcf_ch
-  script:  
+  script:
   """
   vcftools --gzvcf $variantsFile -c \
            --exclude-bed ${blacklisted} \
@@ -92,5 +92,6 @@ process '1D_prepare_vcf_file' {
   tabix ${variantsFile.baseName}.filtered.recode.vcf.gz
   """
 }
+----
 
 
