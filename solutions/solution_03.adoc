@@ -7,7 +7,6 @@
  */
 
 process '1B_prepare_genome_picard' {
-  tag "$genome.baseName"
 
   input:
       file genome from genome_file <1>

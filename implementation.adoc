@@ -160,6 +160,7 @@ Our first process created the genome index for GATK using samtools. For the next
 
 Fill in the `BLANK` words for both the input and output sections. 
 
+TIP: You can choose any channel output name that makes sense to you.
 ----
 /*
  * Process 1B: Create a FASTA genome sequence dictionary with Picard for GATK
@@ -183,9 +184,10 @@ process '1B_prepare_genome_picard' {
 
 NOTE: `.baseName` returns the filename without the file suffix. If `"${genome}"` is `human.fa`, then `"${genome.baseName}.dict"` is `human.dict`.
 
-***
-
 *link:solutions/solution_03.adoc[Problem #3 Solution]*
+
+
+***
 
 ==== Process 1C: Create STAR genome index file
 
@@ -193,7 +195,7 @@ Next we must create a genome index for the https://github.com/alexdobin/STAR[STA
 
 === Problem #4
 
-This is a similar exercise except this time both `input` and `output` sections have been left completely `BLANK`and must be completed.
+This is a similar exercise except this time both `input` and `output` lines have been left completely `BLANK` and must be completed.
 
 ----
 /*
@@ -203,10 +205,10 @@ This is a similar exercise except this time both `input` and `output` sections h
 process '1C_prepare_star_genome_index' {
 
   input:
-      BLANK
+      BLANK_LINE
       
   output:
-      BLANK
+      BLANK_LINE
 
   script:
   """
@@ -225,6 +227,62 @@ TIP: The output of the STAR genomeGenerate command is `genome_dir`.
 *link:solutions/solution_04.adoc[Problem #4 Solution]*
 
 ==== Process 1D: Create a file containing the filtered and recoded set of variants
+
+Next on to something a little more tricky.
+
+The next process takes two inputs: the variants file and the blacklist file.
+
+It should output a channel named `prepared_vcf_ch` which contains a tuple of two files.
+
+NOTE: In Nextflow, tuples can be defined in the input or output using the https://www.nextflow.io/docs/latest/process.html?highlight=set#output-set-of-values[`set`] qualifier.
+
+=== Problem #5
+
+You must fill in the two `BLANK_LINES` in the input and the two `BLANK` output files. 
+
+----
+/*
+ * Process 1D: Create a file containing the filtered and recoded set of variants
+ */
+
+process '1D_prepare_vcf_file' {
+
+  input: 
+      BLANK_LINE
+      BLANK_LINE
+
+  output:
+      set(BLANK,BLANK) into prepared_vcf_ch
+  
+  script:  
+  """
+  vcftools --gzvcf $variantsFile -c \ <1>
+           --exclude-bed ${blacklisted} \ <2>
+           --recode | bgzip -c \
+           > ${variantsFile.baseName}.filtered.recode.vcf.gz <3>
+
+  tabix ${variantsFile.baseName}.filtered.recode.vcf.gz <4> 
+  """
+}
+----
+<1> The input variable for the variants file
+<2> The input variable for the blacklist file 
+<3> The first of the two output files
+<4> Generates the second output file named `"${variantsFile.baseName}.filtered.recode.vcf.gz.tbi"`
+
+*link:solutions/solution_04.adoc[Problem #5 Solution]*
+
+Congratulations! Part 1 is now complete. 
+
+Try run the pipeline for the project directory with:
+
+```
+$ nextflow run main.nf
+```
+
+*link:solutions/part1.adoc[You can find the completed pipeline for part 1 here.]*
+
+***
 
 === PART 2: STAR RNA-Seq Mapping
 

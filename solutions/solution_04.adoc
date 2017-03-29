@@ -27,8 +27,8 @@ process '1C_prepare_star_genome_index' {
 ----
 
 <1> Take as input the `genome` file from `genome_file`.  
-<2> The `output` is a file* is called `genome_dir` and is added to a channel called `genome_dir_ch`.
-<3> Create the output directory which will contain the resulting STAR genome index.
+<2> The `output` is a `file`* called `genome_dir` and is added `into` a channel called `genome_dir_ch`. You can call the channel whatever you wish.
+<3> Creates the output directory that will contain the resulting STAR genome index.
 <4> Specify the name of the output directory for STAR.
 
 NOTE: * The file in this case is a directory however it makes no difference.
