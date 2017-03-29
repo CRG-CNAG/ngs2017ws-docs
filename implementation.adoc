@@ -2,9 +2,9 @@
 
 == PART 1: Data preparation
 
-A first step in any pipeline is to prepare the input data. You will find 
-all the data required to run the pipeline in the folder `data` 
-within the `ngs2017-nf` repository directory. 
+A first step in any pipeline is to prepare the input data. You will find
+all the data required to run the pipeline in the folder `data`
+within the `ngs2017-nf` repository directory.
 
 There are four data inputs that we will use in this tutorial:
 
@@ -95,7 +95,7 @@ reads_ch        = BLANK
 GATK            = BLANK
 ----
 
-TIP: The first three should specify file objects containing a single `file`. For the reads channel, we can use a ttps://www.nextflow.io/docs/latest/channel.html#channel-factory[channel contructor] for pairs of files. The final one, `GATK` is simply a creating a Nextflow variable specifying the relative path of the GATK file and does not need a constructor.
+TIP: The first three should specify file objects containing a single `file`. For the reads channel, we can use a https://www.nextflow.io/docs/latest/channel.html#channel-factory[channel contructor] for pairs of files. The final one, `GATK` is simply a creating a Nextflow variable specifying the relative path of the GATK file and does not need a constructor.
 
 
 *link:solutions/solution_01.adoc[Problem #1 Solution]*
@@ -105,7 +105,7 @@ TIP: The first three should specify file objects containing a single `file`. For
 
 ==== Process 1A: Create a FASTA genome index with samtools for GATK
 
-Now we have our inputs set up we can move onto our first process. 
+Now we have our inputs set up we can move onto our first process.
 
 In our first process we will create a genome index using http://www.htslib.org/[samtools]
 
@@ -122,12 +122,12 @@ the input step (written as `BLANK`) of the process and run the pipeline.
 
 process '1A_prepare_genome_samtools' { <1>
 
-  input: 
+  input:
       file genome from BLANK <2>
-      
+
   output:
       file "${genome}.fai" into genome_index_ch <3>
-      
+
   script:
   """
   samtools faidx ${genome} <4>
@@ -158,7 +158,7 @@ Our first process created the genome index for GATK using samtools. For the next
 
 === Problem #3
 
-Fill in the `BLANK` words for both the input and output sections. 
+Fill in the `BLANK` words for both the input and output sections.
 
 TIP: You can choose any channel output name that makes sense to you.
 ----
@@ -170,7 +170,7 @@ process '1B_prepare_genome_picard' {
 
   input:
       file genome BLANK BLANK
-      
+
   output:
       file "${genome.baseName}.dict" BLANK BLANK
 
@@ -191,7 +191,7 @@ NOTE: `.baseName` returns the filename without the file suffix. If `"${genome}"`
 
 ==== Process 1C: Create STAR genome index file
 
-Next we must create a genome index for the https://github.com/alexdobin/STAR[STAR] mapping software. 
+Next we must create a genome index for the https://github.com/alexdobin/STAR[STAR] mapping software.
 
 === Problem #4
 
@@ -206,7 +206,7 @@ process '1C_prepare_star_genome_index' {
 
   input:
       BLANK_LINE
-      
+
   output:
       BLANK_LINE
 
@@ -238,7 +238,7 @@ NOTE: In Nextflow, tuples can be defined in the input or output using the https:
 
 === Problem #5
 
-You must fill in the two `BLANK_LINES` in the input and the two `BLANK` output files. 
+You must fill in the two `BLANK_LINES` in the input and the two `BLANK` output files.
 
 ----
 /*
@@ -247,32 +247,32 @@ You must fill in the two `BLANK_LINES` in the input and the two `BLANK` output f
 
 process '1D_prepare_vcf_file' {
 
-  input: 
+  input:
       BLANK_LINE
       BLANK_LINE
 
   output:
       set(BLANK,BLANK) into prepared_vcf_ch
-  
-  script:  
+
+  script:
   """
   vcftools --gzvcf $variantsFile -c \ <1>
            --exclude-bed ${blacklisted} \ <2>
            --recode | bgzip -c \
            > ${variantsFile.baseName}.filtered.recode.vcf.gz <3>
 
-  tabix ${variantsFile.baseName}.filtered.recode.vcf.gz <4> 
+  tabix ${variantsFile.baseName}.filtered.recode.vcf.gz <4>
   """
 }
 ----
 <1> The input variable for the variants file
-<2> The input variable for the blacklist file 
+<2> The input variable for the blacklist file
 <3> The first of the two output files
 <4> Generates the second output file named `"${variantsFile.baseName}.filtered.recode.vcf.gz.tbi"`
 
 *link:solutions/solution_05.adoc[Problem #5 Solution]*
 
-Congratulations! Part 1 is now complete. 
+Congratulations! Part 1 is now complete.
 
 Try run the pipeline for the project directory with:
 
@@ -297,24 +297,24 @@ In this process, for each sample, we align the reads to our genome using the STA
 The process could be summerised in pseudocode as:
 
 ----
-    process: 
+    process:
       2_rnaseq_mapping_star
 
-    synopsis: 
+    synopsis:
       mapping of the RNA-Seq reads using STAR
 
-    input: 
+    input:
       the genome fasta file
       the STAR genome index
       a set containing the sample id and paired read files
-      
-    output: 
-      a set containg sample id, aligned bam file & aligned bam file index 
+
+    output:
+      a set containg sample id, aligned bam file & aligned bam file index
 ----
 
 === Problem #6
 
-You must fill in the three `BLANK_LINE` lines in the input and the one `BLANK_LINE` line in the output. 
+You must fill in the three `BLANK_LINE` lines in the input and the one `BLANK_LINE` line in the output.
 
 ----
 /*
@@ -323,15 +323,15 @@ You must fill in the three `BLANK_LINE` lines in the input and the one `BLANK_LI
 
 process '2_rnaseq_mapping_star' {
 
-  input: 
+  input:
       BLANK_LINE
       BLANK_LINE
       BLANK_LINE
 
-  output: 
+  output:
       BLANK_LINE
 
-  script:    
+  script:
   """
   # ngs-nf-dev Align reads to genome
   STAR --genomeDir $genomeDir \
@@ -342,17 +342,17 @@ process '2_rnaseq_mapping_star' {
        --alignSJoverhangMin 8 \
        --alignSJDBoverhangMin 1 \
        --outFilterMismatchNmax 999
-    
-  # 2nd pass (improve alignmets using table of splice junctions and create a new index)  
-  mkdir genomeDir  
+
+  # 2nd pass (improve alignmets using table of splice junctions and create a new index)
+  mkdir genomeDir
   STAR --runMode genomeGenerate \
        --genomeDir genomeDir \
        --genomeFastaFiles $genome \
        --sjdbFileChrStartEnd SJ.out.tab \
        --sjdbOverhang 75 \
-       --runThreadN ${task.cpus}  
-    
-  # Final read alignments  
+       --runThreadN ${task.cpus}
+
+  # Final read alignments
   STAR --genomeDir genomeDir \
        --readFilesIn $reads \
        --runThreadN ${task.cpus} \
@@ -384,44 +384,44 @@ N characters in their http://genome.sph.umich.edu/wiki/SAM#What_is_a_CIGAR.3F[CI
 
 === Process 3: Split reads that contain Ns in their CIGAR string
 
-The process creates k+1 new reads (where k is the number of N cigar elements) 
-that correspond to the segments of the original read beside/between 
+The process creates k+1 new reads (where k is the number of N cigar elements)
+that correspond to the segments of the original read beside/between
 the splicing events represented by the Ns in the original CIGAR.
 
 The process could be summerised in pseudocode as:
 
 ----
-    process: 
+    process:
       3_rnaseq_gatk_splitNcigar
 
-    synopsis: 
+    synopsis:
       split reads on N in CIGAR using GATK
 
-    input: 
+    input:
       the genome fasta file
       the genome index made with samtools
       the genome dictionary made with picard
       a set containg sample id, aligned bam file and aligned bam file index from the STAR mapping
-      
-    output: 
+
+    output:
       a set containing the sample id, the split bam file and the split bam index file
-      
+
 ----
 
 === Problem #7
 
-You must fill in the four `BLANK_LINE` lines in the input and the one `BLANK_LINE` line in the output. 
+You must fill in the four `BLANK_LINE` lines in the input and the one `BLANK_LINE` line in the output.
 
-CAUTION: There is an optional https://www.nextflow.io/docs/latest/process.html#tag[`tag`] line added 
-to the start of this process. The https://www.nextflow.io/docs/latest/process.html#tag[`tag`] line allows you to assign a name to a specific 
-task (single execution of a process). This is particularly useful when there are many samples all 
+CAUTION: There is an optional https://www.nextflow.io/docs/latest/process.html#tag[`tag`] line added
+to the start of this process. The https://www.nextflow.io/docs/latest/process.html#tag[`tag`] line allows you to assign a name to a specific
+task (single execution of a process). This is particularly useful when there are many samples all
 using the same process.
- 
+
 ----
 process '3_rnaseq_gatk_splitNcigar' {
   tag OPTIONAL_BLANK
-  
-  input: 
+
+  input:
       BLANK_LINE
       BLANK_LINE
       BLANK_LINE
@@ -429,7 +429,7 @@ process '3_rnaseq_gatk_splitNcigar' {
 
   output:
       BLANK_LINE
-  
+
   script:
   """
   # SplitNCigarReads and reassign mapping qualities
