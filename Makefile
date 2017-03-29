@@ -5,14 +5,15 @@ GEMS = env
 endif
 HTML_FILE = index.html
 PDF_FILE = hands-on.pdf
+SOLUTIONS_DIR = solutions
 CHEATSHEET_HTML = cheatsheet.html
 CHEATSHEET_PDF = cheatsheet.pdf
-SOLUTIONS_HTML = solutions/index.html
+SOLUTIONS_HTML = $(SOLUTIONS_DIR)/index.html
 STYLESHEETS_DIR = css
 ASSETS_DIR = assets
 README = hands-on.adoc
 CHEATSHEET = cheatsheet.adoc
-SOLUTIONS = solutions/solutions.adoc
+SOLUTIONS = $(SOLUTIONS_DIR)/solutions.adoc
 DEPLOY_LIST = deploy-list.txt
 PDF = pdf
 PDF_STYLE = crg
@@ -60,6 +61,7 @@ $(DEPLOY_LIST):
 	@echo $(CHEATSHEET_HTML) >> $(DEPLOY_LIST)
 	@echo $(ASSETS_DIR) >> $(DEPLOY_LIST)
 	@echo $(STYLESHEETS_DIR) >> $(DEPLOY_LIST)
+	@echo $(SOLUTIONS_HTML) >> $(DEPLOY_LIST)
 
 check_deploy:
 ifndef RNASEQ_DEPLOY_DIR
