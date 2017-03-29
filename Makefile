@@ -7,10 +7,12 @@ HTML_FILE = index.html
 PDF_FILE = hands-on.pdf
 CHEATSHEET_HTML = cheatsheet.html
 CHEATSHEET_PDF = cheatsheet.pdf
+SOLUTIONS_HTML = solutions/index.html
 STYLESHEETS_DIR = css
 ASSETS_DIR = assets
 README = hands-on.adoc
 CHEATSHEET = cheatsheet.adoc
+SOLUTIONS = solutions/solutions.adoc
 DEPLOY_LIST = deploy-list.txt
 PDF = pdf
 PDF_STYLE = crg
@@ -22,7 +24,7 @@ draft: set-draft html
 set-draft:
 	$(eval ATTRS += -a draft)
 
-html: $(HTML_FILE) $(CHEATSHEET_HTML)
+html: $(HTML_FILE) $(CHEATSHEET_HTML) $(SOLUTIONS_HTML)
 $(HTML_FILE): setup $(README)
 	@GEM_HOME=$(GEMS) $(GEMS)/bin/asciidoctor $(README) $(ATTRS) -o $(HTML_FILE)
 	@echo == Written file $(HTML_FILE)
@@ -30,6 +32,10 @@ $(HTML_FILE): setup $(README)
 $(CHEATSHEET_HTML): setup $(CHEATSHEET)
 	@GEM_HOME=$(GEMS) $(GEMS)/bin/asciidoctor $(CHEATSHEET) -o $(CHEATSHEET_HTML)
 	@echo == Written file $(CHEATSHEET_HTML)
+
+$(SOLUTIONS_HTML): setup $(SOLUTIONS)
+	@GEM_HOME=$(GEMS) $(GEMS)/bin/asciidoctor $(SOLUTIONS) -o $(SOLUTIONS_HTML)
+	@echo == Written file $(SOLUTIONS_HTML)
 
 pdf: $(PDF_FILE) $(CHEATSHEET_PDF)
 $(PDF_FILE): setup $(README)

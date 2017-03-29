@@ -1,0 +1,32 @@
+= Solutions
+:hide-uri-scheme:
+:nofooter:
+:icons: font
+:toclevels: 3
+:stylesdir: ../css
+:stylesheet: crg.css
+:linkcss:
+:source-highlighter: highlight.js
+:highlightjs-theme: github
+
+:sectnums:
+
+:leveloffset: +1
+
+include::solution_01.adoc[]
+
+include::solution_02.adoc[]
+
+include::solution_03.adoc[]
+
+include::solution_04.adoc[]
+
+include::solution_05.adoc[]
+
+include::part1.adoc[]
+
+include::solution_06.adoc[]
+
+include::solution_07.adoc[]
+
+:leveloffset: -1
