@@ -135,7 +135,7 @@ process '1A_prepare_genome_samtools' { <1>
 }
 ----
 
-In plain english the process could be written as:
+In plain english, the process could be written as:
 
 
 <1> A **process** called 1A_prepare_genome_samtools
@@ -270,7 +270,7 @@ process '1D_prepare_vcf_file' {
 <3> The first of the two output files
 <4> Generates the second output file named `"${variantsFile.baseName}.filtered.recode.vcf.gz.tbi"`
 
-*link:solutions/solution_04.adoc[Problem #5 Solution]*
+*link:solutions/solution_05.adoc[Problem #5 Solution]*
 
 Congratulations! Part 1 is now complete. 
 
@@ -284,17 +284,182 @@ $ nextflow run main.nf
 
 ***
 
+
+
 === PART 2: STAR RNA-Seq Mapping
+
+We have all the data prepared and into channels ready for the more serious steps
 
 ==== Process 2: Align RNA-Seq reads to the genome with STAR
 
+In this process, for each sample, we align the reads to our genome using the STAR index we created previously.
+
+The process could be summerised in pseudocode as:
+
+----
+    process: 
+      2_rnaseq_mapping_star
+
+    synopsis: 
+      mapping of the RNA-Seq reads using STAR
+
+    input: 
+      the genome fasta file
+      the STAR genome index
+      a set containing the sample id and paired read files
+      
+    output: 
+      a set containg sample id, aligned bam file & aligned bam file index 
+----
+
+=== Problem #6
+
+You must fill in the three `BLANK_LINE` lines in the input and the one `BLANK_LINE` line in the output. 
+
+----
+/*
+ * Process 2: Align RNA-Seq reads to the genome with STAR
+ */
+
+process '2_rnaseq_mapping_star' {
+
+  input: 
+      BLANK_LINE
+      BLANK_LINE
+      BLANK_LINE
+
+  output: 
+      BLANK_LINE
+
+  script:    
+  """
+  # ngs-nf-dev Align reads to genome
+  STAR --genomeDir $genomeDir \
+       --readFilesIn $reads \
+       --runThreadN ${task.cpus} \
+       --readFilesCommand zcat \
+       --outFilterType BySJout \
+       --alignSJoverhangMin 8 \
+       --alignSJDBoverhangMin 1 \
+       --outFilterMismatchNmax 999
+    
+  # 2nd pass (improve alignmets using table of splice junctions and create a new index)  
+  mkdir genomeDir  
+  STAR --runMode genomeGenerate \
+       --genomeDir genomeDir \
+       --genomeFastaFiles $genome \
+       --sjdbFileChrStartEnd SJ.out.tab \
+       --sjdbOverhang 75 \
+       --runThreadN ${task.cpus}  
+    
+  # Final read alignments  
+  STAR --genomeDir genomeDir \
+       --readFilesIn $reads \
+       --runThreadN ${task.cpus} \
+       --readFilesCommand zcat \
+       --outFilterType BySJout \
+       --alignSJoverhangMin 8 \
+       --alignSJDBoverhangMin 1 \
+       --outFilterMismatchNmax 999 \
+       --outSAMtype BAM SortedByCoordinate \
+       --outSAMattrRGline ID:$replicateId LB:library PL:illumina PU:machine SM:GM12878
+
+  # Index the BAM file
+  samtools index Aligned.sortedByCoord.out.bam
+  """
+}
+----
+
+TIP: The final command produces an bam index which is the file name with `.bai` attached.
+
+*link:solutions/solution_06.adoc[Problem #6 Solution]*
+
+
 == PART 3: GATK Prepare Mapped Reads
+
+Part 3 is a filtering step using GATK.
+
+For each sample, we split all the reads that contain
+N characters in their http://genome.sph.umich.edu/wiki/SAM#What_is_a_CIGAR.3F[CIGAR] string.
 
 === Process 3: Split reads that contain Ns in their CIGAR string
 
+The process creates k+1 new reads (where k is the number of N cigar elements) 
+that correspond to the segments of the original read beside/between 
+the splicing events represented by the Ns in the original CIGAR.
+
+The process could be summerised in pseudocode as:
+
+----
+    process: 
+      3_rnaseq_gatk_splitNcigar
+
+    synopsis: 
+      split reads on N in CIGAR using GATK
+
+    input: 
+      the genome fasta file
+      the genome index made with samtools
+      the genome dictionary made with picard
+      a set containg sample id, aligned bam file and aligned bam file index from the STAR mapping
+      
+    output: 
+      a set containing the sample id, the split bam file and the split bam index file
+      
+----
+
+=== Problem #7
+
+You must fill in the four `BLANK_LINE` lines in the input and the one `BLANK_LINE` line in the output. 
+
+CAUTION: There is an optional https://www.nextflow.io/docs/latest/process.html#tag[`tag`] line added 
+to the start of this process. The https://www.nextflow.io/docs/latest/process.html#tag[`tag`] line allows you to assign a name to a specific 
+task (single execution of a process). This is particularly useful when there are many samples all 
+using the same process.
+ 
+----
+process '3_rnaseq_gatk_splitNcigar' {
+  tag OPTIONAL_BLANK
+  
+  input: 
+      BLANK_LINE
+      BLANK_LINE
+      BLANK_LINE
+      BLANK_LINE
+
+  output:
+      BLANK_LINE
+  
+  script:
+  """
+  # SplitNCigarReads and reassign mapping qualities
+  java -jar $GATK -T SplitNCigarReads \
+                  -R $genome -I $bam \
+                  -o split.bam \
+                  -rf ReassignOneMappingQuality \
+                  -RMQF 255 -RMQT 60 \
+                  -U ALLOW_N_CIGAR_READS \
+                  --fix_misencoded_quality_scores
+  """
+}
+----
+
+TIP: The GATK command above automatically creates a bam index (.bai) of the split.bam output file
+
+*link:solutions/solution_07.adoc[Problem #7 Solution]*
+
+***
+
 == PART 4: GATK Base Quality Score Recalibration Workflow
 
+Part 4 is a recalibration step using GATK.
+
 === Process 4: Base recalibrate to detect systematic errors in base quality scores, select unique alignments and index
+
+=== Problem #8
+
+
+
 
 == PART 5: GATK Variant Calling
 
