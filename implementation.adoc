@@ -98,7 +98,7 @@ GATK            = BLANK
 TIP: The first three should specify file objects containing a single `file`. For the reads channel, we can use a https://www.nextflow.io/docs/latest/channel.html#channel-factory[channel constructor] for pairs of files. The final one, `GATK` is simply a creating a Nextflow variable specifying the relative path of the GATK file and does not need a constructor.
 
 
-*link:solutions/solution_01.adoc[Problem #1 Solution]*
+*link:solutions/#_problem_1[Problem #1 Solution]*
 
 
 ***
@@ -146,7 +146,7 @@ In plain english, the process could be written as:
 
 <4> **script**: using samtools create the genome index from the genome file
 
-*link:solutions/solution_02.adoc[Problem #2 Solution]*
+*link:solutions/#_problem_2[Problem #2 Solution]*
 
 Now we have out first process finished!
 
@@ -184,7 +184,7 @@ process '1B_prepare_genome_picard' {
 
 NOTE: `.baseName` returns the filename without the file suffix. If `"${genome}"` is `human.fa`, then `"${genome.baseName}.dict"` is `human.dict`.
 
-*link:solutions/solution_03.adoc[Problem #3 Solution]*
+*link:solutions/#_problem_3[Problem #3 Solution]*
 
 
 ***
@@ -224,7 +224,7 @@ process '1C_prepare_star_genome_index' {
 
 TIP: The output of the STAR genomeGenerate command is `genome_dir`.
 
-*link:solutions/solution_04.adoc[Problem #4 Solution]*
+*link:solutions/#_problem_4[Problem #4 Solution]*
 
 ==== Process 1D: Create a file containing the filtered and recoded set of variants
 
@@ -270,7 +270,7 @@ process '1D_prepare_vcf_file' {
 <3> The first of the two output files
 <4> Generates the second output file named `"${variantsFile.baseName}.filtered.recode.vcf.gz.tbi"`
 
-*link:solutions/solution_05.adoc[Problem #5 Solution]*
+*link:solutions/#_problem_5[Problem #5 Solution]*
 
 Congratulations! Part 1 is now complete.
 
@@ -280,7 +280,7 @@ Try run the pipeline for the project directory with:
 $ nextflow run main.nf
 ```
 
-*link:solutions/part1.adoc[You can find the completed pipeline for part 1 here.]*
+*link:solutions/#_part_1[You can find the completed pipeline for part 1 here.]*
 
 ***
 
@@ -372,7 +372,7 @@ process '2_rnaseq_mapping_star' {
 
 TIP: The final command produces an bam index which is the file name with `.bai` attached.
 
-*link:solutions/solution_06.adoc[Problem #6 Solution]*
+*link:solutions/#_problem_6[Problem #6 Solution]*
 
 
 == PART 3: GATK Prepare Mapped Reads
@@ -446,7 +446,7 @@ process '3_rnaseq_gatk_splitNcigar' {
 
 TIP: The GATK command above automatically creates a bam index (.bai) of the split.bam output file
 
-*link:solutions/solution_07.adoc[Problem #7 Solution]*
+*link:solutions/#_problem_7[Problem #7 Solution]*
 
 ***
 
