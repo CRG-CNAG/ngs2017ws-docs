@@ -26,7 +26,7 @@ set-draft:
 	$(eval ATTRS += -a draft)
 
 html: setup $(HTML_FILE) $(CHEATSHEET_HTML) $(SOLUTIONS_HTML)
-$(HTML_FILE): $(README)
+$(HTML_FILE): $(README) *.adoc
 	@GEM_HOME=$(GEMS) $(GEMS)/bin/asciidoctor $(README) $(ATTRS) -o $(HTML_FILE)
 	@echo == Written file $(HTML_FILE)
 
