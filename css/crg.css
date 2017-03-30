@@ -182,9 +182,11 @@ p.lead, .paragraph.lead > p, #preamble > .sectionbody > .paragraph:first-of-type
 div, dl, dt, dd, ul, ol, li, h1, h2, h3, #toctitle, .sidebarblock > .content > .title, h4, h5, h6, pre, form, p, p.lead, .paragraph.lead > p, #preamble > .sectionbody > .paragraph:first-of-type p, blockquote, th, td { margin: 0; padding: 0; direction: ltr; }
 
 /* Default Link Styles */
-a { color: #2156a5; text-decoration: underline; line-height: inherit; }
+a { color: #2156a5; text-decoration: none; line-height: inherit; font-weight: bold}
 a:hover, a:focus { color: #1d4b8f; }
 a img { border: none; }
+
+#toc a { font-weight: normal; }
 
 /* Default paragraph styles */
 p, p.lead, .paragraph.lead > p, #preamble > .sectionbody > .paragraph:first-of-type p { font-family: inherit; font-weight: normal; font-size: 1em; line-height: 1.6; margin-bottom: 1.25em; text-rendering: optimizeLegibility; }
