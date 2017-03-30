@@ -63,7 +63,7 @@ STAR --runMode genomeGenerate \
 
 STAR 2-pass, final alignments:
 
------
+----
   STAR --genomeDir genome_dir \
        --readFilesIn sample_1.fastq.gz sample_2.fastq.gz \
        --runThreadN 4 \
@@ -79,7 +79,7 @@ STAR 2-pass, final alignments:
 Index result bam file
 
 ----
-samtools index final.bam
+samtools index final_alignments.bam
 ----
 
 == Split'N'Trim and reassign mapping qualities
@@ -92,7 +92,7 @@ This step is done with recommended parameters from the GATK best practics.
 
 ----
 java -jar GenomeAnalysisTK.jar -T SplitNCigarReads \
-                  -R genome.fa -I final.bam \
+                  -R genome.fa -I final_alignments.bam \
                   -o split.bam \
                   -rf ReassignOneMappingQuality \
                   -RMQF 255 -RMQT 60 \
@@ -112,26 +112,42 @@ java -jar GenomeAnalysisTK.jar -T BaseRecalibrator \
                   -cov ReadGroupCovariate \
                   -cov QualityScoreCovariate \
                   -cov CycleCovariate \
-                  -knownSites ${variants_file} \
+                  -knownSites known_SNVs.filtered.recode.vcf.gz\
                   -cov ContextCovariate \
-                  -R ${genome} -I ${bam} \
+                  -R genome.fa -I split.bam \
                   --downsampling_type NONE \
-                  -nct ${task.cpus} \
+                  -nct 4 \
                   -o final.rnaseq.grp 
 
-  java -jar $GATK -T PrintReads \
-                  -R ${genome} -I ${bam} \
+  java -jar GenomeAnalysisTK.jar -T PrintReads \
+                  -R genome.fa -I split.bam \
                   -BQSR final.rnaseq.grp \
-                  -nct ${task.cpus} \
+                  -nct 4 \
                   -o final.bam
 
 ----
 
 == Variant Calling and Variant filtering
 
-The variant calling is done on the uniquelly aligned reads only, that allows to reduce number of false positive variants. 
+The variant calling is done on the uniquelly aligned reads only, that allows to reduce number of false positive variants.
+
+----
+(samtools view -H final.bam; samtools view final.bam| grep -w 'NH:i:1') \
+  |samtools view -Sb -  > final.uniq.bam
+  
+samtools index final.uniq.bam
+----
 
 Here we're using tool HaplotypeCaller from the GATK tools with default parameters. 
+
+----
+ls final.uniq.bam  > bam.list
+java -jar GenomeAnalysisTK.jar -T HaplotypeCaller \
+                  -R genome.fa -I bam.list \
+                  -dontUseSoftClippedBases \
+                  -stand_call_conf 20.0 \
+                  -o output.gatk.vcf.gz                  
+----
 
 For variant filtering we're using parameters recommended by GATK team:
 
@@ -139,5 +155,15 @@ For variant filtering we're using parameters recommended by GATK team:
 * strand bias estimated using Fisher's Exact Test with values  > 30.0 (Phred-scaled p-value)
 * variant call confidence score QualByDepth (QD) values < 2.0. The QD is the QUAL score normalized by allele depth (AD) for a variant.
 
+----
+ java -jar GenomeAnalysisTK.jar -T VariantFiltration \
+                  -R genome.fa -V output.gatk.vcf.gz \
+                  -window 35 -cluster 3 \
+                  -filterName FS -filter "FS > 30.0" \
+                  -filterName QD -filter "QD < 2.0" \
+                  -o final.vcf
+----
 == Variant Post-processing
 For downsteram analysis we're considering only sites covered with at least 8 reads.
+
+
