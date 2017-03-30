@@ -172,11 +172,41 @@ grep -v '#' final.vcf | awk '$7~/PASS/' \
 |perl -ne 'chomp($_); ($dp)=$_=~/DP\\=(\\d+)\\;/; if($dp>=8){print $_."\\n"};' > result.DP8.vcf
 ---- 
 
-Then we compare SNVs obtained with RNA-seq data and obtained from DNA sequencing, known variants. 
-Common variants are true SNVs that are expressed and can be used for allele specific analysis. 
-Those variants present in the RNA-seq cohort only are either RNA editing events or sequencing errors, depending on the quality of the site.
+Filtered RNA-seq variants are compared with those obtained from DNA sequencing (from Illumina platinum genome project). Those variants that are common between these two datasets, are "know" SNVs, other present in the RNA-seq cohort only are "novel". 
 
+For allele specific expression analysis we will use only known SNVs. 
+Novel variants will be used to detect RNA-editing events.
+
+Compare two variant *.vcf files to detect common and different sites. 
 ----
  vcftools --vcf result.DP8.vcf --gzdiff known_SNVs.filtered.recode.vcf.gz --diff-site --out commonSNPs
 ----
 
+To select sites present in the both files, "know" SNVs
+
+----
+awk 'BEGIN{OFS="\t"} $4~/B/{print $1,$2,$3}' commonSNPs.diff.sites_in_files  > test.bed
+   
+vcftools --vcf final.vcf --bed test.bed --recode --keep-INFO-all --stdout > known_snps.vcf
+----
+
+Plot a histogram with allele frequency distribution for known SNVs
+----
+grep -v '#'  known_snps.vcf | awk -F '\\t' '{print $10}' \
+               |awk -F ':' '{print $2}'|perl -ne 'chomp($_); \
+               @v=split(/\\,/,$_); if($v[0]!=0 ||$v[1] !=0)\
+               {print  $v[1]/($v[1]+$v[0])."\\n"; }' |awk '$1!=1' \
+               >AF.4R
+
+gghist.R -i AF.4R -o AF.histogram.pdf
+----
+
+Calculate read counts per each known SNV per allele for allele specific analysis
+
+----
+java -jar GenomeAnalysisTK.jar -R genome.fa \
+                  -T ASEReadCounter \
+                  -o ASE.tsv \
+                  -I bam.list \
+                  -sites known_snps.vcf
+----
