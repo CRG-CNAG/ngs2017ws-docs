@@ -1,7 +1,7 @@
 :experimental:
 = Editing files with GNU nano
 
-GNU nano is a text editor for Unix-like operating systems using a command line interface.
+GNU nano is a text editor for Unix-like operating systems using a command line interface. The following sections describe the commands used for opening, editing and saving files using nano.
 
 == File Control
 
