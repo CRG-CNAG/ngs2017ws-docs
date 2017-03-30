@@ -13,17 +13,16 @@ https://software.broadinstitute.org/gatk/guide/article?id=3891[GATK best practic
 Here are the links for the software documentations.
 
 * http://www.htslib.org/doc/samtools.html[samtools]
-* https://broadinstitute.github.io/picard/command-line-overview.html[picard]
-** https://broadinstitute.github.io/picard/command-line-overview.html#CreateSequenceDictionary[picard, CreateSequenceDictionary]
+* https://broadinstitute.github.io/picard/command-line-overview.html#CreateSequenceDictionary[picard, CreateSequenceDictionary]
 * http://labshare.cshl.edu/shares/gingeraslab/www-data/dobin/STAR/STAR.posix/doc/STARmanual.pdf[STAR]
 * https://vcftools.github.io/man_latest.html[vcftools]
 * https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/index[GATK tools]
-** https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_rnaseq_SplitNCigarReads.php[GATK, SplitNCigarReads]
-** https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_bqsr_BaseRecalibrator.php[GATK,BaseRecalibrator]
-** https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_readutils_PrintReads.php[GATK, PrintReads]
-** https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_haplotypecaller_HaplotypeCaller.php[GATK, HaplotypeCaller]
-** https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_filters_VariantFiltration.php[GATK, VariantFiltration]
-** https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_rnaseq_ASEReadCounter.php[GATK, ASEReadCounter]
+** https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_rnaseq_SplitNCigarReads.php[SplitNCigarReads]
+** https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_bqsr_BaseRecalibrator.php[BaseRecalibrator]
+** https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_readutils_PrintReads.php[PrintReads]
+** https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_haplotypecaller_HaplotypeCaller.php[HaplotypeCaller]
+** https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_filters_VariantFiltration.php[VariantFiltration]
+** https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_rnaseq_ASEReadCounter.php[ASEReadCounter]
 
 == Prepare data
 
