@@ -12,7 +12,7 @@ There are four data inputs that we will use in this tutorial:
 * Human chromosome 22 in FASTA file format
 
 . *Read Files* (`data/reads/`)
-* Sample 1: 50 bp paired-end reads (`rep1_1.fq.gz` and `rep1_2.fq.gz`).
+* Sample ENCSR000COQ: 76bp paired-end reads (`ENCSR000COQ1_1.fq.gz` and `ENCSR000COQ1_2.fq.gz`).
 
 . *Variants File* (`data/known_variants.vcf.gz`)
 * Known variants, gunzipped as a Variant Calling File (VCF) format.
