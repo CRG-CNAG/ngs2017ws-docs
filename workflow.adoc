@@ -20,6 +20,7 @@ java -jar picard.jar CreateSequenceDictionary R= genome.fa O= genome.dict
 ----
 
 http://www.htslib.org/doc/samtools.html[samtools documentation]
+
 https://broadinstitute.github.io/picard/command-line-overview.html[picard documentation]
 
 Create STAR 2.5 genome index – needed for RNA-seq reads mappings
