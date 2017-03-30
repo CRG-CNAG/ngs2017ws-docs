@@ -8,9 +8,26 @@ _The variant calling_ is done on bam files from *_all replicates simultaniously_
 
 https://software.broadinstitute.org/gatk/guide/article?id=3891[GATK best practices, RNA-seq]
 
+==Sofware manuals
+
+Here are the links for the software documentations.
+
+*http://www.htslib.org/doc/samtools.html[samtools]
+*https://broadinstitute.github.io/picard/command-line-overview.html[picard]
+**https://broadinstitute.github.io/picard/command-line-overview.html#CreateSequenceDictionary[picard, CreateSequenceDictionary]
+*http://labshare.cshl.edu/shares/gingeraslab/www-data/dobin/STAR/STAR.posix/doc/STARmanual.pdf[STAR]
+*https://vcftools.github.io/man_latest.html[vcftools]
+*https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/index[GATK tools]
+**https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_rnaseq_SplitNCigarReads.php[GATK, SplitNCigarReads]
+**https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_bqsr_BaseRecalibrator.php[GATK,BaseRecalibrator]
+**https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_readutils_PrintReads.php[GATK, PrintReads]
+**https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_haplotypecaller_HaplotypeCaller.php[GATK, HaplotypeCaller]
+**https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_filters_VariantFiltration.php[GATK, VariantFiltration]
+**https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_rnaseq_ASEReadCounter.php[GATK, ASEReadCounter]
+
 == Prepare data
 
-Prepare input files for the further analysis – create genome indexes and filter those variants overlapping blacklisted regions. 
+This step prepare input files for the further analysis – genome indexes are created and filter those variants overlapping blacklisted regions. 
 
 Create samtools and pickard genome index  - needed for GATK tools, such as Split'N'Trim
 
@@ -18,10 +35,6 @@ Create samtools and pickard genome index  - needed for GATK tools, such as Split
 samtools faidx genome.fa
 java -jar picard.jar CreateSequenceDictionary R= genome.fa O= genome.dict
 ----
-
-http://www.htslib.org/doc/samtools.html[samtools manual]
-
-https://broadinstitute.github.io/picard/command-line-overview.html[picard manual]
 
 Create STAR 2.5 genome index – needed for RNA-seq reads mappings
 STAR creates index file in the folder with name genome_dir
@@ -31,22 +44,20 @@ STAR --runMode genomeGenerate \
        --genomeFastaFiles genome.fa \
        --runThreadN 4
 ----
-http://labshare.cshl.edu/shares/gingeraslab/www-data/dobin/STAR/STAR.posix/doc/STARmanual.pdf[STAR manual]
 
-Filter known variants that overlap with blacklisted regions to reduce false positive calls [optional].
+Filter variants that overlap with blacklisted regions to reduce false positive calls [optional].
 
  vcftools --gzvcf known_SNVs.vcf -c \
            --exclude-bed blacklisted.bed \
            --recode | bgzip -c \
            > known_SNVs.filtered.recode.vcf.gz
-           
-https://vcftools.github.io/man_latest.html[vcftools manual]           
+          
            
 == Mapping RNAseq reads to the reference
 
-To align RNA-seq reads to the genome we're using STAR 2-pass approach. The first alignment creates a  table with splice-junctions that is used to guide final mappings. The mappings at both steps are done with default parameters. 
+To align RNA-seq reads to the genome we're using STAR 2-pass approach. The first alignment creates a table with splice-junctions that is used to guide final alignments. The alignments at both steps are done with default parameters. 
 
-Additional fields with the read groups, libraries and sample information are added into the final bam file at the second mapping step. As a result we do not need to run GATK best practics Picard processing steps.
+Additional fields with the read groups, libraries and sample information are added into the final bam file at the second mapping step. As a result we do not need to run Picard processing step from GATK best practics.
 
 STAR 1-pass:
 
@@ -61,7 +72,7 @@ STAR 1-pass:
        --outFilterMismatchNmax 999
 ----
 
-Create new genome index, using splice-junction table:
+Create new genome index using splice-junction table:
 
 ----
 STAR --runMode genomeGenerate \
@@ -87,7 +98,7 @@ STAR 2-pass, final alignments:
        --outSAMattrRGline ID:ReplicateID LB:library PL:illumina PU:machine SM:GM12878
 ----
 
-Index result bam file
+Index resulting bam file
 
 ----
 samtools index final_alignments.bam
