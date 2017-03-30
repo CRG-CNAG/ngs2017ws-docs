@@ -201,7 +201,7 @@ grep -v '#'  known_snps.vcf | awk -F '\\t' '{print $10}' \
 gghist.R -i AF.4R -o AF.histogram.pdf
 ----
 
-Calculate read counts per each known SNV per allele for allele specific analysis
+Calculate read counts per each known SNVs per allele for allele specific expression analysis
 
 ----
 java -jar GenomeAnalysisTK.jar -R genome.fa \
