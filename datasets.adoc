@@ -2,18 +2,18 @@
 #*Genome assembly*, genome.fa
 
 The human genome assembly hg19 (GRCh37), chr 22 only.
-GenBank [link] (https://www.ncbi.nlm.nih.gov/assembly/GCA_000001405.1)
+GenBank [link](https://www.ncbi.nlm.nih.gov/assembly/GCA_000001405.1)
 
 #*RNAs-seq reads*, *.fastq 
 
-The RNA-seq data comes from the human GM12878 cell line from the whole cell, cytosol and nucleous extraction (Table 1). 
+The RNA-seq data comes from the human GM12878 cell line from the whole cell, cytosol and nucleous extraction, see table below. 
 
 The libraries are stranded PE76 Illumina GAIIx RNA-Seq from rRNA-depleted Poly-A+ long RNA  (> 200 nucleotides in size). 
 
-Here we're  using a subset of these reads, those mapped to the locus 22q11 of the human genome, chr22:16000000-18000000
+Here we're  using a subset of these reads, those mapped to the locus <i>22q11</i> of the human genome, chr22:16000000-18000000
 
 |===
-|ENCODE ID|Cellular fraction| replicate|file names|
+|*ENCODE ID*|*Cellular fraction*|*replicate ID*|*file names*|
 |ENCSR000COQ|Whole cell| 1|ENCSR000COQ1_1.fastq.gz, ENCSR000COQ1_2.fastq.gz|
 |ENCSR000COQ|Whole cell| 2|ENCSR000COQ2_1.fastq.gz, ENCSR000COQ2_2.fastq.gz|
 |ENCSR000CPO|Nuclear|1|ENCSR000CPO1_1.fastq.gz, ENCSR000CPO1_2.fastq.gz|
