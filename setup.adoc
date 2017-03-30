@@ -1,7 +1,12 @@
-= Environment setup
+= Environment Setup
 :experimental:
 
-For the implementation we are going to connect to a Amazon Elastic Compute Cloud (Amazon EC2) virtual machine.
+We are going to use Amazon Elastic Compute Cloud (Amazon EC2) virtual machines to work on the practical part of the workshop. Each attendee will run a `t2.large` instance based on a prepared image with the following tools already installed:
+
+- Docker
+- git
+- nano
+- Java 8
 
 == Launching the EC2 virtual machine
 
@@ -15,7 +20,7 @@ eval "$(curl -fsSL https://goo.gl/DdVLrZ)" | bash
 ~~ N G S '1 7  -  W O R K S H O P ~~
 
 Launching EC2 virtual machine
-- type  : t2.nano
+- type  : t2.large
 - ami   : ami-61d0ec07
 - disk  : 8 GB
 - subnet: subnet-05222a43
@@ -156,10 +161,11 @@ Digest: sha256:b65a7d721b9dd2da07d6bdd7f868b04039860f14fa514add975c59e68614c310
 Status: Downloaded newer image for cbcrg/callings-nf@sha256:b65a7d721b9dd2da07d6bdd7f868b04039860f14fa514add975c59e68614c310
 ----
 
-== Terminate the EC2 virtual machine
+== Terminate the EC2 instance
 
 We ask you to terminate the virtual machine once you have completed your work. Type `exit` to close the `ssh` session and the following command to terminate the machine (use the `instanceId` you collected when you lanched the virtual machine):
 
+[source,cmd]
 ----
 aws ec2 terminate-instances --instance-ids {instanceID}
 ----
