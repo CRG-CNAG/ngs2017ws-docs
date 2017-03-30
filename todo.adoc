@@ -6,3 +6,4 @@
 * [ ] add implementation section
 * [x] add setup secton (launching instance, install nextflow)
 * [ ] update data and file names
+* [ ] change header in the linux cheatsheet
