@@ -15,18 +15,21 @@ Here we're  using a subset of these reads, those mapped to the locus _22q11_ of 
 
 |===
 |*ENCODE ID*|*Cellular fraction*|*replicate ID*|*file names*
-|ENCSR000COQ|Whole cell| 1|ENCSR000COQ1_1.fastq.gz, ENCSR000COQ1_2.fastq.gz
-|ENCSR000COQ|Whole cell| 2|ENCSR000COQ2_1.fastq.gz, ENCSR000COQ2_2.fastq.gz
-|ENCSR000CPO|Nuclear|1|ENCSR000CPO1_1.fastq.gz, ENCSR000CPO1_2.fastq.gz
-|ENCSR000CPO|Nuclear|2|ENCSR000CPO2_1.fastq.gz, ENCSR000CPO2_2.fastq.gz
-|ENCSR000COR|Cytosolic|1|ENCSR000COR1_1.fastq.gz, ENCSR000COR1_1.fastq.gz
-|ENCSR000COR|Cytosolic|2|ENCSR000COR2_1.fastq.gz, ENCSR000COR2_1.fastq.gz
+|https://www.encodeproject.org/experiments/ENCSR000COQ/[ENCSR000COQ]|Whole cell| 1|ENCSR000COQ1_1.fastq.gz, ENCSR000COQ1_2.fastq.gz
+|https://www.encodeproject.org/experiments/ENCSR000COQ/[ENCSR000COQ]|Whole cell| 2|ENCSR000COQ2_1.fastq.gz, ENCSR000COQ2_2.fastq.gz
+|https://www.encodeproject.org/experiments/ENCSR000CPO/[ENCSR000CPO]|Nuclear|1|ENCSR000CPO1_1.fastq.gz, ENCSR000CPO1_2.fastq.gz
+|https://www.encodeproject.org/experiments/ENCSR000CPO/[ENCSR000CPO]|Nuclear|2|ENCSR000CPO2_1.fastq.gz, ENCSR000CPO2_2.fastq.gz
+|https://www.encodeproject.org/experiments/ENCSR000COR/[ENCSR000COR]|Cytosolic|1|ENCSR000COR1_1.fastq.gz, ENCSR000COR1_1.fastq.gz
+|https://www.encodeproject.org/experiments/ENCSR000COR/[ENCSR000COR]|Cytosolic|2|ENCSR000COR2_1.fastq.gz, ENCSR000COR2_1.fastq.gz
 |===
 
 .*"Known" variants*, *.vcf
 
 Known variants comes from high confident variant calls for GM12878 from the Illumina Platinum Genomes project.
+This variant calls were obtained by taking into account pedigree information and the concordance of calls across different methods. 
+
 We're using here only the subset from the chromosome 22.
+
 https://www.illumina.com/platinumgenomes.html[Illumina Platinum Genomes link]
 
 .*Blacklisted regions*, *.bed
