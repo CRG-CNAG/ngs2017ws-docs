@@ -107,7 +107,7 @@ samtools index final_alignments.bam
 
 The RNA-seq reads overlapping exon-intron junctions can produce a false positive variants due to inaccurate splicing. To solve this problem the GATK team recommend to hard-clip any sequence that overlap intronic region, and has developed a speciall tool SplitNCigarReads. The tool identify Ns in the CIGAR string of the alignment and split reads at this position, few new reads are created. 
 
-At this step we also reassigning mapping qualities of the alignments. This is important because STAR assign good quality of 255 to the “unknown” mappings  that is meaningless to GATK and variant calling.  
+At this step we also reassigning mapping qualities of the alignments. This is important because STAR assign good quality of 255 to the “unknown” mappings  that is meaningless to GATK and to variant calling in general.  
 
 This step is done with recommended parameters from the GATK best practics.
 
@@ -123,9 +123,9 @@ java -jar GenomeAnalysisTK.jar -T SplitNCigarReads \
 
 == Base Recalibration
 
-Here in the pipeline we did not included indel realigment step because it is time-intensive but does not really improve variant calling. In the GATK best practics the indel realignment step is optional.
+Here in the pipeline we did not included indel realigment step, optional step in the GATK best practices. It is time-intensive but does not really improve variant calling. 
 
-But we do include base recalibration step – this step allows to remove possible systematic errors introduced by the sequencing machine in the assigned qualities of the reads. To do this, list of known variants is used as an input for machine learning algorithm that model possible errors. Then the base quality score is adjusted based on the obtained results.
+We include base recalibration step – this step allows to remove possible systematic errors introduced by the sequencing machine in the assigned qualities of the reads. To do this, the list of known variants is used as an input for machine learning algorithm that model possible errors. Then the base quality score is adjusted based on the obtained results.
 
 ----
 java -jar GenomeAnalysisTK.jar -T BaseRecalibrator \
@@ -150,7 +150,7 @@ java -jar GenomeAnalysisTK.jar -T BaseRecalibrator \
 
 == Variant Calling and Variant filtering
 
-The variant calling is done on the uniquelly aligned reads only, that allows to reduce number of false positive variants.
+The variant calling is done on the uniquelly aligned reads only, it allows to reduce number of false positive variants.
 
 ----
 (samtools view -H final.bam; samtools view final.bam| grep -w 'NH:i:1') \
@@ -159,7 +159,7 @@ The variant calling is done on the uniquelly aligned reads only, that allows to 
 samtools index final.uniq.bam
 ----
 
-Here we're using tool HaplotypeCaller from the GATK tools with default parameters. 
+For variant calling we're using tool HaplotypeCaller from the GATK tools with default parameters. 
 
 ----
 ls final.uniq.bam  > bam.list
@@ -170,7 +170,7 @@ java -jar GenomeAnalysisTK.jar -T HaplotypeCaller \
                   -o output.gatk.vcf.gz                  
 ----
 
-For variant filtering we're using parameters recommended by GATK team:
+Variant filtering is done as recommended by GATK:
 
 * clusters of at least 3 SNPs that are within a window of 35 bases between them 
 * strand bias estimated using Fisher's Exact Test with values  > 30.0 (Phred-scaled p-value)
@@ -184,6 +184,7 @@ For variant filtering we're using parameters recommended by GATK team:
                   -filterName QD -filter "QD < 2.0" \
                   -o final.vcf
 ----
+
 == Variant Post-processing
 
 For downsteram analysis we're considering only sites that pass all filters and covered with at least 8 reads.
@@ -193,17 +194,17 @@ grep -v '#' final.vcf | awk '$7~/PASS/' \
 |perl -ne 'chomp($_); ($dp)=$_=~/DP\\=(\\d+)\\;/; if($dp>=8){print $_."\\n"};' > result.DP8.vcf
 ---- 
 
-Filtered RNA-seq variants are compared with those obtained from DNA sequencing (from Illumina platinum genome project). Those variants that are common between these two datasets, are "know" SNVs, other present in the RNA-seq cohort only are "novel". 
+Filtered RNA-seq variants are compared with those obtained from DNA sequencing (from Illumina platinum genome project). Those variants that are common between these two datasets, are "known" SNVs, those present in the RNA-seq cohort only are "novel". 
 
-For allele specific expression analysis we will use only known SNVs. 
-Novel variants will be used to detect RNA-editing events.
+For _allele specific expression_ analysis we will use _only known SNVs_. 
+_Novel variants_ will be used to detect _RNA-editing events_.
 
-Compare two variant *.vcf files to detect common and different sites. 
+Compare two variant *.vcf files to detect common and different sites: 
 ----
  vcftools --vcf result.DP8.vcf --gzdiff known_SNVs.filtered.recode.vcf.gz --diff-site --out commonSNPs
 ----
 
-To select sites present in the both files, "know" SNVs
+Here we select sites present in the both files, "known" SNVs only:
 
 ----
 awk 'BEGIN{OFS="\t"} $4~/B/{print $1,$2,$3}' commonSNPs.diff.sites_in_files  > test.bed
@@ -211,7 +212,7 @@ awk 'BEGIN{OFS="\t"} $4~/B/{print $1,$2,$3}' commonSNPs.diff.sites_in_files  > t
 vcftools --vcf final.vcf --bed test.bed --recode --keep-INFO-all --stdout > known_snps.vcf
 ----
 
-Plot a histogram with allele frequency distribution for known SNVs
+Plot a histogram with allele frequency distribution for "known" SNVs
 ----
 grep -v '#'  known_snps.vcf | awk -F '\\t' '{print $10}' \
                |awk -F ':' '{print $2}'|perl -ne 'chomp($_); \
@@ -222,7 +223,7 @@ grep -v '#'  known_snps.vcf | awk -F '\\t' '{print $10}' \
 gghist.R -i AF.4R -o AF.histogram.pdf
 ----
 
-Calculate read counts per each known SNVs per allele for allele specific expression analysis
+Calculate read counts per each "known" SNVs per allele for allele specific expression analysis
 
 ----
 java -jar GenomeAnalysisTK.jar -R genome.fa \
