@@ -35,6 +35,8 @@ NOTE: A cheatsheet with basic Linux and Cluster commands is available <<{cheatsh
 
 :leveloffset: +1
 
+include::datasets.adoc[]
+
 include::workflow.adoc[]
 
 include::setup.adoc[]
