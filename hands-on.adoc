@@ -38,15 +38,13 @@ NOTE: A cheatsheet with basic Linux and Cluster commands is available <<{cheatsh
 
 :leveloffset: +1
 
-include::nano.adoc[]
-
-include::nextflow.adoc[]
-
 include::workflow.adoc[]
 
-include::implementation.adoc[]
+include::setup.adoc[]
 
-include::scaling-up.adoc[]
+include::nano.adoc[]
+
+include::implementation.adoc[]
 
 ifeval::["{backend}" == "pdf"]
 [[cheatsheet]]

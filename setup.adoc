@@ -1,0 +1,165 @@
+= Environment setup
+:experimental:
+
+For the implementation we are going to connect to a Amazon Elastic Compute Cloud (Amazon EC2) virtual machine.
+
+== Launching the EC2 virtual machine
+
+Run the following command to launch the virtual machine:
+
+[source, cmd]
+----
+eval "$(curl -fsSL https://goo.gl/DdVLrZ)" | bash
+----
+----
+~~ N G S '1 7  -  W O R K S H O P ~~
+
+Launching EC2 virtual machine
+- type  : t2.nano
+- ami   : ami-61d0ec07
+- disk  : 8 GB
+- subnet: subnet-05222a43
+
+* Please confirm you want to launch an VM with these settings [y/n]
+----
+
+Type kbd:[Y] kbd:[Enter] and wait until the instance is ready:
+----
+* Instance launched >> i-07a9f2ba3795c4f8f <<
+* Waiting for ready status ..  [/]
+----
+
+NOTE: the `i-xxx...` string is the `instanceId`. Take note of it in order to be able to terminate the instance when you are done with it.
+
+Once the virtual machine is up and runnning you will get the following message:
+----
+* The instance is ready -- Login with the following command:
+
+  ssh ngs17@ec2-54-194-213-184.eu-west-1.compute.amazonaws.com
+  (password `ngs17`)
+----
+
+Follow the on-screen instructions to connect to the machine, e.g.:
+
+[source,cmd]
+----
+ssh ngs17@ec2-54-194-213-184.eu-west-1.compute.amazonaws.com
+----
+----
+ngs17@ec2-54-194-213-184.eu-west-1.compute.amazonaws.com's password:
+X11 forwarding request failed on channel 0
+Last login: Wed Mar 29 12:23:50 2017
+
+       __|  __|_  )
+       _|  (     /   Amazon Linux AMI
+      ___|\___|___|
+
+https://aws.amazon.com/amazon-linux-ami/2016.09-release-notes/
+7 package(s) needed for security, out of 17 available
+Run "sudo yum update" to apply all updates.
+[ngs17@ip-172-30-1-84 ~]$
+----
+
+== Installing Nextflow
+
+Nextflow can be installed with the following command:
+
+[source,cmd]
+----
+curl -fsSL get.nextflow.io | bash
+----
+----
+...
+CAPSULE: Downloading dependency com.fasterxml.jackson.core:jackson-databind:jar:2.6.6
+CAPSULE: Downloading dependency ch.qos.logback:logback-classic:jar:1.1.10
+CAPSULE: Downloading dependency com.amazonaws:jmespath-java:jar:1.0
+CAPSULE: Downloading dependency com.fasterxml.jackson.core:jackson-annotations:jar:2.6.0
+
+      N E X T F L O W
+      Version 0.24.1 build 4245
+      last modified 24-03-2017 19:41 UTC
+      http://nextflow.io
+
+
+Nextflow installation completed. Please note:
+- the executable file `nextflow` has been created in the folder: /home/ngs17
+- you may complete the installation by moving it to a directory in your $PATH
+----
+
+If everything goes well you will find an executable file named `nextflow` in the current folder.
+
+To check the installed version use the command below:
+
+[source,cmd]
+----
+./nextflow info
+----
+----
+  Version: 0.24.1 build 4245
+  Modified: 24-03-2017 19:41 UTC
+  System: Linux 4.4.51-40.58.amzn1.x86_64
+  Runtime: Groovy 2.4.10 on OpenJDK 64-Bit Server VM 1.8.0_121-b13
+  Encoding: UTF-8 (UTF-8)
+----
+
+== Getting the data
+
+All the files needed for the workshop are stored in a git repository on GitHub. In order to get the data srun the following command:
+
+[source,cmd]
+----
+git clone https://github.com/CRG-CNAG/ngs2017-nf.git
+----
+----
+Cloning into 'ngs2017-nf'...
+remote: Counting objects: 15, done.
+remote: Compressing objects: 100% (3/3), done.
+remote: Total 15 (delta 0), reused 0 (delta 0), pack-reused 12
+Unpacking objects: 100% (15/15), done.
+Checking connectivity... done.
+----
+
+Check the content of the freshly cloned repo:
+
+[source,cmd]
+----
+tree ngs2017-nf
+----
+
+== Pulling the Docker image
+
+Nextflow can pull Docker images at runtime, but let's just download it manually to see how Docker works:
+
+----
+docker pull cbcrg/callings-nf@sha256:b65a7d721b9dd2da07d6bdd7f868b04039860f14fa514add975c59e68614c310
+----
+
+You should see the progress of the download:
+
+----
+sha256:b65a7d721b9dd2da07d6bdd7f868b04039860f14fa514add975c59e68614c310: Pulling from cbcrg/callings-nf
+915665fee719: Downloading [=============================================>     ] 47.08 MB/51.36 MB
+f332de2321e6: Downloading [===========>                                       ] 41.96 MB/187.8 MB
+1577a6dd9e43: Downloading [===============================>                   ] 46.72 MB/73.45 MB
+7059d9bb5245: Waiting
+71863f70269f: Waiting
+ce2a2879246d: Waiting
+e38ba5d5f9fb: Waiting
+90158da87bb2: Waiting
+
+----
+
+and the following message if everything went fine:
+
+----
+Digest: sha256:b65a7d721b9dd2da07d6bdd7f868b04039860f14fa514add975c59e68614c310
+Status: Downloaded newer image for cbcrg/callings-nf@sha256:b65a7d721b9dd2da07d6bdd7f868b04039860f14fa514add975c59e68614c310
+----
+
+== Terminate the EC2 virtual machine
+
+We ask you to terminate the virtual machine once you have completed your work. Type `exit` to close the `ssh` session and the following command to terminate the machine (use the `instanceId` you collected when you lanched the virtual machine):
+
+----
+aws ec2 terminate-instances --instance-ids {instanceID}
+----
