@@ -2,9 +2,9 @@
 
 The aim of the pipeline is to process raw RNA-seq data (*.fastq) and obtain the list of small variants, SNVs (SNPs and INDELs) for the downsteram analysis. The pipeline is based on the GATK best practices for variant calling with RNAseq data and includes all majour steps. In addition the pipeline includes SNVs postprocessing and quantification for allele specific expression.
 
-Processing of the samples is done for *_each replicate independently_*. This includes mapping of the reads, split at the CIGAR, reassigning mapping qualities and base quality recalibration.  
+_Processing of the samples_ is done for *_each replicate independently_*. This includes mapping of the reads, split at the CIGAR, reassigning mapping qualities and base quality recalibration.  
 
-The variant calling is done on bam files from *_all replicates simultaniously_* – this allows to improve coverage of the genomic regions and perform more reliable variant calling. 
+_The variant calling_ is done on bam files from *_all replicates simultaniously_* – this allows to improve coverage of the genomic regions and perform more reliable variant calling. 
 
 https://software.broadinstitute.org/gatk/guide/article?id=3891[GATK best practices, RNA-seq]
 
@@ -19,6 +19,9 @@ samtools faidx genome.fa
 java -jar picard.jar CreateSequenceDictionary R= genome.fa O= genome.dict
 ----
 
+http://www.htslib.org/doc/samtools.html[samtools documentation]
+https://broadinstitute.github.io/picard/command-line-overview.html[picard documentation]
+
 Create STAR 2.5 genome index – needed for RNA-seq reads mappings
 STAR creates index file in the folder with name genome_dir
 ----
@@ -27,6 +30,7 @@ STAR --runMode genomeGenerate \
        --genomeFastaFiles genome.fa \
        --runThreadN 4
 ----
+http://labshare.cshl.edu/shares/gingeraslab/www-data/dobin/STAR/STAR.posix/doc/STARmanual.pdf[STAR manual]
 
 Filter known variants that overlap with blacklisted regions to reduce false positive calls [optional].
 
@@ -34,6 +38,8 @@ Filter known variants that overlap with blacklisted regions to reduce false posi
            --exclude-bed blacklisted.bed \
            --recode | bgzip -c \
            > known_SNVs.filtered.recode.vcf.gz
+           
+https://vcftools.github.io/man_latest.html[vcftools manual]           
            
 == Mapping RNAseq reads to the reference
 
