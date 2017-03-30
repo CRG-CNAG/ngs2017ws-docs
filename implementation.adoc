@@ -115,6 +115,8 @@ Copy the code below and paste it at the end of `main.nf`.
 Your aim is to insert the correct input name from above into
 the input step (written as `BLANK`) of the process and run the pipeline.
 
+This is problem introduces the most basic structure of a Nextflow process.
+
 ----
 /*
  * Process 1A: Create a FASTA genome index with samtools
@@ -454,16 +456,32 @@ Next we peroform a Base Quality Score Recalibration step using GATK.
 
 
 
+***
 
+Now we are ready to perform the actual variant calling with GATK.
 
-== PART 5: GATK Variant Calling
+==== Process 5: Call variants with GATK HaplotypeCaller
 
-=== Process 5: Call variants with GATK HaplotypeCaller
+===== Problem #9
 
-== PART 6: Post-process variants file and prepare for Allele-Specific Expression and RNA Editing Analysis
+***
 
-=== Process 6A: Post-process the VCF result
+In the final steps will create processes for Allele-Specific Expression and RNA Editing Analysis.
 
-=== Process 6B: Prepare variants file for allele specific expression (ASE) analysis
+==== Process 6A: Post-process the VCF result
 
-=== Process 6C: Allele-Specific Expression analysis with GATK ASEReadCounter
+==== Process 6B: Prepare variants file for allele specific expression (ASE) analysis
+
+===== Problem #10
+
+***
+
+===== Problem #11
+
+***
+
+==== Process 6C: Allele-Specific Expression analysis with GATK ASEReadCounter
+
+===== Problem #12
+
+***

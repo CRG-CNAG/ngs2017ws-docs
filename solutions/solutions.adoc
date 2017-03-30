@@ -13,15 +13,15 @@
 
 :leveloffset: +1
 
-include::solution_01.adoc[]
+include::anxious_advice.adoc[]
 
-include::solution_02.adoc[]
+include::busy_building.adoc[]
 
-include::solution_03.adoc[]
+include::cooing_clock.adoc[]
 
-include::solution_04.adoc[]
+include::discreet_direction.adoc[]
 
-include::solution_05.adoc[]
+include::expensive_ear.adoc[]
 
 include::part1.adoc[]
 
