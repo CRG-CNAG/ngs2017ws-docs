@@ -1,40 +1,66 @@
+= Data Description
 
 .*Genome assembly*, genome.fa
 
-The human genome assembly hg19 (GRCh37), chr 22 only.
+The human genome assembly [crg]#hg19 (GRCh37)#, chromosome 22 only.
 
 GenBank https://www.ncbi.nlm.nih.gov/assembly/GCA_000001405.1[link]
 
-.*RNAs-seq reads*, *.fastq 
+.*RNAs-seq reads*, *.fastq
 
-The RNA-seq data comes from the human GM12878 cell line from the whole cell, cytosol and nucleous extraction, see table below. 
+The RNA-seq data comes from the human [crg]#GM12878# cell line from whole cell, cytosol and nucleous extraction (see table below).
 
-The libraries are stranded PE76 Illumina GAIIx RNA-Seq from rRNA-depleted Poly-A+ long RNA  (> 200 nucleotides in size). 
+The libraries are [crg]#stranded PE76 Illumina GAIIx# RNA-Seq from [crg]#rRNA-depleted Poly-A+# long RNA (`> 200` nucleotides in size).
 
-Here we're  using a subset of these reads, those mapped to the locus _22q11_ of the human genome, more precisely _chr22:16000000-18000000_
+Only reads mapped to the http://genome-euro.ucsc.edu/cgi-bin/hgTracks?db=hg19&lastVirtModeType=default&lastVirtModeExtraState=&virtModeType=default&virtMode=0&nonVirtPosition=&position=chr22%3A14700001-25900000&hgsid=221945779_QucOFSFGagd1cn9uVki0TFjrxSBU[22q11^] locus of the human genome (`chr22:16000000-18000000`) are used.
 
+[cols="4"]
 |===
-|*ENCODE ID*|*Cellular fraction*|*replicate ID*|*file names*
-|https://www.encodeproject.org/experiments/ENCSR000COQ/[ENCSR000COQ]|Whole cell| 1|ENCSR000COQ1_1.fastq.gz, ENCSR000COQ1_2.fastq.gz
-|https://www.encodeproject.org/experiments/ENCSR000COQ/[ENCSR000COQ]|Whole cell| 2|ENCSR000COQ2_1.fastq.gz, ENCSR000COQ2_2.fastq.gz
-|https://www.encodeproject.org/experiments/ENCSR000CPO/[ENCSR000CPO]|Nuclear|1|ENCSR000CPO1_1.fastq.gz, ENCSR000CPO1_2.fastq.gz
-|https://www.encodeproject.org/experiments/ENCSR000CPO/[ENCSR000CPO]|Nuclear|2|ENCSR000CPO2_1.fastq.gz, ENCSR000CPO2_2.fastq.gz
-|https://www.encodeproject.org/experiments/ENCSR000COR/[ENCSR000COR]|Cytosolic|1|ENCSR000COR1_1.fastq.gz, ENCSR000COR1_1.fastq.gz
-|https://www.encodeproject.org/experiments/ENCSR000COR/[ENCSR000COR]|Cytosolic|2|ENCSR000COR2_1.fastq.gz, ENCSR000COR2_1.fastq.gz
+| ENCODE ID | Cellular fraction | replicate ID | file names
+
+.2+| https://www.encodeproject.org/experiments/ENCSR000COQ/[ENCSR000COQ]
+.2+| Whole Cell
+| 1
+l| ENCSR000COQ1_1.fastq.gz
+ENCSR000COQ1_2.fastq.gz
+
+| 2
+l| ENCSR000COQ2_1.fastq.gz
+ENCSR000COQ2_2.fastq.gz
+
+.2+|https://www.encodeproject.org/experiments/ENCSR000CPO/[ENCSR000CPO]
+.2+|Nuclear
+|1
+l|ENCSR000CPO1_1.fastq.gz
+ENCSR000CPO1_2.fastq.gz
+
+|2
+l|ENCSR000CPO2_1.fastq.gz
+ENCSR000CPO2_2.fastq.gz
+
+.2+|https://www.encodeproject.org/experiments/ENCSR000COR/[ENCSR000COR]
+.2+|Cytosolic
+|1
+l|ENCSR000COR1_1.fastq.gz
+ENCSR000COR1_1.fastq.gz
+
+|2
+l|ENCSR000COR2_1.fastq.gz
+ENCSR000COR2_1.fastq.gz
 |===
 
 .*"Known" variants*, *.vcf
 
-Known variants comes from high confident variant calls for GM12878 from the Illumina Platinum Genomes project.
-This variant calls were obtained by taking into account pedigree information and the concordance of calls across different methods. 
+Known variants comes from high confident variant calls for [crg]#GM12878# from the Illumina Platinum Genomes project.
+This variant calls were obtained by taking into account pedigree information and the concordance of calls across different methods.
 
-We're using here only the subset from the chromosome 22.
+We're using the subset from chromosome 22 only.
 
 https://www.illumina.com/platinumgenomes.html[Illumina Platinum Genomes link]
 
 .*Blacklisted regions*, *.bed
 
-Blacklisted regions, or the regions with anomalous coverage, are taken from the ENCODE project for the assembly hg19.
-These regions were identify with DNAse and ChiP-seq samples over ~60 human tissues/cell types, and had a very high ratio of multi-mapping to unique mapping reads and high variance in mappability.
+Blacklisted regions, or the regions with anomalous coverage, are taken from the ENCODE project for the assembly [crg]#hg19#.
+These regions were identified with DNAse and ChiP-seq samples over ~60 human tissues/cell types, and had a very high ratio of multi-mapping to unique-mapping reads and high variance in mappability.
 
 https://www.encodeproject.org/annotations/ENCSR636HFF/[Blacklisted regions at ENCODE portal]
