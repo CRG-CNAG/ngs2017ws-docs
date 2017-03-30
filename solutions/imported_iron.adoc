@@ -1,0 +1,6 @@
+= Problem 9
+
+.Solution
+----
+
+----

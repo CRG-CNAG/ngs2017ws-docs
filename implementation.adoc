@@ -1,6 +1,6 @@
 = Nextflow Implementaton
 
-== PART 1: Data preparation
+== Data preparation
 
 A first step in any pipeline is to prepare the input data. You will find
 all the data required to run the pipeline in the folder `data`
@@ -78,7 +78,7 @@ Launching `main.nf` [nauseous_wright] - revision: 83a0a5415a
 ----
 
 ***
-=== Problem #1
+==== Problem #1
 Great, now let get our data into variables and https://www.nextflow.io/docs/latest/channel.html[channels]. Open the `main.nf` file and copy the lines below.
 
 This time you must fill the `BLANK` spaces with the correct constructors.
@@ -103,7 +103,7 @@ TIP: The first three should specify file objects containing a single `file`. For
 
 ***
 
-==== Process 1A: Create a FASTA genome index with samtools for GATK
+=== Process 1A: Create a FASTA genome index with samtools for GATK
 
 Now we have our inputs set up we can move onto our first process.
 
@@ -111,7 +111,7 @@ In our first process we will create a genome index using http://www.htslib.org/[
 
 Copy the code below and paste it at the end of `main.nf`.
 
-=== Problem #2
+==== Problem #2
 Your aim is to insert the correct input name from above into
 the input step (written as `BLANK`) of the process and run the pipeline.
 
@@ -156,7 +156,7 @@ Now we have out first process finished!
 
 Our first process created the genome index for GATK using samtools. For the next process we must do something very similar, this time creating a genome sequence dictionary using https://broadinstitute.github.io/picard/[Picard].
 
-=== Problem #3
+===== Problem #3
 
 Fill in the `BLANK` words for both the input and output sections.
 
@@ -193,7 +193,7 @@ NOTE: `.baseName` returns the filename without the file suffix. If `"${genome}"`
 
 Next we must create a genome index for the https://github.com/alexdobin/STAR[STAR] mapping software.
 
-=== Problem #4
+===== Problem #4
 
 This is a similar exercise except this time both `input` and `output` lines have been left completely `BLANK` and must be completed.
 
@@ -236,7 +236,7 @@ It should output a channel named `prepared_vcf_ch` which contains a tuple of two
 
 NOTE: In Nextflow, tuples can be defined in the input or output using the https://www.nextflow.io/docs/latest/process.html?highlight=set#output-set-of-values[`set`] qualifier.
 
-=== Problem #5
+===== Problem #5
 
 You must fill in the two `BLANK_LINES` in the input and the two `BLANK` output files.
 
@@ -285,9 +285,6 @@ $ nextflow run main.nf
 ***
 
 
-
-=== PART 2: STAR RNA-Seq Mapping
-
 We have all the data prepared and into channels ready for the more serious steps
 
 ==== Process 2: Align RNA-Seq reads to the genome with STAR
@@ -312,7 +309,7 @@ The process could be summerised in pseudocode as:
       a set containg sample id, aligned bam file & aligned bam file index
 ----
 
-=== Problem #6
+===== Problem #6
 
 You must fill in the three `BLANK_LINE` lines in the input and the one `BLANK_LINE` line in the output.
 
@@ -375,14 +372,12 @@ TIP: The final command produces an bam index which is the file name with `.bai` 
 *link:solutions/#_problem_6[Problem #6 Solution]*
 
 
-== PART 3: GATK Prepare Mapped Reads
+***
 
-Part 3 is a filtering step using GATK.
-
-For each sample, we split all the reads that contain
+The next step is a filtering step using GATK. For each sample, we split all the reads that contain
 N characters in their http://genome.sph.umich.edu/wiki/SAM#What_is_a_CIGAR.3F[CIGAR] string.
 
-=== Process 3: Split reads that contain Ns in their CIGAR string
+==== Process 3: Split reads that contain Ns in their CIGAR string
 
 The process creates k+1 new reads (where k is the number of N cigar elements)
 that correspond to the segments of the original read beside/between
@@ -408,7 +403,7 @@ The process could be summerised in pseudocode as:
 
 ----
 
-=== Problem #7
+===== Problem #7
 
 You must fill in the four `BLANK_LINE` lines in the input and the one `BLANK_LINE` line in the output.
 
@@ -450,13 +445,13 @@ TIP: The GATK command above automatically creates a bam index (.bai) of the spli
 
 ***
 
-== PART 4: GATK Base Quality Score Recalibration Workflow
+Next we peroform a Base Quality Score Recalibration step using GATK.
 
-Part 4 is a recalibration step using GATK.
+==== Process 4: Base recalibrate to detect systematic errors in base quality scores, select unique alignments and index
 
-=== Process 4: Base recalibrate to detect systematic errors in base quality scores, select unique alignments and index
+===== Problem #8
 
-=== Problem #8
+
 
 
 

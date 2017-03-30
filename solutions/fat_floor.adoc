@@ -1,0 +1,53 @@
+= Problem 6
+
+.Solution
+----
+process '2_rnaseq_mapping_star' {
+
+  input: 
+      file genome from genome_file 
+      file genomeDir from genome_dir_ch
+      set replicateId, file(reads) from reads_ch 
+
+  output: 
+      set replicateId, file('Aligned.sortedByCoord.out.bam'), file('Aligned.sortedByCoord.out.bam.bai') into aligned_bam_ch
+
+  script:    
+  """
+  # ngs-nf-dev Align reads to genome
+  STAR --genomeDir $genomeDir \
+       --readFilesIn $reads \
+       --runThreadN ${task.cpus} \
+       --readFilesCommand zcat \
+       --outFilterType BySJout \
+       --alignSJoverhangMin 8 \
+       --alignSJDBoverhangMin 1 \
+       --outFilterMismatchNmax 999
+    
+  # 2nd pass (improve alignmets using table of splice junctions and create a new index)  
+  mkdir genomeDir  
+  STAR --runMode genomeGenerate \
+       --genomeDir genomeDir \
+       --genomeFastaFiles $genome \
+       --sjdbFileChrStartEnd SJ.out.tab \
+       --sjdbOverhang 75 \
+       --runThreadN ${task.cpus}  
+    
+  # Final read alignments  
+  STAR --genomeDir genomeDir \
+       --readFilesIn $reads \
+       --runThreadN ${task.cpus} \
+       --readFilesCommand zcat \
+       --outFilterType BySJout \
+       --alignSJoverhangMin 8 \
+       --alignSJDBoverhangMin 1 \
+       --outFilterMismatchNmax 999 \
+       --outSAMtype BAM SortedByCoordinate \
+       --outSAMattrRGline ID:$replicateId LB:library PL:illumina PU:machine SM:GM12878
+
+  # Index the BAM file
+  samtools index Aligned.sortedByCoord.out.bam
+  """
+}
+
+----
