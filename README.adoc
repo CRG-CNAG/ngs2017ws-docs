@@ -9,4 +9,4 @@ To generate the `index.html` file with the documentation do:
 make html
 ----
 
-The published version of this documentation can be found https://goo.gl/hr2Wvh[here].
+The published version of this documentation can be found https://goo.gl/hr2Wvh[here^].
