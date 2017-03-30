@@ -164,6 +164,19 @@ For variant filtering we're using parameters recommended by GATK team:
                   -o final.vcf
 ----
 == Variant Post-processing
-For downsteram analysis we're considering only sites covered with at least 8 reads.
 
+For downsteram analysis we're considering only sites that pass all filters and covered with at least 8 reads.
+
+----
+grep -v '#' final.vcf | awk '$7~/PASS/' \
+|perl -ne 'chomp($_); ($dp)=$_=~/DP\\=(\\d+)\\;/; if($dp>=8){print $_."\\n"};' > result.DP8.vcf
+---- 
+
+Then we compare SNVs obtained with RNA-seq data and obtained from DNA sequencing, known variants. 
+Common variants are true SNVs that are expressed and can be used for allele specific analysis. 
+Those variants present in the RNA-seq cohort only are either RNA editing events or sequencing errors, depending on the quality of the site.
+
+----
+ vcftools --vcf result.DP8.vcf --gzdiff known_SNVs.filtered.recode.vcf.gz --diff-site --out commonSNPs
+----
 
