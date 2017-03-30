@@ -11,16 +11,13 @@ ifeval::["{backend}" == "html5"]
 :imagesdir: ./assets/
 :source-highlighter: highlight.js
 :highlightjs-theme: github
-ifndef::draft[]
 :toc: left
-endif::draft[]
 :cheatsheet: cheatsheet.adoc#,here
 endif::[]
 ifeval::["{backend}" == "pdf"]
 :cheatsheet: cheatsheet,at the end of this document
 endif::[]
 ifdef::draft[]
-:toc: preamble
 
 image::draft.png[DRAFT,150,150,float="right",align="center"]
 include::todo.adoc[leveloffset=+1]
