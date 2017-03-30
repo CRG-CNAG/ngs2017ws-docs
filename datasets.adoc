@@ -2,7 +2,8 @@
 .*Genome assembly*, genome.fa
 
 The human genome assembly hg19 (GRCh37), chr 22 only.
-GenBank [link](https://www.ncbi.nlm.nih.gov/assembly/GCA_000001405.1)
+
+GenBank https://www.ncbi.nlm.nih.gov/assembly/GCA_000001405.1[link]
 
 .*RNAs-seq reads*, *.fastq 
 
