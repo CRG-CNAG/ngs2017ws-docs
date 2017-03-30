@@ -23,9 +23,13 @@ Here we're  using a subset of these reads, those mapped to the locus _22q11_ of 
 |===
 
 .*"Known" variants*, *.vcf
-Known variants comes from high confident variant calls for GM12878 from the Illumina Platinum Genomes project  from the chromosome 22.
-link:https://www.illumina.com/platinumgenomes.html
+
+Known variants comes from high confident variant calls for GM12878 from the Illumina Platinum Genomes project.
+We're using here only the subset from the chromosome 22.
+https://www.illumina.com/platinumgenomes.html [Illumina Platinum Genomes]
 
 .*Blacklisted regions*, *.bed
-Blacklisted regions, or the regions with anomalous coverage, are taken from the ENCODE project, chromosome 22 from the assembly release hg19. 
-link:https://www.encodeproject.org/annotations/ENCSR636HFF/
+
+Blacklisted regions, or the regions with anomalous coverage, are taken from the ENCODE project for the assembly hg19.
+
+https://www.encodeproject.org/annotations/ENCSR636HFF/ [Blacklisted regions at ENCODE portal]
