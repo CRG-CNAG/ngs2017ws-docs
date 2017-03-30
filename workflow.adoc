@@ -1,8 +1,12 @@
 = Worflow Description
 
-The aim of the pipeline is to process raw RNA-seq data (*.fastq) and obtain the list of small variants, SNVs (SNPs and INDELs) for the downsteram analysis. The pipeline is based on the GATK best practise for variant calling with RNAseq data and includes all majour steps. In addition the pipeline includes SNVs postprocessing and quantification for allele specific expression.
+The aim of the pipeline is to process raw RNA-seq data (*.fastq) and obtain the list of small variants, SNVs (SNPs and INDELs) for the downsteram analysis. The pipeline is based on the GATK best practices for variant calling with RNAseq data and includes all majour steps. In addition the pipeline includes SNVs postprocessing and quantification for allele specific expression.
 
-Processing of the samples is done for each replicate independently. This includes mapping of the reads, split at the CIGAR, reassigning mapping qualities and base quality recalibration.  The variant calling is done on bam files from all replicates simultaniously – this allows to improve coverage of the genomic regions and perform more reliable variant calling. 
+Processing of the samples is done for *_each replicate independently_*. This includes mapping of the reads, split at the CIGAR, reassigning mapping qualities and base quality recalibration.  
+
+The variant calling is done on bam files from *_all replicates simultaniously_* – this allows to improve coverage of the genomic regions and perform more reliable variant calling. 
+
+https://software.broadinstitute.org/gatk/guide/article?id=3891[GATK best practices, RNA-seq]
 
 == Prepare data
 
