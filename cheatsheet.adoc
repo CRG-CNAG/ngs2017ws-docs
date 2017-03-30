@@ -11,8 +11,8 @@
 
 include::linux-commands.adoc[]
 
-include::files.adoc[]
+// include::files.adoc[]
 
-include::cluster.adoc[]
+// include::cluster.adoc[]
 
 :leveloffset: -1
