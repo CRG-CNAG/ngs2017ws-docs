@@ -1,5 +1,29 @@
 = Worflow Description
 
+The aim of the pipeline is to process raw RNA-seq data (*.fastq) and obtain the list of small variants, SNVs (SNPs and INDELs) for the downsteram analysis. The pipeline is based on the GATK best practise for variant calling with RNAseq data and includes all majour steps. In addition the pipeline includes SNVs postprocessing and quantification for allele specific expression.
+
+Processing of the samples is done for each replicate independently. This includes mapping of the reads, split at the CIGAR, reassigning mapping qualities and base quality recalibration.  The variant calling is done on bam files from all replicates simultaniously – this allows to improve coverage of the genomic regions and perform more reliable variant calling. 
+
+== Prepare data
+
+Prepare input files for the further analysis – create genome indexes and filter those variants overlapping blacklisted regions. 
+
+Create samtools and pickard genome index  - needed for GATK tools, such as Split'N'Trim
+
+----
+samtools faidx genome.fa
+ java -jar picard.jar CreateSequenceDictionary R= genome.fa O= genome.dict
+----
+
+Create STAR 2.5 genome index – needed for RNA-seq reads mappings
+
+----
+STAR --runMode genomeGenerate \
+       --genomeDir genome_dir \
+       --genomeFastaFiles genome.fa \
+       --runThreadN 4
+----
+
 == 2-pass mapping to the reference
 
 == Split'N'Trim and reassign mapping qualities
