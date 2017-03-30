@@ -1,6 +1,8 @@
 = TODO
 
-* [ ] add documentation schema
+* [x] add documentation schema
 * [ ] add dataset description in preamble
-* [ ] add workflow description
+* [x] add workflow description
 * [ ] add implementation section
+* [x] add setup secton (launching instance, install nextflow)
+* [ ] update data and file names
