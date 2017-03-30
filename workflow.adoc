@@ -19,9 +19,9 @@ samtools faidx genome.fa
 java -jar picard.jar CreateSequenceDictionary R= genome.fa O= genome.dict
 ----
 
-http://www.htslib.org/doc/samtools.html[samtools documentation]
+http://www.htslib.org/doc/samtools.html[samtools manual]
 
-https://broadinstitute.github.io/picard/command-line-overview.html[picard documentation]
+https://broadinstitute.github.io/picard/command-line-overview.html[picard manual]
 
 Create STAR 2.5 genome index – needed for RNA-seq reads mappings
 STAR creates index file in the folder with name genome_dir
