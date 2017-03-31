@@ -30,7 +30,7 @@ process '3_rnaseq_gatk_splitNcigar' {
 
 ----
 
-<1> https://www.nextflow.io/docs/latest/process.html#tag[`tag`] line with the using the sample id as the tag.
+<1> https://www.nextflow.io/docs/latest/process.html#tag[`tag`] line with the using the replicate id as the tag.
 <2> the genome fasta file
 <3> the genome index from the `genome_index_ch` channel created in the process `1A_prepare_genome_samtools`
 <4> the genome dictionary from the `genome_dict_ch` channel created in the process `1B_prepare_genome_picard`

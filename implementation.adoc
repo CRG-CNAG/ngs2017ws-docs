@@ -332,7 +332,7 @@ $ nextflow run main.nf
 
 We have all the data prepared and into channels ready for the more serious steps
 
-==== Process 2: Align RNA-Seq reads to the genome with STAR
+==== Process 2: STAR Mapping
 
 In this process, for each sample, we align the reads to our genome using the STAR index we created previously.
 
@@ -419,7 +419,7 @@ TIP: The final command produces an bam index which is the file name with `.bai` 
 The next step is a filtering step using GATK. For each sample, we split all the reads that contain
 N characters in their http://genome.sph.umich.edu/wiki/SAM#What_is_a_CIGAR.3F[CIGAR] string.
 
-==== Process 3: Split reads that contain Ns in their CIGAR string
+==== Process 3: GATK Split on N
 
 The process creates k+1 new reads (where k is the number of N cigar elements)
 that correspond to the segments of the original read beside/between
@@ -487,9 +487,9 @@ TIP: The GATK command above automatically creates a bam index (.bai) of the spli
 
 Next we perform a Base Quality Score Recalibration step using GATK.
 
-==== Process 4: Base recalibrate to detect systematic errors in base quality scores, select unique alignments and index
+==== Process 4: GATK Recalibrate
 
-This step 
+This step uses GATK to detect systematic errors in the base quality scores, select unique alignments and then index the resulting bam file with samtools. You can find details of the specific GATK BaseRecalibrator parameters https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_bqsr_BaseRecalibrator.php[here].
 
 The process could be summerised in pseudocode as:
 
@@ -498,7 +498,7 @@ The process could be summerised in pseudocode as:
       4_rnaseq_gatk_recalibrate
 
     synopsis:
-      recalibrate reads using GATK
+      recalibrate reads from each replicate using GATK
 
     input:
       the genome fasta file
@@ -508,7 +508,7 @@ The process could be summerised in pseudocode as:
       a set containing the filtered/recoded VCF file and the tab index (TBI) file from process 1D
 
     output:
-      a set containing the replicate id, the unique bam file and the unique bam index file <1>
+      a set containing the sample id, the unique bam file and the unique bam index file <1>
 
 ----
 <1> The files resulting from this process will be used in two downstream processes. Therefore we must duplicate the resulting channel. We can do this using the `into` operator with parenthesis in the output section. See https://www.nextflow.io/docs/latest/operator.html#into[here] for more information on using `into`. 
@@ -571,13 +571,81 @@ process '4_rnaseq_gatk_recalibrate' {
 
 Now we are ready to perform the variant calling with GATK.
 
-==== Process 5: Call variants with GATK HaplotypeCaller
+
+
+==== Process 5: GATK Variant Calling
+
+This steps call variants with GATK HaplotypeCaller. 
+
+You can find details of the specific GATK HaplotypeCaller parameters https://software.broadinstitute.org/gatk/documentation/tooldocs/current/org_broadinstitute_gatk_tools_walkers_haplotypecaller_HaplotypeCaller.php[here]. 
+
+The process could be summerised in pseudocode as:
+
+----
+    process:
+      5_rnaseq_call_variants
+
+    synopsis:
+      variant calling of each sample using GATK
+
+    input:
+      the genome fasta file
+      the genome index made with samtools
+      the genome dictionary made with picard
+      a set containg replicate id, aligned bam file and aligned bam file index from process 3
+      a set containing the filtered/recoded VCF file and the tab index (TBI) file from process 1D
+
+    output:
+      a set containing the sample id the resulting variant calling file (vcf) <1>
+
+----
 
 ===== Problem #9
 
+In this problem we will introduce the use of a channel operator in the input section. By default, the https://www.nextflow.io/docs/latest/operator.html#grouptuple[`groupTuple()`] operator groups items which share the same first element of the set.
+
+CAUTION: Note that in process 4, we used the sampleID (not replicateID) as the first element of the set in the output. Now we combine the replicates by grouping them on the sample ID. It follows from this that process 4 is run one time per replicate and process 5 is run one time per sample.
+
+Fill in the `BLANKS` as before.
+
+----
+process '5_rnaseq_call_variants' {
+  tag BLANK
+
+  input:
+      BLANK_LINE
+      BLANK_LINE
+      BLANK_LINE
+      BLANK from BLANK.groupTuple()
+  
+  output: 
+      BLANK_LINE
+
+  script:
+  """
+  echo "${bam.join('\n')}" > bam.list
+  
+  # Variant calling
+  java -jar $GATK -T HaplotypeCaller \
+                  -R $genome -I bam.list \
+                  -dontUseSoftClippedBases \
+                  -stand_call_conf 20.0 \
+                  -o output.gatk.vcf.gz
+
+  # Variant filtering
+  java -jar $GATK -T VariantFiltration \
+                  -R $genome -V output.gatk.vcf.gz \
+                  -window 35 -cluster 3 \
+                  -filterName FS -filter "FS > 30.0" \
+                  -filterName QD -filter "QD < 2.0" \
+                  -o final.vcf
+  """
+}
+----
+
 ***
 
-In the final steps will create processes for Allele-Specific Expression and RNA Editing Analysis.
+In the final steps we will create processes for Allele-Specific Expression and RNA Editing Analysis.
 
 ==== Process 6A: Post-process the VCF result
 

@@ -3,16 +3,16 @@
 .Solution
 ----
 process '5_rnaseq_call_variants' {
-  tag "$sampleId"
+  tag "$sampleId" <1> 
 
   input:
-      file genome from genome_file
-      file index from genome_index_ch
-      file dict from genome_dict_ch
-      set sampleId, file(bam), file(index) from final_output_ch.groupTuple()
+      file genome from genome_file <2>
+      file index from genome_index_ch <3>
+      file dict from genome_dict_ch <4>
+      set sampleId, file(bam), file(index) from final_output_ch.groupTuple() <5>
   
   output: 
-      set sampleId, file('final.vcf') into vcf_files
+      set sampleId, file('final.vcf') into vcf_files <6>
 
   script:
   """
@@ -31,7 +31,15 @@ process '5_rnaseq_call_variants' {
                   -window 35 -cluster 3 \
                   -filterName FS -filter "FS > 30.0" \
                   -filterName QD -filter "QD < 2.0" \
-                  -o final.vcf
+                  -o final.vcf <7>
   """
 }
 ----
+
+<1> https://www.nextflow.io/docs/latest/process.html#tag[`tag`] line with the using the sample id as the tag.
+<2> the genome fasta file.
+<3> the genome index from the `genome_index_ch` channel created in the process `1A_prepare_genome_samtools`.
+<4> the genome dictionary from the `genome_dict_ch` channel created in the process `1B_prepare_genome_picard`.
+<5> the sets grouped by sampleID from the `final_output_ch` channel created in the process `4_rnaseq_gatk_recalibrate`.
+<6> the set containing the sample ID and final VCF file.
+<7> the line specifing the name resulting final vcf file.

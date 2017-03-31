@@ -5,12 +5,12 @@
 process '2_rnaseq_mapping_star' {
 
   input: 
-      file genome from genome_file 
-      file genomeDir from genome_dir_ch
-      set replicateId, file(reads) from reads_ch 
+      file genome from genome_file <1>
+      file genomeDir from genome_dir_ch <2> 
+      set replicateId, file(reads) from reads_ch <3>
 
   output: 
-      set replicateId, file('Aligned.sortedByCoord.out.bam'), file('Aligned.sortedByCoord.out.bam.bai') into aligned_bam_ch
+      set replicateId, file('Aligned.sortedByCoord.out.bam'), file('Aligned.sortedByCoord.out.bam.bai') into aligned_bam_ch <4>
 
   script:    
   """
@@ -46,8 +46,13 @@ process '2_rnaseq_mapping_star' {
        --outSAMattrRGline ID:$replicateId LB:library PL:illumina PU:machine SM:GM12878
 
   # Index the BAM file
-  samtools index Aligned.sortedByCoord.out.bam
+  samtools index Aligned.sortedByCoord.out.bam <5>
   """
 }
 
 ----
+<1> the genome fasta file.
+<2> the STAR genome index directory from the `genome_dir_ch` channel created in the process `1C_prepare_star_genome_index`.
+<3> set containing replicate ID and pairs of reads.
+<4> set containing the replicate ID, resulting bam file and bam index.
+<5> line specifying the name of the resulting bam file which is indexed with samtools to create a bam index file (`.bai`).
