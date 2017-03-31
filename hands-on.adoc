@@ -27,8 +27,6 @@ This workshop will introduce the best practices proposed to tackle the problem o
 
 The practical session will go through the step by step implementation of a pipeline for standard [crg]#Variant Calling Analyses with RNA-seq data#. For this purpose attendess wiil use Nextflow, a framework for computational pipelines that simplifies the development and deployment of NGS pipelines in a portable manner across different execution environments.
 
-WARNING: Add dataset description
-
 NOTE: A cheatsheet with basic Linux and Cluster commands is available <<{cheatsheet}>>.
 
 :sectnums:

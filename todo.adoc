@@ -1,9 +1,10 @@
 = TODO
 
 * [x] add documentation schema
-* [ ] add dataset description in preamble
+* [x] add dataset description
 * [x] add workflow description
-* [ ] add implementation section
+* [x] add implementation section
 * [x] add setup secton (launching instance, install nextflow)
-* [ ] update data and file names
-* [ ] change header in the linux cheatsheet
+* [x] update data and file names
+* [x] change header in the linux cheatsheet
+* [ ] should we move `nano` to the cheatsheet?

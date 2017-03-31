@@ -1,4 +1,4 @@
-= NGS 2016 Workshop Cheatsheet
+= NGS 2017 Workshop Cheatsheet
 :sectnums:
 :hide-uri-scheme:
 :nofooter:
