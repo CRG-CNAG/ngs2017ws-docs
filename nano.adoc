@@ -7,7 +7,8 @@ GNU nano is a text editor for Unix-like operating systems using a command line i
 
 [cols="^l,1*3"]
 |===
-| nano main.nf | Open or create the file `main.nf`
+| nano main.nf
+| Open or create the file `main.nf`
 | kbd:[Ctr+o] kbd:[Enter]
 | Save changes
 // | kbd:[Ctrl+r] kbd:[Alt+f]
