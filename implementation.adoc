@@ -104,21 +104,19 @@ Now we have our inputs set up we can move onto our first process.
 
 In our first process we will create a genome index using http://www.htslib.org/[samtools]
 
-The pseudocode for the process would be:
+Implement a process having the following structure:
 
-----
-    process:
-      1A_prepare_genome_samtools
+*name*: +
+1A_prepare_genome_samtools
 
-    synopsis:
-      create a genome index for the genome fasta with samtools
+*command*: +
+create a genome index for the genome fasta with samtools
 
-    input:
-      the genome fasta file
+*input*: +
+the genome fasta file
 
-    output:
-      the samtools genome index file
-----
+*output*: +
+the samtools genome index file
 
 ==== Problem #2
 Copy the code below and paste it at the end of `main.nf`.
@@ -511,7 +509,8 @@ The process could be summerised in pseudocode as:
       a set containing the sample id, the unique bam file and the unique bam index file <1>
 
 ----
-<1> The files resulting from this process will be used in two downstream processes. If a process is executed more than once, and the downstream channel is used by more than one process, we must duplicate the channel. We can do this using the `into` operator with parenthesis in the output section. See https://www.nextflow.io/docs/latest/operator.html#into[here] for more information on using `into`. 
+
+<1> The files resulting from this process will be used in two downstream processes. If a process is executed more than once, and the downstream channel is used by more than one process, we must duplicate the channel. We can do this using the `into` operator with parenthesis in the output section. See https://www.nextflow.io/docs/latest/operator.html#into[here] for more information on using `into`.
 
 ===== Problem #8
 
@@ -520,8 +519,8 @@ You must fill in the four `BLANK_LINE` lines in the input and the one `BLANK_LIN
 ----
 process '4_rnaseq_gatk_recalibrate' {
   tag "$replicateId"
-    
-  input: 
+
+  input:
       BLANK_LINE
       BLANK_LINE
       BLANK_LINE
@@ -531,7 +530,7 @@ process '4_rnaseq_gatk_recalibrate' {
   output:
       BLANK into (final_output_ch, bam_for_ASE_ch)
 
-  script: 
+  script:
     sampleId = replicateId.replaceAll(/[12]$/,'')
     """
     # Indel Realignment and Base Recalibration
@@ -545,7 +544,7 @@ process '4_rnaseq_gatk_recalibrate' {
                   -R ${genome} -I ${bam} \
                   --downsampling_type NONE \
                   -nct ${task.cpus} \
-                  -o final.rnaseq.grp 
+                  -o final.rnaseq.grp
 
      java -jar $GATK -T PrintReads \
                   -R ${genome} -I ${bam} \
@@ -575,9 +574,9 @@ Now we are ready to perform the variant calling with GATK.
 
 ==== Process 5: GATK Variant Calling
 
-This steps call variants with GATK HaplotypeCaller. 
+This steps call variants with GATK HaplotypeCaller.
 
-You can find details of the specific GATK HaplotypeCaller parameters https://software.broadinstitute.org/gatk/documentation/tooldocs/current/org_broadinstitute_gatk_tools_walkers_haplotypecaller_HaplotypeCaller.php[here]. 
+You can find details of the specific GATK HaplotypeCaller parameters https://software.broadinstitute.org/gatk/documentation/tooldocs/current/org_broadinstitute_gatk_tools_walkers_haplotypecaller_HaplotypeCaller.php[here].
 
 The process could be summerised in pseudocode as:
 
@@ -616,14 +615,14 @@ process '5_rnaseq_call_variants' {
       BLANK_LINE
       BLANK_LINE
       BLANK from BLANK.groupTuple()
-  
-  output: 
+
+  output:
       BLANK_LINE
 
   script:
   """
   echo "${bam.join('\n')}" > bam.list
-  
+
   # Variant calling
   java -jar $GATK -T HaplotypeCaller \
                   -R $genome -I bam.list \
@@ -646,12 +645,12 @@ process '5_rnaseq_call_variants' {
 
 
 
-==== Processes 6A and 6B: 
+==== Processes 6A and 6B:
 
 In the final steps we will create processes for Allele-Specific Expression and RNA Editing Analysis.
 
 
-Post-process the VCF result, you can find 
+Post-process the VCF result, you can find
 
 
 Prepare variants file for allele specific expression (ASE) analysis
@@ -671,7 +670,7 @@ The psuedocode for these processes could be written as:
       a set containing the filtered/recoded VCF file and the tab index (TBI) file from process 1D
 
     output:
-      a set containing the sample id, the variant calling file (vcf) and a file containing common SNPs 
+      a set containing the sample id, the variant calling file (vcf) and a file containing common SNPs
 
 
     process:
@@ -684,7 +683,7 @@ The psuedocode for these processes could be written as:
       a set containing the sample id, the variant calling file (vcf) and a file containing common SNPs
 
     output:
-      a set containing the sample ID and known SNPs in the sample for ASE 
+      a set containing the sample ID and known SNPs in the sample for ASE
       a figure of SNPs generated in R as a PDF file
 
 ----
@@ -699,18 +698,18 @@ You must also now combine the output of process 6A with the input of process 6B.
 process '6A_post_process_vcf' {
   tag BLANK
   publishDir "$params.results/$sampleId" <1>
-  
+
   input:
       BLANK_LINE
       BLANK_LINE
-      
-  output: 
+
+  output:
       BLANK_LINE
-  
+
   script:
   '''
   grep -v '#' final.vcf | awk '$7~/PASS/' |perl -ne 'chomp($_); ($dp)=$_=~/DP\\=(\\d+)\\;/; if($dp>=8){print $_."\\n"};' > result.DP8.vcf
-  
+
   vcftools --vcf result.DP8.vcf --gzdiff filtered.recode.vcf.gz  --diff-site --out commonSNPs
   '''
 }
@@ -719,17 +718,17 @@ process '6A_post_process_vcf' {
 process '6B_prepare_vcf_for_ase' {
   tag BLANK
   publishDir BLANK
-  
-  input: 
+
+  input:
       BLANK_LINE
-  output: 
+  output:
       BLANK_LINE
       BLANK_LINE
 
   script:
   '''
   awk 'BEGIN{OFS="\t"} $4~/B/{print $1,$2,$3}' commonSNPs.diff.sites_in_files  > test.bed
-    
+
   vcftools --vcf final.vcf --bed test.bed --recode --keep-INFO-all --stdout > known_snps.vcf
 
   grep -v '#'  known_snps.vcf | awk -F '\\t' '{print $10}' \
@@ -741,17 +740,17 @@ process '6B_prepare_vcf_for_ase' {
   gghist.R -i AF.4R -o AF.histogram.pdf
   '''
 }
----- 
+----
 
 ***
-The final step is the GATK ASEReadCounter. But before we can 
+The final step is the GATK ASEReadCounter. But before we can
 
 
 ===== Problem #11
 
 Now we have seen all the basics of processes in Nextflow. However, one of the standout features of Nextflow is the operations that can be performed on channels outside of processes.
 
-We which to have 
+We which to have
 
 You can fill in the `BLANKS` below.
 
@@ -790,7 +789,7 @@ Now we have t
 ===== Problem #12
 
 
-In the final problem you can 
+In the final problem you can
 
 The process creates a file called `ASE.tsv` as output and needs as input:
 
@@ -800,10 +799,10 @@ The process creates a file called `ASE.tsv` as output and needs as input:
 4. the `grouped_vcf_bam_bai_ch`channel
 
 You will need to contruct the rest of the process yourself.
-  
+
 ----
   echo "${bam.join('\n')}" > bam.list
-    
+
   java -jar $GATK -R ${genome} \
                   -T ASEReadCounter \
                   -o ASE.tsv \
