@@ -182,7 +182,7 @@ p.lead, .paragraph.lead > p, #preamble > .sectionbody > .paragraph:first-of-type
 div, dl, dt, dd, ul, ol, li, h1, h2, h3, #toctitle, .sidebarblock > .content > .title, h4, h5, h6, pre, form, p, p.lead, .paragraph.lead > p, #preamble > .sectionbody > .paragraph:first-of-type p, blockquote, th, td { margin: 0; padding: 0; direction: ltr; }
 
 /* Default Link Styles */
-a { color: #2156a5; text-decoration: none; line-height: inherit; font-weight: bold}
+a { color: #2156a5; text-decoration: none; line-height: inherit; font-weight: 600}
 a:hover, a:focus { color: #1d4b8f; }
 a img { border: none; }
 
