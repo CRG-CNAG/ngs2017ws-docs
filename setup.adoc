@@ -4,8 +4,8 @@
 We are going to use Amazon Elastic Compute Cloud (Amazon EC2) virtual machines to work on the practical part of the workshop. Each attendee will run a `t2.large` instance based on a prepared image with the following tools already installed:
 
 - Docker
-- git
-- nano
+- Git
+- Nano
 - Java 8
 
 == Launching the EC2 virtual machine
