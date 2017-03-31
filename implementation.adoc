@@ -104,13 +104,27 @@ Now we have our inputs set up we can move onto our first process.
 
 In our first process we will create a genome index using http://www.htslib.org/[samtools]
 
-Copy the code below and paste it at the end of `main.nf`.
+The pseudocode for the process would be:
+
+----
+    process:
+      1A_prepare_genome_samtools
+
+    synopsis:
+      create a genome index for the genome fasta with samtools
+
+    input:
+      the genome fasta file
+
+    output:
+      the samtools genome index file
+----
 
 ==== Problem #2
-Your aim is to insert the correct input name from above into
-the input step (written as `BLANK`) of the process and run the pipeline.
+Copy the code below and paste it at the end of `main.nf`.
 
-This is problem introduces the most basic structure of a Nextflow process.
+Your aim is to insert the correct input name from into
+the input step (written as `BLANK`) of the process and run the pipeline.
 
 ----
 /*
@@ -134,7 +148,6 @@ process '1A_prepare_genome_samtools' { <1>
 
 In plain english, the process could be written as:
 
-
 <1> A **process** called 1A_prepare_genome_samtools
 
 <2> takes as **input** the genome file from `BLANK`
@@ -148,6 +161,22 @@ In plain english, the process could be written as:
 ==== Process 1B: Create a FASTA genome sequence dictionary with Picard for GATK
 
 Our first process created the genome index for GATK using samtools. For the next process we must do something very similar, this time creating a genome sequence dictionary using https://broadinstitute.github.io/picard/[Picard].
+
+The pseudocode for the process would be:
+
+----
+    process:
+      1B_prepare_genome_picard
+
+    synopsis:
+      create a genome dictionary for the genome fasta with Picard tools
+
+    input:
+      the genome fasta file
+
+    output:
+      the genome dictionary file
+----
 
 ===== Problem #3
 
@@ -175,7 +204,7 @@ process '1B_prepare_genome_picard' {
 }
 ----
 
-NOTE: `.baseName` returns the filename without the file suffix. If `"${genome}"` is `human.fa`, then `"${genome.baseName}.dict"` is `human.dict`.
+NOTE: `.baseName` returns the filename without the file suffix. If `"${genome}"` is `human.fa`, then `"${genome.baseName}.dict"` would be `human.dict`.
 
 ***
 
@@ -183,9 +212,25 @@ NOTE: `.baseName` returns the filename without the file suffix. If `"${genome}"`
 
 Next we must create a genome index for the https://github.com/alexdobin/STAR[STAR] mapping software.
 
+The pseudocode for the process would be:
+
+----
+    process:
+      1C_prepare_star_genome_index
+
+    synopsis:
+      create a STAR genome index for the genome fasta
+
+    input:
+      the genome fasta file
+
+    output:
+      a directory containing the STAR genome index
+----
+
 ===== Problem #4
 
-This is a similar exercise except this time both `input` and `output` lines have been left completely `BLANK` and must be completed.
+This is a similar exercise as problem 3, except this time both `input` and `output` lines have been left completely `BLANK` and must be completed.
 
 ----
 /*
@@ -212,7 +257,7 @@ process '1C_prepare_star_genome_index' {
 }
 ----
 
-TIP: The output of the STAR genomeGenerate command is `genome_dir`.
+TIP: The output of the STAR genomeGenerate command is specified here as `genome_dir`.
 
 ==== Process 1D: Create a file containing the filtered and recoded set of variants
 
@@ -223,6 +268,23 @@ The next process takes two inputs: the variants file and the blacklist file.
 It should output a channel named `prepared_vcf_ch` which contains a tuple of two files.
 
 NOTE: In Nextflow, tuples can be defined in the input or output using the https://www.nextflow.io/docs/latest/process.html?highlight=set#output-set-of-values[`set`] qualifier.
+
+The pseudocode for the process would be:
+
+----
+    process:
+      1D_prepare_vcf_file
+
+    synopsis:
+      Create a filtered and recoded set of variants
+
+    input:
+      the variants file
+      the blacklisted regions file
+
+    output:
+      a set containing the filtered/recoded VCF file and the tab index (TBI) file.
+----
 
 ===== Problem #5
 
@@ -260,7 +322,7 @@ process '1D_prepare_vcf_file' {
 
 Congratulations! Part 1 is now complete.
 
-Try run the pipeline for the project directory with:
+Try run the pipeline from the project directory with:
 
 ```
 $ nextflow run main.nf
@@ -423,18 +485,91 @@ TIP: The GATK command above automatically creates a bam index (.bai) of the spli
 
 ***
 
-Next we peroform a Base Quality Score Recalibration step using GATK.
+Next we perform a Base Quality Score Recalibration step using GATK.
 
 ==== Process 4: Base recalibrate to detect systematic errors in base quality scores, select unique alignments and index
 
+This step 
+
+The process could be summerised in pseudocode as:
+
+----
+    process:
+      4_rnaseq_gatk_recalibrate
+
+    synopsis:
+      recalibrate reads using GATK
+
+    input:
+      the genome fasta file
+      the genome index made with samtools
+      the genome dictionary made with picard
+      a set containg replicate id, aligned bam file and aligned bam file index from process 3
+      a set containing the filtered/recoded VCF file and the tab index (TBI) file from process 1D
+
+    output:
+      a set containing the replicate id, the unique bam file and the unique bam index file <1>
+
+----
+<1> The files resulting from this process will be used in two downstream processes. Therefore we must duplicate the resulting channel. We can do this using the `into` operator with parenthesis in the output section. See https://www.nextflow.io/docs/latest/operator.html#into[here] for more information on using `into`. 
+
 ===== Problem #8
 
+You must fill in the four `BLANK_LINE` lines in the input and the one `BLANK_LINE` line in the output.
 
+----
+process '4_rnaseq_gatk_recalibrate' {
+  tag "$replicateId"
+    
+  input: 
+      BLANK_LINE
+      BLANK_LINE
+      BLANK_LINE
+      BLANK_LINE
+      BLANK_LINE
 
+  output:
+      BLANK into (final_output_ch, bam_for_ASE_ch)
+
+  script: 
+    sampleId = replicateId.replaceAll(/[12]$/,'')
+    """
+    # Indel Realignment and Base Recalibration
+    java -jar $GATK -T BaseRecalibrator \
+                  --default_platform illumina \
+                  -cov ReadGroupCovariate \
+                  -cov QualityScoreCovariate \
+                  -cov CycleCovariate \
+                  -knownSites ${variants_file} \
+                  -cov ContextCovariate \
+                  -R ${genome} -I ${bam} \
+                  --downsampling_type NONE \
+                  -nct ${task.cpus} \
+                  -o final.rnaseq.grp 
+
+     java -jar $GATK -T PrintReads \
+                  -R ${genome} -I ${bam} \
+                  -BQSR final.rnaseq.grp \
+                  -nct ${task.cpus} \
+                  -o final.bam
+
+    # Select only unique alignments, no multimaps
+    (samtools view -H final.bam; samtools view final.bam| grep -w 'NH:i:1') \
+    |samtools view -Sb -  > ${replicateId}.final.uniq.bam <1>
+
+    # Index BAM files
+    samtools index ${replicateId}.final.uniq.bam <2>
+    """
+}
+
+----
+
+<1> The unique bam file
+<2> The index of the unique bam file (bam file name + `.bai`)
 
 ***
 
-Now we are ready to perform the actual variant calling with GATK.
+Now we are ready to perform the variant calling with GATK.
 
 ==== Process 5: Call variants with GATK HaplotypeCaller
 

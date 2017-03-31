@@ -6,14 +6,14 @@ process '4_rnaseq_gatk_recalibrate' {
   tag "$replicateId"
     
   input: 
-      file genome from genome_file 
-      file index from genome_index_ch
-      file dict from genome_dict_ch
-      set replicateId, file(bam), file(index) from splitted_bam_ch
-      set file(variants_file), file(variants_file_index) from prepared_vcf_ch
+      file genome from genome_file <1>
+      file index from genome_index_ch <2>
+      file dict from genome_dict_ch <3>
+      set replicateId, file(bam), file(index) from splitted_bam_ch <4>
+      set file(variants_file), file(variants_file_index) from prepared_vcf_ch <5>
 
   output:
-      set sampleId, file("${replicateId}.final.uniq.bam"), file("${replicateId}.final.uniq.bam.bai") into (final_output_ch, bam_for_ASE_ch)
+      set sampleId, file("${replicateId}.final.uniq.bam"), file("${replicateId}.final.uniq.bam.bai") into (final_output_ch, bam_for_ASE_ch) <6>
   
   script: 
   sampleId = replicateId.replaceAll(/[12]$/,'')
@@ -46,3 +46,9 @@ process '4_rnaseq_gatk_recalibrate' {
   """
 }
 ----
+<1> the genome fasta file.
+<2> the genome index from the `genome_index_ch` channel created in the process `1A_prepare_genome_samtools`.
+<3> the genome dictionary from the `genome_dict_ch` channel created in the process `1B_prepare_genome_picard`.
+<4> the set containing the split reads from the `splitted_bam_ch` channel created in the process `3_rnaseq_gatk_splitNcigar`.
+<5> the set containing the filtered/recoded VCF file and the tab index (TBI) file from the `prepared_vcf_ch` channel created in the process `1D_prepare_vcf_file`.
+<6> the set containing the replicate id, the unique bam file and the unique bam index file which goes into two channels.

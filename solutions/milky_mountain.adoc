@@ -1,6 +1,0 @@
-= Problem 13
-
-.Solution
-----
-
-----

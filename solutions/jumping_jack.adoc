@@ -2,8 +2,6 @@
 
 .Solution
 ----
-
-/***********
 process '6A_post_process_vcf' {
   tag "$sampleId"
   publishDir "$params.results/$sampleId" 
