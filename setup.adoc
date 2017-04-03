@@ -10,12 +10,15 @@ We are going to use Amazon Elastic Compute Cloud (Amazon EC2) virtual machines t
 
 == Launching the EC2 virtual machine
 
-Run the following command to launch the virtual machine:
+To connect to the cloud run the following command which launches the virtual machine:
 
 [source, cmd]
 ----
 eval "$(curl -fsSL https://goo.gl/DdVLrZ)" | bash
 ----
+
+TIP: You will need the aws command line interface installed to access launch and access the EC2 instance. You can find the details on how to install it here https://aws.amazon.com/cli/[here].
+
 ----
 ~~ N G S '1 7  -  W O R K S H O P ~~
 
