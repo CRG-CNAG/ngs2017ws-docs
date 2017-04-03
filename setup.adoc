@@ -1,5 +1,6 @@
 = Environment Setup
 :experimental:
+:linkattrs:
 
 We are going to use Amazon Elastic Compute Cloud (Amazon EC2) virtual machines to work on the practical part of the workshop. Each attendee will run a `t2.large` instance based on a prepared image with the following tools already installed:
 
@@ -38,7 +39,13 @@ Type kbd:[Y] kbd:[Enter] and wait until the instance is ready:
 * Waiting for ready status ..  [/]
 ----
 
-Once the virtual machine is up and runnning you will get the following message:
+== Editing files with GNU nano
+
+While waiting for the virtual machine to be ready we can open a new terminal and have a look at how we can edit files with GNU nano. Check the <<cheatsheet#_gnu_nano,nano section>> in the cheatsheet for possible actions.
+
+== Connecting to the virtual machine
+
+Once the previous command is completed and the virtual machine is up and runnning you will get the following message:
 ----
 * The instance is ready -- Login with the following command:
 
