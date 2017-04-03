@@ -346,7 +346,7 @@ process '1D_prepare_vcf_file' {
       BLANK_LINE
 
   output:
-      set(BLANK,BLANK) into prepared_vcf_ch
+      set BLANK, BLANK into prepared_vcf_ch
 
   script:
   """
