@@ -46,6 +46,13 @@ params.blacklist  = "data/blacklist.bed"
 params.reads      = "data/reads/rep1_{1,2}.fq.gz" <3>
 params.results    = "results" <4>
 params.gatk       = "/opt/broad/GenomeAnalysisTK.jar" <5>
+
+println "genome   : $params.genome"
+println "reads    : $params.reads"
+println "variants : $params.variants"
+println "blacklist: $params.blacklist"
+println "results  : $params.results" 
+println "gatk     : $params.gatk\n"
 ----
 
 TIP: With `nano` you can paste the above text into your `main.nf` script with the `shift`+`insert` keys.
@@ -100,8 +107,8 @@ GATK            = params.gatk
 TIP: The first three should specify file objects containing a single `file` as shown in 
 https://www.nextflow.io/docs/latest/basic.html#processes-and-channels[this] basic example. 
 For the reads channel, use the https://www.nextflow.io/docs/latest/channel.html#fromfilepairs[fromFilePairs] 
-channel factory method. The final one, `GATK` is simply a creating a Nextflow variable 
-specifying the relative path of the GATK file and does not need a constructor.
+channel factory method. The final one, `GATK` is simply creating a Nextflow variable 
+specifying the relative path of the GATK file and does not need any special function.
 
 
 Once you think you have data organised, you can again run the pipeline. 
@@ -124,9 +131,8 @@ details about using the `resume` option.
 
 == Process 1A: Create a FASTA genome index
 
-Now we have our inputs set up we can move onto the processes.
-
-In our first process we will create a genome index using http://www.htslib.org/[samtools]
+Now we have our inputs set up we can move onto the processes. In our first process we will 
+create a genome index using http://www.htslib.org/[samtools].
 
 You should implement a process having the following structure:
 
@@ -145,9 +151,8 @@ the samtools genome index file
 === Problem #2
 Copy the code below and paste it at the end of `main.nf`.
 
-Your aim is to insert the correct input name from into
-the input step (written as `BLANK`) of the process and 
-run the pipeline.
+Your aim is to replace `BLANK` placeholder with the  the correct 
+variable name of the genome file that you have defined in previous problem.
 
 ----
 /*
