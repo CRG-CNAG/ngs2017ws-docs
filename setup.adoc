@@ -17,7 +17,8 @@ To connect to the cloud run the following command which launches the virtual mac
 eval "$(curl -fsSL https://goo.gl/DdVLrZ)" | bash
 ----
 
-TIP: You will need the aws command line interface installed to access launch and access the EC2 instance. You can find the details on how to install it here https://aws.amazon.com/cli/[here].
+TIP: You will need the aws command line interface installed to launch and access the EC2 instance. 
+You can find the details on how to install it https://aws.amazon.com/cli/[here].
 
 ----
 ~~ N G S '1 7  -  W O R K S H O P ~~
@@ -83,6 +84,7 @@ Nextflow can be installed with the following command:
 ----
 curl -fsSL get.nextflow.io | bash
 ----
+
 ----
 ...
 CAPSULE: Downloading dependency com.fasterxml.jackson.core:jackson-databind:jar:2.6.6
@@ -103,11 +105,18 @@ Nextflow installation completed. Please note:
 
 If everything goes well you will find an executable file named `nextflow` in the current folder.
 
+To add the nextflow binary to the `PATH` variable use the command:
+[source,cmd]
+----
+export PATH=$PATH:~/.
+----
+
+
 To check the installed version use the command below:
 
 [source,cmd]
 ----
-./nextflow info
+nextflow info
 ----
 ----
   Version: 0.24.1 build 4245

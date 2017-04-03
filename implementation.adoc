@@ -29,6 +29,7 @@ We can begin writing the pipeline by creating and editing a text file called `ma
 from the `ngs2017-nf` repository directory with your favourite text editor. In this example we are using nano:
 
 ----
+$ cd ngs2017-nf
 $ nano main.nf
 ----
 
@@ -78,7 +79,7 @@ Launching `main.nf` [nauseous_wright] - revision: 83a0a5415a
 
 ***
 === Problem #1
-Great, now let get our data into variables and https://www.nextflow.io/docs/latest/channel.html[channels]. Open the `main.nf` file and copy the lines below.
+Great, now we can assing the data into variables and https://www.nextflow.io/docs/latest/channel.html[channels]. Open the `main.nf` file and copy the lines below.
 
 This time you must fill the `BLANK` spaces with the correct constructors.
 
@@ -94,13 +95,30 @@ reads_ch        = BLANK
 GATK            = BLANK
 ----
 
-TIP: The first three should specify file objects containing a single `file`. For the reads channel, we can use a https://www.nextflow.io/docs/latest/channel.html#channel-factory[channel constructor] for pairs of files. The final one, `GATK` is simply a creating a Nextflow variable specifying the relative path of the GATK file and does not need a constructor.
+TIP: The first three should specify file objects containing a single `file` as shown in https://www.nextflow.io/docs/latest/basic.html#processes-and-channels[this] basic example. For the reads channel, we can use a https://www.nextflow.io/docs/latest/channel.html#channel-factory[channel constructor] for pairs of files. The final one, `GATK` is simply a creating a Nextflow variable specifying the relative path of the GATK file and does not need a constructor.
+
+
+Once you think you have data organised, you can again run the pipeline. 
+However this time, we can use the the `-resume` flag.
+
+[source,cmd]
+----
+$ nextflow run main.nf -resume
+----
+----
+N E X T F L O W  ~  version 0.24.1
+Launching `main.nf` [kickass_newton] - revision: b4a90c435b
+----
+
+TIP: See https://www.nextflow.io/docs/latest/getstarted.html?highlight=resume#modify-and-resume[here] for more
+details about using the `resume` option.
+
 
 ***
 
 == Process 1A: Create a FASTA genome index
 
-Now we have our inputs set up we can move onto our first process.
+Now we have our inputs set up we can move onto the processes.
 
 In our first process we will create a genome index using http://www.htslib.org/[samtools]
 
@@ -155,8 +173,23 @@ In plain english, the process could be written as:
 
 <4> **script**: using samtools create the genome index from the genome file
 
-***
 
+Now when we run the pipeline, we see that the process 1A is submitted:
+
+[source, cmd]
+----
+$ nextflow run main.nf -resume
+----
+
+----
+N E X T F L O W  ~  version 0.24.1
+Launching `main.nf` [adoring_wilson] - revision: 89dbc97b8e
+[warm up] executor > local
+[17/b0eae4] Submitted process > 1A_prepare_genome_samtools
+
+----
+
+***
 == Process 1B: Create a FASTA genome sequence dictionary with Picard for GATK
 
 Our first process created the genome index for GATK using samtools. For the next process we must do something very similar, this time creating a genome sequence dictionary using https://broadinstitute.github.io/picard/[Picard].
@@ -345,8 +378,8 @@ You should implement a process having the following structure:
 mapping of the RNA-Seq reads using STAR
 
 *input*: +
-the genome fasta file
-the STAR genome index
+the genome fasta file +
+the STAR genome index +
 a set containing the sample id and paired read files
 
 *output*: +
@@ -435,9 +468,9 @@ You should implement a process having the following structure:
 split reads on Ns in CIGAR string using GATK
 
 *input*: +
-the genome fasta file
-the genome index made with samtools
-the genome dictionary made with picard
+the genome fasta file +
+the genome index made with samtools +
+the genome dictionary made with picard +
 a set containg sample id, aligned bam file and aligned bam file index from the STAR mapping
 
 *output*: +
@@ -501,11 +534,11 @@ You should implement a process having the following structure:
 recalibrate reads from each replicate using GATK
 
 *input*: +
-the genome fasta file
-the genome index made with samtools
-the genome dictionary made with picard
-a set containg replicate id, aligned bam file and aligned bam file index from process 3
-a set containing the filtered/recoded VCF file and the tab index (TBI) file from process 1D
+the genome fasta file +
+the genome index made with samtools + 
+the genome dictionary made with picard + 
+a set containg replicate id, aligned bam file and aligned bam file index from process 3 + 
+a set containing the filtered/recoded VCF file and the tab index (TBI) file from process 1D +
 
 *output*: +
 a set containing the sample id, the unique bam file and the unique bam index file
@@ -588,11 +621,11 @@ You should implement a process having the following structure:
 variant calling of each sample using GATK
 
 *input*: +
-the genome fasta file
-the genome index made with samtools
-the genome dictionary made with picard
-a set containg replicate id, aligned bam file and aligned bam file index from process 3
-a set containing the filtered/recoded VCF file and the tab index (TBI) file from process 1D
+the genome fasta file +
+the genome index made with samtools +
+the genome dictionary made with picard +
+a set containg replicate id, aligned bam file and aligned bam file index from process 3 +
+a set containing the filtered/recoded VCF file and the tab index (TBI) file from process 1D +
 
 *output*: +
 a set containing the sample id the resulting variant calling file (vcf) <1>
@@ -662,8 +695,8 @@ You should implement a processes having the following structure:
 post-process the variant calling file (vcf) of each sample
 
 *input*: +
-set containing the sample ID and vcf file
-a set containing the filtered/recoded VCF file and the tab index (TBI) file from process 1D
+set containing the sample ID and vcf file +
+a set containing the filtered/recoded VCF file and the tab index (TBI) file from process 1D +
 
 *output*: +
 a set containing the sample id, the variant calling file (vcf) and a file containing common SNPs
@@ -679,7 +712,7 @@ prepare the VCF for allele specific expression (ASE) and generate a figure in R.
 a set containing the sample id, the variant calling file (vcf) and a file containing common SNPs
 
 *output*: +
-a set containing the sample ID and known SNPs in the sample for ASE
+a set containing the sample ID and known SNPs in the sample for ASE +
 a figure of the SNPs generated in R as a PDF file
 
 
@@ -790,9 +823,9 @@ You should implement a process having the following structure:
 create a genome dictionary for the genome fasta with Picard tools
 
 *input*: +
-genome fasta file
-genome index file from samtools
-genome dictionary file
+genome fasta file +
+genome index file from samtools +
+genome dictionary file + 
 the `grouped_vcf_bam_bai_ch`channel
 
 *output*: +
