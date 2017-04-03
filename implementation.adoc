@@ -786,13 +786,13 @@ The `bam_for_ASE_ch` channel emites tuples having the following structure, holdi
 
 [source,cmd]
 ----
-`( sample_id, file_bam, file_bai )`
+( sample_id, file_bam, file_bai )
 ----
 
 The `vcf_for_ASE` channel emits tuples having the following structure: +
 [source,cmd]
 ----
-`( sample_id, output.vcf )`
+( sample_id, output.vcf )
 ----
 
 In the first operation, the BAMs are grouped together by sample id. 
@@ -801,7 +801,10 @@ Next, this resulting channel is merged with the VCFs (vcf_for_ASE) having the sa
 
 We must take the merged channel and creates a channel named `grouped_vcf_bam_bai_ch` emitting the following tuples: 
 
-`( sample_id, file_vcf, List[file_bam], List[file_bai] )`
+[source,cmd]
+----
+( sample_id, file_vcf, List[file_bam], List[file_bai] )
+----
 
 Your aim is to fill in the `BLANKS` below.
 
