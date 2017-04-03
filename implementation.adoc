@@ -99,7 +99,7 @@ GATK            = params.gatk
 
 TIP: The first three should specify file objects containing a single `file` as shown in 
 https://www.nextflow.io/docs/latest/basic.html#processes-and-channels[this] basic example. 
-For the reads channel, use the https://www.nextflow.io/docs/latest/channel.html#fromfilepairs#channel-factory[fromFilePairs] 
+For the reads channel, use the https://www.nextflow.io/docs/latest/channel.html#fromfilepairs[fromFilePairs] 
 channel factory method. The final one, `GATK` is simply a creating a Nextflow variable 
 specifying the relative path of the GATK file and does not need a constructor.
 
