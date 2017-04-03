@@ -30,16 +30,16 @@ $(HTML_FILE): $(README) *.adoc
 	@GEM_HOME=$(GEMS) $(GEMS)/bin/asciidoctor $(README) $(ATTRS) -o $(HTML_FILE)
 	@echo == Written file $(HTML_FILE)
 
-$(CHEATSHEET_HTML): $(CHEATSHEET)
+$(CHEATSHEET_HTML): $(CHEATSHEET) *.adoc
 	@GEM_HOME=$(GEMS) $(GEMS)/bin/asciidoctor $(CHEATSHEET) -o $(CHEATSHEET_HTML)
 	@echo == Written file $(CHEATSHEET_HTML)
 
 $(SOLUTIONS_HTML): ATTRS = -a nofooter -a linkcss -a stylesdir=../css -a stylesheet=crg.css -a hide-uri-scheme -a icons=font -a source-highlighter=highlight.js -a highlightjs-theme=github
-$(SOLUTIONS_HTML): %.html: %.adoc
+$(SOLUTIONS_HTML): %.html: %.adoc solutions/*.adoc
 	@GEM_HOME=$(GEMS) $(GEMS)/bin/asciidoctor $< $(ATTRS) -o $@
 	@echo == Written file $@
 
-pdf: setup $(PDF_FILE) $(CHEATSHEET_PDF)
+pdf: setup $(PDF_FILE) $(CHEATSHEET_PDF) *.adoc
 $(PDF_FILE): $(README)
 	@GEM_HOME=$(GEMS) $(GEMS)/bin/asciidoctor-pdf $(README) -a pdf-stylesdir=$(PDF)/style -a pdf-style=$(PDF_STYLE) -a pdf-fontsdir=$(PDF)/font
 	@echo == Written file $(PDF_FILE)
