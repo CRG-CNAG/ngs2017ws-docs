@@ -380,10 +380,10 @@ mapping of the RNA-Seq reads using STAR
 *input*: +
 the genome fasta file +
 the STAR genome index +
-a set containing the sample id and paired read files
+a set containing the replicate id and paired read files
 
 *output*: +
-a set containg sample id, aligned bam file & aligned bam file index
+a set containg replicate id, aligned bam file & aligned bam file index
 
 
 === Problem #6
@@ -446,7 +446,7 @@ process '2_rnaseq_mapping_star' {
 }
 ----
 
-TIP: The final command produces an bam index which is the file name with `.bai` attached.
+TIP: The final command produces an bam index which is the full filename with an additional `.bai` suffix.
 
 ***
 
@@ -471,7 +471,7 @@ split reads on Ns in CIGAR string using GATK
 the genome fasta file +
 the genome index made with samtools +
 the genome dictionary made with picard +
-a set containg sample id, aligned bam file and aligned bam file index from the STAR mapping
+a set containg replicate id, aligned bam file and aligned bam file index from the STAR mapping
 
 *output*: +
 a set containing the sample id, the split bam file and the split bam index file
@@ -484,9 +484,10 @@ Copy the code below and paste it at the end of `main.nf`.
 You must fill in the four `BLANK_LINE` lines in the input and the one `BLANK_LINE` line in the output.
 
 CAUTION: There is an optional https://www.nextflow.io/docs/latest/process.html#tag[`tag`] line added
-to the start of this process. The https://www.nextflow.io/docs/latest/process.html#tag[`tag`] line allows you to assign a name to a specific
-task (single execution of a process). This is particularly useful when there are many samples all
-using the same process.
+to the start of this process. The https://www.nextflow.io/docs/latest/process.html#tag[`tag`] line 
+allows you to assign a name to a specific task (single execution of a process). 
+This is particularly useful when there are many samples/replicates which pass through the same process.
+
 
 ----
 process '3_rnaseq_gatk_splitNcigar' {
@@ -548,7 +549,7 @@ a set containing the sample id, the unique bam file and the unique bam index fil
 
 Copy the code below and paste it at the end of `main.nf`.
 
-You must fill in the four `BLANK_LINE` lines in the input and the one `BLANK_LINE` line in the output.
+You must fill in the five `BLANK_LINE` lines in the input and the one `BLANK_LINE` line in the output.
 
 ----
 process '4_rnaseq_gatk_recalibrate' {
@@ -624,11 +625,10 @@ variant calling of each sample using GATK
 the genome fasta file +
 the genome index made with samtools +
 the genome dictionary made with picard +
-a set containg replicate id, aligned bam file and aligned bam file index from process 3 +
-a set containing the filtered/recoded VCF file and the tab index (TBI) file from process 1D +
+a set containg replicate id, aligned bam file and aligned bam file index from process 4
 
 *output*: +
-a set containing the sample id the resulting variant calling file (vcf) <1>
+a set containing the sample id the resulting variant calling file (vcf)
 
 
 === Problem #9
