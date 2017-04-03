@@ -7,4 +7,4 @@
 * [x] add setup secton (launching instance, install nextflow)
 * [x] update data and file names
 * [x] change header in the linux cheatsheet
-* [ ] should we move `nano` to the cheatsheet?
+* [x] moved `nano` shortcuts to the cheatsheet and add section in setup
