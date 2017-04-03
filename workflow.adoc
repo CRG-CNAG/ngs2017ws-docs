@@ -1,40 +1,40 @@
 = Worflow Description
 
-The aim of the pipeline is to process raw RNA-seq data (*.fastq) and obtain the list of small variants, SNVs (SNPs and INDELs) for the downstream analysis. The pipeline is based on the https://software.broadinstitute.org/gatk/guide/article?id=3891[GATK best practices for variant calling with RNAseq data] and includes all major steps. In addition the pipeline includes SNVs postprocessing and quantification for allele specific expression.
+The aim of the pipeline is to process raw RNA-seq data (in FASTQ format) and obtain the list of small variants, SNVs (SNPs and INDELs) for the downstream analysis. The pipeline is based on the https://software.broadinstitute.org/gatk/guide/article?id=3891[GATK best practices for variant calling with RNAseq data] and includes all major steps. In addition the pipeline includes SNVs postprocessing and quantification for allele specific expression.
 
-_Processing of the samples_ is done for *_each replicate independently_*. This includes mapping of the reads, split at the CIGAR, reassigning mapping qualities and base quality recalibration.
+Samples processing is done *indipendently* for *each replicate*. This includes mapping of the reads, splitting at the CIGAR, reassigning mapping qualities and recalibrating base qualities.
 
-_The variant calling_ is done on bam files from *_all replicates simultaniously_* – this allows to improve coverage of the genomic regions and perform more reliable variant calling.
+Variant calling is done *simultaniously* on bam files from *all replicates*. This allows to improve coverage of genomic regions and obtain more reliable results.
 
 == Sofware manuals
 
-Here are the links for the software documentations.
+Documentation for all software used in the workflow can be found at the following links:
 
 * http://www.htslib.org/doc/samtools.html[samtools]
-* https://broadinstitute.github.io/picard/command-line-overview.html#CreateSequenceDictionary[picard, CreateSequenceDictionary]
+* https://broadinstitute.github.io/picard/command-line-overview.html#CreateSequenceDictionary[picard `CreateSequenceDictionary`]
 * http://labshare.cshl.edu/shares/gingeraslab/www-data/dobin/STAR/STAR.posix/doc/STARmanual.pdf[STAR]
 * https://vcftools.github.io/man_latest.html[vcftools]
 * https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/index[GATK tools]
-** https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_rnaseq_SplitNCigarReads.php[SplitNCigarReads]
-** https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_bqsr_BaseRecalibrator.php[BaseRecalibrator]
-** https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_readutils_PrintReads.php[PrintReads]
-** https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_haplotypecaller_HaplotypeCaller.php[HaplotypeCaller]
-** https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_filters_VariantFiltration.php[VariantFiltration]
-** https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_rnaseq_ASEReadCounter.php[ASEReadCounter]
+** https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_rnaseq_SplitNCigarReads.php[`SplitNCigarReads`]
+** https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_bqsr_BaseRecalibrator.php[`BaseRecalibrator`]
+** https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_readutils_PrintReads.php[`PrintReads`]
+** https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_haplotypecaller_HaplotypeCaller.php[`HaplotypeCaller`]
+** https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_filters_VariantFiltration.php[`VariantFiltration`]
+** https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_rnaseq_ASEReadCounter.php[`ASEReadCounter`]
 
-== Prepare data
+== Preparing data
 
-This step prepare input files for the further analysis – genome indexes are created and filter those variants overlapping blacklisted regions.
+This step prepares input files for the analysis. Genome indexes are created and variants overlapping blacklisted regions are filtered out.
 
-Create samtools and picard genome index  - needed for GATK tools, such as Split'N'Trim
+Genome indices with `samtools` and `picard` are produced first. They will be needed for GATK commands such as `Split'N'Trim`:
 
 ----
 samtools faidx genome.fa
 java -jar picard.jar CreateSequenceDictionary R= genome.fa O= genome.dict
 ----
 
-Create STAR 2.5 genome index – needed for RNA-seq reads mappings
-STAR creates index file in the folder with name genome_dir
+Genome index for `STAR`, needed for RNA-seq reads mappings, is created next. Index files are written to the folder `genome_dir`
+:
 ----
 STAR --runMode genomeGenerate \
        --genomeDir genome_dir \
@@ -42,7 +42,7 @@ STAR --runMode genomeGenerate \
        --runThreadN 4
 ----
 
-Filter variants that overlap with blacklisted regions to reduce false positive calls [optional].
+Variants overlapping blacklisted regions are then filtered in order to reduce false positive calls [optional]:
 
  vcftools --gzvcf known_SNVs.vcf -c \
            --exclude-bed blacklisted.bed \
@@ -50,7 +50,7 @@ Filter variants that overlap with blacklisted regions to reduce false positive c
            > known_SNVs.filtered.recode.vcf.gz
 
 
-== Mapping RNAseq reads to the reference
+== Mapping RNA-seq reads to the reference
 
 To align RNA-seq reads to the genome we're using STAR 2-pass approach. The first alignment creates a table with splice-junctions that is used to guide final alignments. The alignments at both steps are done with default parameters.
 
