@@ -93,9 +93,8 @@ Nextflow installation completed. Please note:
 - you may complete the installation by moving it to a directory in your $PATH
 ----
 
-If everything goes well you will find an executable file named `nextflow` in the current folder.
-
 Complete the installation copying the `nextflow` launcher file in a folder in the `PATH` variable e.g.:
+
 [source,cmd]
 ----
 mv nextflow $HOME/bin/
@@ -163,7 +162,7 @@ e38ba5d5f9fb: Waiting
 
 ----
 
-and the following message if everything went fine:
+and the following message when the pull is completed:
 
 ----
 Digest: sha256:b65a7d721b9dd2da07d6bdd7f868b04039860f14fa514add975c59e68614c310
