@@ -11,7 +11,7 @@
 
 include::linux-commands.adoc[]
 
-// include::files.adoc[]
+include::files.adoc[tags=header;nano]
 
 // include::cluster.adoc[]
 

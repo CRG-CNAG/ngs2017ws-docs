@@ -40,8 +40,6 @@ include::workflow.adoc[]
 
 include::setup.adoc[]
 
-include::nano.adoc[]
-
 include::implementation.adoc[]
 
 ifeval::["{backend}" == "pdf"]
