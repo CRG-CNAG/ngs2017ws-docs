@@ -187,7 +187,7 @@ In plain english, the process could be written as:
 
 Now when we run the pipeline, we see that the process 1A is submitted:
 
-[source, cmd]
+[source,cmd]
 ----
 $ nextflow run main.nf -resume
 ----
@@ -368,9 +368,10 @@ Congratulations! Part 1 is now complete.
 
 Try run the pipeline from the project directory with:
 
-```
-$ nextflow run main.nf
-```
+[source,cmd]
+----
+$ nextflow run main.nf -resume
+----
 
 ***
 
