@@ -38,15 +38,6 @@ Type kbd:[Y] kbd:[Enter] and wait until the instance is ready:
 * Waiting for ready status ..  [/]
 ----
 
-[NOTE]
-====
-the `i-xxx...` string is the `instanceId` and will be needed to terminate the instance when you are done with it. Take note of the `instanceId` or use the following command to save it into an environment variable:
-[source,cmd]
-----
-export INSTANCE_ID=$(aws ec2 describe-instances --output text | awk '$1=="INSTANCES" && $2==0{print $7}')
-----
-====
-
 Once the virtual machine is up and runnning you will get the following message:
 ----
 * The instance is ready -- Login with the following command:
@@ -178,13 +169,4 @@ and the following message if everything went fine:
 ----
 Digest: sha256:b65a7d721b9dd2da07d6bdd7f868b04039860f14fa514add975c59e68614c310
 Status: Downloaded newer image for cbcrg/callings-nf@sha256:b65a7d721b9dd2da07d6bdd7f868b04039860f14fa514add975c59e68614c310
-----
-
-== Terminate the EC2 instance
-
-We ask you to terminate the virtual machine once you have completed your work. Type `exit` to close the `ssh` session and the following command to terminate the machine (here we assume you saved the `instanceId` into an environment variable):
-
-[source,cmd]
-----
-aws ec2 terminate-instances --instance-ids ${INSTANCE_ID}
 ----
