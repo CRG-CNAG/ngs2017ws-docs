@@ -104,7 +104,7 @@ Now we have our inputs set up we can move onto our first process.
 
 In our first process we will create a genome index using http://www.htslib.org/[samtools]
 
-Implement a process having the following structure:
+You should implement a process having the following structure:
 
 *name*: +
 1A_prepare_genome_samtools
@@ -160,25 +160,28 @@ In plain english, the process could be written as:
 
 Our first process created the genome index for GATK using samtools. For the next process we must do something very similar, this time creating a genome sequence dictionary using https://broadinstitute.github.io/picard/[Picard].
 
-The pseudocode for the process would be:
+You should implement a process having the following structure:
 
-----
-    process:
-      1B_prepare_genome_picard
+*name*: +
+1B_prepare_genome_picard
 
-    synopsis:
-      create a genome dictionary for the genome fasta with Picard tools
+*command*: +
+create a genome dictionary for the genome fasta with Picard tools
 
-    input:
-      the genome fasta file
+*input*: +
+the genome fasta file
 
-    output:
-      the genome dictionary file
-----
+*output*: +
+the genome dictionary file
 
 ===== Problem #3
 
 Fill in the `BLANK` words for both the input and output sections.
+
+Copy the code below and paste it at the end of `main.nf`.
+
+Your aim is to insert the correct input name from into
+the input step (written as `BLANK`) of the process and run the pipeline.
 
 TIP: You can choose any channel output name that makes sense to you.
 ----
@@ -210,25 +213,24 @@ NOTE: `.baseName` returns the filename without the file suffix. If `"${genome}"`
 
 Next we must create a genome index for the https://github.com/alexdobin/STAR[STAR] mapping software.
 
-The pseudocode for the process would be:
+You should implement a process having the following structure:
 
-----
-    process:
-      1C_prepare_star_genome_index
+*name*: +
+1C_prepare_star_genome_index
 
-    synopsis:
-      create a STAR genome index for the genome fasta
+*command*: +
+create a STAR genome index for the genome fasta
 
-    input:
-      the genome fasta file
+*input*: +
+the genome fasta file
 
-    output:
-      a directory containing the STAR genome index
-----
+*output*: +
+a directory containing the STAR genome index
+
 
 ===== Problem #4
 
-This is a similar exercise as problem 3, except this time both `input` and `output` lines have been left completely `BLANK` and must be completed.
+This is a similar exercise as problem 3, except this time both `input` and `output` lines have been left `BLANK` and must be completed.
 
 ----
 /*
