@@ -98,7 +98,7 @@ If everything goes well you will find an executable file named `nextflow` in the
 Complete the installation copying the `nextflow` launcher file in a folder in the `PATH` variable e.g.:
 [source,cmd]
 ----
-mv $HOME/bin/
+mv nextflow $HOME/bin/
 ----
 
 
