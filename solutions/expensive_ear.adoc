@@ -21,9 +21,9 @@ process '1D_prepare_vcf_file' {
   vcftools --gzvcf $variantsFile -c \
            --exclude-bed ${blacklisted} \
            --recode | bgzip -c \
-           > ${variantsFile.baseName}.filtered.recode.vcf.gz<4>
+           > ${variantsFile.baseName}.filtered.recode.vcf.gz <4>
 
-  tabix ${variantsFile.baseName}.filtered.recode.vcf.gz<5>
+  tabix ${variantsFile.baseName}.filtered.recode.vcf.gz <5>
   """
 }
 ----

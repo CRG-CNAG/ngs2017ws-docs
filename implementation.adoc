@@ -15,7 +15,7 @@ There are four data inputs that we will use in this tutorial:
 * Sample ENCSR000COQ: 76bp paired-end reads (`ENCSR000COQ1_1.fq.gz` and `ENCSR000COQ1_2.fq.gz`).
 
 . *Variants File* (`data/known_variants.vcf.gz`)
-* Known variants, gunzipped as a Variant Calling File (VCF) format.
+* Known variants, gzipped as a Variant Calling File (VCF) format.
 
 . *Blacklist File* (`data/blacklist.bed`)
 * Genomic locations which are known to produce artifacts and spurious variants in Browser Extensible Data (BED) format.
@@ -26,26 +26,28 @@ There are four data inputs that we will use in this tutorial:
 
 == Input parameters
 We can begin writing the pipeline by creating and editing a text file called `main.nf`
-from the `ngs2017-nf` repository directory with your favourite text editor. In this example we are using nano:
+from the `ngs2017-nf` repository directory with your favourite text editor. In this example we are using `nano`:
 
 ----
 $ cd ngs2017-nf
 $ nano main.nf
 ----
 
-We can edit this file to specify the default parameters. 
+Edit this file to specify the input files as script parameters. Using this notation 
+allows you to override them by specifying different values when launching the 
+pipeline execution. 
 
 ----
 /*
  * Define the default parameters <1>
  */
 
-params.genome     = "data/genome.fa" <2>
+params.genome     = "data/genome.fa" 
 params.variants   = "data/known_variants.vcf.gz"
 params.blacklist  = "data/blacklist.bed"
-params.reads      = "data/reads/rep1_{1,2}.fq.gz" <3>
-params.results    = "results" <4>
-params.gatk       = "/opt/broad/GenomeAnalysisTK.jar" <5>
+params.reads      = "data/reads/ENCSR000COQ1_{1,2}.fastq.gz" <2>
+params.results    = "results" <3>
+params.gatk       = "/opt/broad/GenomeAnalysisTK.jar" <4>
 
 println "genome   : $params.genome"
 println "reads    : $params.reads"
@@ -55,17 +57,16 @@ println "results  : $params.results"
 println "gatk     : $params.gatk\n"
 ----
 
-TIP: With `nano` you can paste the above text into your `main.nf` script with the `shift`+`insert` keys.
+TIP: You can copy the above text by using the kbd:[Cmd+c] keys, then move in the terminal window, 
+open `nano` and paste the above text by using the kbd:[Cmd+v] keys shortcut.
 
 <1> The `/\*`, `*` and `*/` specify comment lines which are ignored by Nextflow.
 
-<2> The variable `$baseDir` specifies the base directory of the pipeline, in this case the directory `ngs2017-nf`.
+<2> The `reads` parameter uses a glob pattern to specify the forward (`ENCSR000COQ1_1.fq.gz`) and reverse (`ENCSR000COQ1_2.fq.gz`) reads are pairs of the same sample.
 
-<3> The `reads` parameter uses parameter expansion to specify the forward (`rep1_1.fq.gz`) and reverse (`rep1_2.fq.gz`) reads are pairs of the same sample.
+<3> The `results` parameter is used to specify a directory called `results`.
 
-<4> The `results` parameter is used to specify a directory called `results`.
-
-<5> The `gatk` parameter specifies the location of the GATK jar file.
+<4> The `gatk` parameter specifies the location of the GATK jar file.
 
 Once you have the default parameters in the `main.nf` file, you can save and run the main script for the first time.
 
@@ -78,16 +79,22 @@ To run the main script use the following command:
 $ nextflow run main.nf
 ----
 
-You should see the pipeline launch and then exit.
+You should see the script execute, print the input parameter and then exit.
 
 ----
 N E X T F L O W  ~  version 0.24.1
 Launching `main.nf` [nauseous_wright] - revision: 83a0a5415a
+genome   : data/genome.fa
+reads    : data/reads/ENCSR000COQ1_{1,2}.fastq.gz
+variants : data/known_variants.vcf.gz
+blacklist: data/blacklist.bed
+results  : results
+gatk     : /opt/broad/GenomeAnalysisTK.jar
 ----
 
 ***
 === Problem #1
-Great, now we need to transform the parameters into proper file object and https://www.nextflow.io/docs/latest/channel.html[channel] variables.
+Great, now we need to transform the parameters into proper file handlers and https://www.nextflow.io/docs/latest/channel.html[channel] variables.
 To do that open the `main.nf` file and copy the lines below.
 
 This time you must fill the `BLANK` spaces with the correct function and parameter.
@@ -108,7 +115,7 @@ TIP: The first three should specify file objects containing a single `file` as s
 https://www.nextflow.io/docs/latest/basic.html#processes-and-channels[this] basic example. 
 For the reads channel, use the https://www.nextflow.io/docs/latest/channel.html#fromfilepairs[fromFilePairs] 
 channel factory method. The final one, `GATK` is simply creating a Nextflow variable 
-specifying the relative path of the GATK file and does not need any special function.
+specifying the path of the GATK application file and does not need any special function.
 
 
 Once you think you have data organised, you can again run the pipeline. 
@@ -118,10 +125,7 @@ However this time, we can use the the `-resume` flag.
 ----
 $ nextflow run main.nf -resume
 ----
-----
-N E X T F L O W  ~  version 0.24.1
-Launching `main.nf` [kickass_newton] - revision: b4a90c435b
-----
+
 
 TIP: See https://www.nextflow.io/docs/latest/getstarted.html?highlight=resume#modify-and-resume[here] for more
 details about using the `resume` option.
@@ -306,11 +310,10 @@ TIP: The output of the STAR genomeGenerate command is specified here as `genome_
 
 == Process 1D: Filtered and recoded set of variants
 
-Next on to something a little more tricky.
+Next on to something a little more tricky. The next process takes two inputs: the variants 
+file and the blacklist file.
 
-The next process takes two inputs: the variants file and the blacklist file.
-
-It should output a channel named `prepared_vcf_ch` which contains a tuple of two files.
+It should output a channel named `prepared_vcf_ch` which emitting a tuple of two files.
 
 NOTE: In Nextflow, tuples can be defined in the input or output using the https://www.nextflow.io/docs/latest/process.html?highlight=set#output-set-of-values[`set`] qualifier.
 
@@ -364,14 +367,15 @@ process '1D_prepare_vcf_file' {
 <3> The first of the two output files
 <4> Generates the second output file named `"${variantsFile.baseName}.filtered.recode.vcf.gz.tbi"`
 
-Congratulations! Part 1 is now complete.
-
 Try run the pipeline from the project directory with:
 
 [source,cmd]
 ----
 $ nextflow run main.nf -resume
 ----
+
+
+Congratulations! Part 1 is now complete.
 
 ***
 
@@ -621,9 +625,8 @@ Now we are ready to perform the variant calling with GATK.
 
 == Process 5: GATK Variant Calling
 
-This steps call variants with GATK HaplotypeCaller.
-
-You can find details of the specific GATK HaplotypeCaller parameters https://software.broadinstitute.org/gatk/documentation/tooldocs/current/org_broadinstitute_gatk_tools_walkers_haplotypecaller_HaplotypeCaller.php[here].
+This steps call variants with GATK HaplotypeCaller. You can find details of the specific 
+GATK HaplotypeCaller parameters https://software.broadinstitute.org/gatk/documentation/tooldocs/current/org_broadinstitute_gatk_tools_walkers_haplotypecaller_HaplotypeCaller.php[here].
 
 You should implement a process having the following structure:
 
@@ -645,9 +648,13 @@ a set containing the sample id the resulting variant calling file (vcf)
 
 === Problem #9
 
-In this problem we will introduce the use of a channel operator in the input section. By default, the https://www.nextflow.io/docs/latest/operator.html#grouptuple[`groupTuple()`] operator groups items which share the same first element of the set.
+In this problem we will introduce the use of a channel operator in the input section. 
+The https://www.nextflow.io/docs/latest/operator.html#grouptuple[groupTuple] operator 
+groups together the tuples emitted by a channel which share a common key.
 
-CAUTION: Note that in process 4, we used the sampleID (not replicateID) as the first element of the set in the output. Now we combine the replicates by grouping them on the sample ID. It follows from this that process 4 is run one time per replicate and process 5 is run one time per sample.
+CAUTION: Note that in process 4, we used the sampleID (not replicateID) as the first element 
+of the set in the output. Now we combine the replicates by grouping them on the sample ID. 
+It follows from this that process 4 is run one time per replicate and process 5 is run one time per sample.
 
 Fill in the `BLANKS` as before.
 
@@ -882,6 +889,6 @@ You should construct the process and run the pipeline in its entirety.
                   -sites ${vcf}
 ----
 
-Congratulations, if you made it this far you now have the all the basics to create your own Nextflow workflows.
+Congratulations! If you made it this far you now have the all the basics to create your own Nextflow workflows.
 
 ***

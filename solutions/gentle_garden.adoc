@@ -18,8 +18,8 @@ process '3_rnaseq_gatk_splitNcigar' {
   """
   # SplitNCigarReads and reassign mapping qualities
   java -jar $GATK -T SplitNCigarReads \
-                  -R $genome -I $bam \  <7> 
-                  -o split.bam \  <8>
+                  -R $genome -I $bam \ <7> 
+                  -o split.bam \ <8>
                   -rf ReassignOneMappingQuality \
                   -RMQF 255 -RMQT 60 \
                   -U ALLOW_N_CIGAR_READS \

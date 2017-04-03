@@ -2,7 +2,7 @@
 
 .Solution
 ----
- *
+/*
  * Process 1A: Create a FASTA genome index with samtools
  */
 
