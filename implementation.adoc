@@ -825,11 +825,11 @@ bam_for_ASE_ch
   .BLANK                            <1>
   .phase(vcf_for_ASE)               <2>
   .map{ left, right ->              <3>
-    def repID = left[0]             <4>
-    def bam   = left[1]             <5>
-    def bai   = left[2]             <6>
-    def vcf   = right [1]           <7>
-    tuple(BLANK,BLANK,BLANK,BLANK)  <8>
+    def sampleId = left[0]          <4>
+    def bam = left[1]               <5>
+    def bai = left[2]               <6>
+    def vcf = right [1]             <7>
+    tuple(BLANK, vcf, BLANK, BLANK) <8>
   .set { grouped_vcf_bam_bai_ch }   <9>
 
 ----
