@@ -96,10 +96,10 @@ Nextflow installation completed. Please note:
 
 If everything goes well you will find an executable file named `nextflow` in the current folder.
 
-To add the nextflow binary to the `PATH` variable use the command:
+Complete the installation copying the `nextflow` launcher file in a folder in the `PATH` variable e.g.:
 [source,cmd]
 ----
-export PATH=$PATH:~/.
+mv $HOME/bin/
 ----
 
 
