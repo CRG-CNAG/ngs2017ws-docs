@@ -25,9 +25,10 @@
                lastId = id;
                // Set/remove active class
                scrollItems
-                 .end()
-                 .removeClass("crg")
-                 .filter("[href='#"+id+"']").addClass("crg");
+                 .end().parent()
+                 .removeClass("active")
+                 .end().filter("[href='#"+id+"']")
+                 .parent().addClass("active");
             }    
         } );
     } );
