@@ -143,6 +143,7 @@ tree ngs2017-nf
 
 Nextflow can pull Docker images at runtime, but let's just download it manually to see how Docker works:
 
+[source,cmd]
 ----
 docker pull cbcrg/callings-nf@sha256:b65a7d721b9dd2da07d6bdd7f868b04039860f14fa514add975c59e68614c310
 ----
