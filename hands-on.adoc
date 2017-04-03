@@ -1,4 +1,5 @@
 = NGS {year} Workshop image:NGS_LOGO.png[Logo,120,120,float="right"]
+:docinfo: private
 :year: 2017
 :hide-uri-scheme:
 :nofooter:
