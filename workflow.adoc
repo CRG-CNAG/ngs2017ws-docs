@@ -56,7 +56,7 @@ Filter variants that overlap with blacklisted regions to reduce false positive c
 
 To align RNA-seq reads to the genome we're using STAR 2-pass approach. The first alignment creates a table with splice-junctions that is used to guide final alignments. The alignments at both steps are done with default parameters. 
 
-Additional fields with the read groups, libraries and sample information are added into the final bam file at the second mapping step. As a result we do not need to run Picard processing step from GATK best practics.
+Additional fields with the read groups, libraries and sample information are added into the final bam file at the second mapping step. As a result we do not need to run Picard processing step from GATK best practices.
 
 STAR 1-pass:
 
