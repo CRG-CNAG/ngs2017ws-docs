@@ -33,19 +33,19 @@ $ cd ngs2017-nf
 $ nano main.nf
 ----
 
-We edit can edit this file to specify the default parameters. 
+We can edit this file to specify the default parameters. 
 
 ----
 /*
  * Define the default parameters <1>
  */
 
-params.genome     = "$baseDir/data/genome.fa" <2>
-params.variants   = "$baseDir/data/known_variants.vcf.gz"
-params.blacklist  = "$baseDir/data/blacklist.bed"
-params.reads      = "$baseDir/data/reads/rep1_{1,2}.fq.gz" <3>
+params.genome     = "data/genome.fa" <2>
+params.variants   = "data/known_variants.vcf.gz"
+params.blacklist  = "data/blacklist.bed"
+params.reads      = "data/reads/rep1_{1,2}.fq.gz" <3>
 params.results    = "results" <4>
-params.gatk       = '/usr/local/bin/GenomeAnalysisTK.jar' <5>
+params.gatk       = "/opt/broad/GenomeAnalysisTK.jar" <5>
 ----
 
 TIP: With `nano` you can paste the above text into your `main.nf` script with the `shift`+`insert` keys.
@@ -60,12 +60,13 @@ TIP: With `nano` you can paste the above text into your `main.nf` script with th
 
 <5> The `gatk` parameter specifies the location of the GATK jar file.
 
-Once you have the default parameters in the `main.nf` file, you can save and run the pipeline for the first time.
+Once you have the default parameters in the `main.nf` file, you can save and run the main script for the first time.
 
 TIP: With `nano` you can save and the file with `Ctrl+O`, then `Enter`, followed by `Ctrl+X`.
 
-We run the pipeline with the following command:
+To run the main script use the following command:
 
+[source,cmd]
 ----
 $ nextflow run main.nf
 ----
@@ -79,9 +80,10 @@ Launching `main.nf` [nauseous_wright] - revision: 83a0a5415a
 
 ***
 === Problem #1
-Great, now we can assing the data into variables and https://www.nextflow.io/docs/latest/channel.html[channels]. Open the `main.nf` file and copy the lines below.
+Great, now we need to transform the parameters into proper file object and https://www.nextflow.io/docs/latest/channel.html[channel] variables.
+To do that open the `main.nf` file and copy the lines below.
 
-This time you must fill the `BLANK` spaces with the correct constructors.
+This time you must fill the `BLANK` spaces with the correct function and parameter.
 
 ----
 /*
@@ -95,7 +97,7 @@ reads_ch        = BLANK
 GATK            = BLANK
 ----
 
-TIP: The first three should specify file objects containing a single `file` as shown in https://www.nextflow.io/docs/latest/basic.html#processes-and-channels[this] basic example. For the reads channel, we can use a https://www.nextflow.io/docs/latest/channel.html#channel-factory[channel constructor] for pairs of files. The final one, `GATK` is simply a creating a Nextflow variable specifying the relative path of the GATK file and does not need a constructor.
+TIP: The first three should specify file objects containing a single `file` as shown in https://www.nextflow.io/docs/latest/basic.html#processes-and-channels[this] basic example. For the reads channel, we can use a https://www.nextflow.io/docs/latest/channel.html#channel-factory[channel factory] for pairs of files. The final one, `GATK` is simply a creating a Nextflow variable specifying the relative path of the GATK file and does not need a constructor.
 
 
 Once you think you have data organised, you can again run the pipeline. 
