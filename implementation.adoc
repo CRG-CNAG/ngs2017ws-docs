@@ -900,6 +900,8 @@ Congratulations! If you made it this far you now have all the basics to create y
 
 ***
 
+include::pipeline_results.adoc[leveloffset=+1]
+
 == Bonus step
 
 Until now the pipeline has been executed using just a single sample (`ENCSR000COQ1`).
