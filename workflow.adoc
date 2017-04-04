@@ -44,10 +44,10 @@ STAR --runMode genomeGenerate \
 
 Variants overlapping blacklisted regions are then filtered in order to reduce false positive calls [optional]:
 
- vcftools --gzvcf known_SNVs.vcf -c \
-           --exclude-bed blacklisted.bed \
+ vcftools --gzvcf known_variants.vcf.gz -c \
+           --exclude-bed blacklist.bed \
            --recode | bgzip -c \
-           > known_SNVs.filtered.recode.vcf.gz
+           > known_variants.filtered.recode.vcf.gz
 
 
 == Mapping RNA-seq reads to the reference
@@ -60,7 +60,7 @@ STAR 1-pass:
 
 ----
  STAR --genomeDir genome_dir \
-       --readFilesIn sample_1.fastq.gz sample_2.fastq.gz \
+       --readFilesIn ENCSR000COQ1_1.fastq.gz ENCSR000COQ1_2.fastq.gz \
        --runThreadN 4 \
        --readFilesCommand zcat \
        --outFilterType BySJout \
@@ -84,7 +84,7 @@ STAR 2-pass, final alignments:
 
 ----
   STAR --genomeDir genome_dir \
-       --readFilesIn sample_1.fastq.gz sample_2.fastq.gz \
+       --readFilesIn ENCSR000COQ1_1.fastq.gz ENCSR000COQ1_2.fastq.gz \
        --runThreadN 4 \
        --readFilesCommand zcat \
        --outFilterType BySJout \
@@ -92,7 +92,7 @@ STAR 2-pass, final alignments:
        --alignSJDBoverhangMin 1 \
        --outFilterMismatchNmax 999 \
        --outSAMtype BAM SortedByCoordinate \
-       --outSAMattrRGline ID:ReplicateID LB:library PL:illumina PU:machine SM:GM12878
+       --outSAMattrRGline ID:ENCSR000COQ1 LB:library PL:illumina PU:machine SM:GM12878
 ----
 
 Index resulting bam file
@@ -131,7 +131,7 @@ java -jar GenomeAnalysisTK.jar -T BaseRecalibrator \
                   -cov ReadGroupCovariate \
                   -cov QualityScoreCovariate \
                   -cov CycleCovariate \
-                  -knownSites known_SNVs.filtered.recode.vcf.gz\
+                  -knownSites known_variants.filtered.recode.vcf.gz\
                   -cov ContextCovariate \
                   -R genome.fa -I split.bam \
                   --downsampling_type NONE \
