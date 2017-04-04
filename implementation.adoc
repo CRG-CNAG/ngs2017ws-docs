@@ -50,14 +50,6 @@ params.reads      = "data/reads/ENCSR000COQ1_{1,2}.fastq.gz" <2>
 params.results    = "results" <3>
 params.gatk       = "/opt/broad/GenomeAnalysisTK.jar" <4>
 
-println ""
-println "genome   : $params.genome"
-println "reads    : $params.reads"
-println "variants : $params.variants"
-println "blacklist: $params.blacklist"
-println "results  : $params.results"
-println "gatk     : $params.gatk"
-println ""
 ----
 
 TIP: You can copy the above text by using the kbd:[Cmd+C] keys, then move in the terminal window,
@@ -87,13 +79,6 @@ You should see the script execute, print the input parameter and then exit.
 ----
 N E X T F L O W  ~  version 0.24.1
 Launching `main.nf` [nauseous_wright] - revision: 83a0a5415a
-
-genome   : data/genome.fa
-reads    : data/reads/ENCSR000COQ1_{1,2}.fastq.gz
-variants : data/known_variants.vcf.gz
-blacklist: data/blacklist.bed
-results  : results
-gatk     : /opt/broad/GenomeAnalysisTK.jar
 ----
 
 ***
