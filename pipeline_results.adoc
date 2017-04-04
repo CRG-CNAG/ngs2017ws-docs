@@ -38,6 +38,7 @@ Allele specific expression quantification::
 
 Tabular separated file with allele counts at a positions of SNVs (only for common SNVs,those from file known_snps.vcf)
 File is sorted by coordinates and contains 13 fields:
+
 . conting: conting,scaffold or chromosome name of the variant
 . position: position of the variant
 . variant ID: variant ID in the dbSNP
