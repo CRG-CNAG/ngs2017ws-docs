@@ -907,7 +907,7 @@ shown below:
 
 [source,cmd]
 ----
-$ nextflow run main.nf -resume --reads 'data/reads/ENCSR000C*_{1,2}.fastq.gz'
+nextflow run main.nf -resume --reads 'data/reads/ENCSR000C*_{1,2}.fastq.gz'
 ----
 
 It will print an output similar to the one below:
