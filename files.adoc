@@ -119,6 +119,8 @@ GNU nano is a text editor for Unix-like operating systems using a command line i
 | Cut from the current cursor position to the end of the current line
 | kbd:[Ctrl+d]
 | Delete the character at the current cursor position
+| kbd:[Alt+t]
+| Cut from the cursor position to the end of the file
 // | kbd:[Ctrl+u]
 // | Paste the contents from the clipboard at the current cursor position
 |===
