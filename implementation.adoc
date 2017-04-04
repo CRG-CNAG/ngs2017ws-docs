@@ -1,4 +1,4 @@
-= Nextflow Implementaton
+= Pipeline Implementaton
 
 == Data preparation
 
@@ -12,7 +12,7 @@ There are four data inputs that we will use in this tutorial:
 * Human chromosome 22 in FASTA file format
 
 . *Read Files* (`data/reads/`)
-* Sample ENCSR000COQ: 76bp paired-end reads (`ENCSR000COQ1_1.fq.gz` and `ENCSR000COQ1_2.fq.gz`).
+* Sample ENCSR000COQ1: 76bp paired-end reads (`ENCSR000COQ1_1.fq.gz` and `ENCSR000COQ1_2.fq.gz`).
 
 . *Variants File* (`data/known_variants.vcf.gz`)
 * Known variants, gzipped as a Variant Calling File (VCF) format.
@@ -892,3 +892,63 @@ You should construct the process and run the pipeline in its entirety.
 Congratulations! If you made it this far you now have the all the basics to create your own Nextflow workflows.
 
 ***
+
+== Bonus step 
+
+Until now the pipeline has been executed using just a single sample (`ENCSR000COQ1`). 
+
+Now we can re-execute the pipeline specifying a large set of samples by using the command
+shown below:
+
+[source,cmd]
+----
+$ nextflow run main.nf -resume --reads 'data/reads/ENCSR000C*_{1,2}.fastq.gz'
+----
+
+It will print an output similar to the one below: 
+
+----
+N E X T F L O W  ~  version 0.24.1
+Launching `CRG-CNAG/CalliNGS-NF` [backstabbing_nightingale] - revision: 1187e44c7a [master]
+[warm up] executor > local
+[c6/75e3f4] Submitted process > 1A_prepare_genome_samtools (genome)
+[7b/44e5d6] Submitted process > 1C_prepare_star_genome_index (genome)
+[da/e19bcf] Submitted process > 1B_prepare_genome_picard (genome)
+[95/1ad13d] Submitted process > 1D_prepare_vcf_file (known_variants.vcf)
+[72/702900] Submitted process > 2_rnaseq_mapping_star (ENCSR000COR1)
+[9a/5ca042] Submitted process > 2_rnaseq_mapping_star (ENCSR000CPO1)
+[77/03ef01] Submitted process > 2_rnaseq_mapping_star (ENCSR000COR2)
+[04/262db9] Submitted process > 2_rnaseq_mapping_star (ENCSR000COQ2)
+[a4/64c69e] Submitted process > 2_rnaseq_mapping_star (ENCSR000CPO2)
+[9e/ad3621] Submitted process > 2_rnaseq_mapping_star (ENCSR000COQ1)
+[a5/cda1b0] Submitted process > 3_rnaseq_gatk_splitNcigar (ENCSR000COQ2)
+[42/0565d7] Submitted process > 3_rnaseq_gatk_splitNcigar (ENCSR000COQ1)
+[0c/68ce48] Submitted process > 3_rnaseq_gatk_splitNcigar (ENCSR000COR1)
+[6b/3843e1] Submitted process > 3_rnaseq_gatk_splitNcigar (ENCSR000COR2)
+[1c/8c474b] Submitted process > 3_rnaseq_gatk_splitNcigar (ENCSR000CPO1)
+[98/f17992] Submitted process > 3_rnaseq_gatk_splitNcigar (ENCSR000CPO2)
+[c2/8cdfca] Submitted process > 4_rnaseq_gatk_recalibrate (ENCSR000COQ1)
+[d1/1a6935] Submitted process > 4_rnaseq_gatk_recalibrate (ENCSR000COR1)
+[9f/b4c61d] Submitted process > 4_rnaseq_gatk_recalibrate (ENCSR000COR2)
+[aa/b43a43] Submitted process > 4_rnaseq_gatk_recalibrate (ENCSR000COQ2)
+[46/2d96f0] Submitted process > 4_rnaseq_gatk_recalibrate (ENCSR000CPO1)
+[85/6b9527] Submitted process > 4_rnaseq_gatk_recalibrate (ENCSR000CPO2)
+[79/a7fb48] Submitted process > 5_rnaseq_call_variants (ENCSR000CPO)
+[a5/29c017] Submitted process > 5_rnaseq_call_variants (ENCSR000COQ)
+[22/1fdea2] Submitted process > 5_rnaseq_call_variants (ENCSR000COR)
+[7d/e1adfb] Submitted process > 6A_post_process_vcf (ENCSR000CPO)
+[0a/4d43fc] Submitted process > 6A_post_process_vcf (ENCSR000COQ)
+[18/8d486b] Submitted process > 6A_post_process_vcf (ENCSR000COR)
+[60/427153] Submitted process > 6B_prepare_vcf_for_ase (ENCSR000CPO)
+[32/64eff0] Submitted process > 6B_prepare_vcf_for_ase (ENCSR000COQ)
+[31/32ad40] Submitted process > 6B_prepare_vcf_for_ase (ENCSR000COR)
+[6f/a5e211] Submitted process > 6C_ASE_knownSNPs (ENCSR000COR)
+[ff/989dc1] Submitted process > 6C_ASE_knownSNPs (ENCSR000CPO)
+[25/92875a] Submitted process > 6C_ASE_knownSNPs (ENCSR000COQ)
+----
+
+You can notice that this time the pipeline spawns the execution of more tasks because 
+three samples have been provided instead of one. 
+
+This shows the ability of Nextflow to implicitly handle multiple parallel task executions 
+given depending the specified pipeline input dataset.
