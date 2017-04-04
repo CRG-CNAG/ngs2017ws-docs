@@ -74,7 +74,7 @@ To run the main script use the following command:
 nextflow run main.nf
 ----
 
-You should see the script execute, print the input parameter and then exit.
+You should see the script execute, print Nextflow version and pipeline revision and then exit.
 
 ----
 N E X T F L O W  ~  version 0.24.1
