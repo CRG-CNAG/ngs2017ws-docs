@@ -144,16 +144,16 @@ create a genome index using http://www.htslib.org/[samtools].
 
 You should implement a process having the following structure:
 
-*name*: +
+Name::
 1A_prepare_genome_samtools
 
-*command*: +
+Command::
 create a genome index for the genome fasta with samtools
 
-*input*: +
+Input::
 the genome fasta file
 
-*output*: +
+Output::
 the samtools genome index file
 
 === Problem #2
@@ -215,16 +215,16 @@ Our first process created the genome index for GATK using samtools. For the next
 
 You should implement a process having the following structure:
 
-*name*: +
+Name::
 1B_prepare_genome_picard
 
-*command*: +
+Command::
 create a genome dictionary for the genome fasta with Picard tools
 
-*input*: +
+Input::
 the genome fasta file
 
-*output*: +
+Output::
 the genome dictionary file
 
 === Problem #3
@@ -268,16 +268,16 @@ Next we must create a genome index for the https://github.com/alexdobin/STAR[STA
 
 You should implement a process having the following structure:
 
-*name*: +
+Name::
 1C_prepare_star_genome_index
 
-*command*: +
+Command::
 create a STAR genome index for the genome fasta
 
-*input*: +
+Input::
 the genome fasta file
 
-*output*: +
+Output::
 a directory containing the STAR genome index
 
 
@@ -323,17 +323,17 @@ NOTE: In Nextflow, tuples can be defined in the input or output using the https:
 
 You should implement a process having the following structure:
 
-*name*: +
+Name::
 1D_prepare_vcf_file
 
-*command*: +
+Command::
 create a filtered and recoded set of variants
 
-*input*: +
+Input::
 the variants file +
 the blacklisted regions file
 
-*output*: +
+Output::
 a set containing the filtered/recoded VCF file and the tab index (TBI) file.
 
 
@@ -391,18 +391,18 @@ In this process, for each sample, we align the reads to our genome using the STA
 
 You should implement a process having the following structure:
 
-*name*: +
+Name::
 2_rnaseq_mapping_star
 
-*command*: +
+Command::
 mapping of the RNA-Seq reads using STAR
 
-*input*: +
+Input::
 the genome fasta file +
 the STAR genome index +
 a set containing the replicate id and paired read files
 
-*output*: +
+Output::
 a set containg replicate id, aligned bam file & aligned bam file index
 
 
@@ -481,19 +481,19 @@ the splicing events represented by the Ns in the original CIGAR.
 
 You should implement a process having the following structure:
 
-*name*: +
+Name::
 3_rnaseq_gatk_splitNcigar
 
-*command*: +
+Command::
 split reads on Ns in CIGAR string using GATK
 
-*input*: +
+Input::
 the genome fasta file +
 the genome index made with samtools +
 the genome dictionary made with picard +
 a set containg replicate id, aligned bam file and aligned bam file index from the STAR mapping
 
-*output*: +
+Output::
 a set containing the sample id, the split bam file and the split bam index file
 
 
@@ -548,20 +548,20 @@ This step uses GATK to detect systematic errors in the base quality scores, sele
 
 You should implement a process having the following structure:
 
-*name*: +
+Name::
 4_rnaseq_gatk_recalibrate
 
-*command*: +
+Command::
 recalibrate reads from each replicate using GATK
 
-*input*: +
+Input::
 the genome fasta file +
 the genome index made with samtools +
 the genome dictionary made with picard +
 a set containg replicate id, aligned bam file and aligned bam file index from process 3 +
 a set containing the filtered/recoded VCF file and the tab index (TBI) file from process 1D +
 
-*output*: +
+Output::
 a set containing the sample id, the unique bam file and the unique bam index file
 
 
@@ -634,19 +634,19 @@ GATK HaplotypeCaller parameters https://software.broadinstitute.org/gatk/documen
 
 You should implement a process having the following structure:
 
-*name*: +
+Name::
 5_rnaseq_call_variants
 
-*command*: +
+Command::
 variant calling of each sample using GATK
 
-*input*: +
+Input::
 the genome fasta file +
 the genome index made with samtools +
 the genome dictionary made with picard +
 a set containg replicate id, aligned bam file and aligned bam file index from process 4
 
-*output*: +
+Output::
 a set containing the sample id the resulting variant calling file (vcf)
 
 
@@ -710,30 +710,30 @@ We must process the VCF result to prepare variants file for allele specific expr
 You should implement a processes having the following structure:
 
 .1st process
-*name*: +
+Name::
 6A_post_process_vcf
 
-*command*: +
+Command::
 post-process the variant calling file (vcf) of each sample
 
-*input*: +
+Input::
 set containing the sample ID and vcf file +
 a set containing the filtered/recoded VCF file and the tab index (TBI) file from process 1D +
 
-*output*: +
+Output::
 a set containing the sample id, the variant calling file (vcf) and a file containing common SNPs
 
 .2nd process
-*name*: +
+Name::
 6B_prepare_vcf_for_ase
 
-*command*: +
+Command::
 prepare the VCF for allele specific expression (ASE) and generate a figure in R.
 
-*input*: +
+Input::
 a set containing the sample id, the variant calling file (vcf) and a file containing common SNPs
 
-*output*: +
+Output::
 a set containing the sample ID and known SNPs in the sample for ASE +
 a figure of the SNPs generated in R as a PDF file
 
@@ -865,19 +865,19 @@ Now we are ready for the final process.
 
 You should implement a process having the following structure:
 
-*name*: +
+Name::
 6C_ASE_knownSNPs
 
-*command*: +
+Command::
 create a genome dictionary for the genome fasta with Picard tools
 
-*input*: +
+Input::
 genome fasta file +
 genome index file from samtools +
 genome dictionary file +
 the `grouped_vcf_bam_bai_ch`channel
 
-*output*: +
+Output::
 the allele specific expression file (`ASE.tsv`)
 
 === Problem #12
