@@ -14,18 +14,30 @@ Variant calls::
 
 This file contains all somatic variants (SNVs) called from RNAseq data. You will see variants that pass all filters, with the 'PASS' keyword in the 7th field of the vcf file (filter status), and also those that has not passed one or few filters.
 
-* *_diff.sites_in_files_*
+* *_commonSNPs.diff.sites_in_files_*
 
-Tabular separated file with comparison between variants obtained from RNAseq and DNA data, "known" variants
+Tabular separated file with comparison between variants obtained from RNAseq and DNA data, "known" variants.
+
+The file is sorted by coordinate position and contains 8 fields:
+. chromosome name; 
+. position of the SNV in file #1 (RNAseq data); 
+. position of SNV in file #2 (DNA "known" variants);
+. flag whether SNV is present in the file #1 '1', in the file #2 '2', or in both files 'B';
+. reference sequence in the file 1;
+. reference sequence in the file 2;
+. alternative sequence in the file 1;
+. alternative sequence in the file 2
 
 * *_known_snps.vcf_*
 
-Variants that are common between RNAseq and DNA calls, "known" variants
+Variants that are common between RNAseq and DNA calls, "known" variants.
 
 Allele specific expression quantification::
 * *_ASE.tsv_*
 
 Tabular separated file with allele counts at a positions of SNVs (only for common SNVs,those from file known_snps.vcf)
+File is sorted by coordinates and contains 13 fields, see 
+
 
 Allele frequency histogram::
 
