@@ -375,7 +375,7 @@ Try run the pipeline from the project directory with:
 
 [source,cmd]
 ----
-$ nextflow run main.nf -resume
+nextflow run main.nf -resume
 ----
 
 
@@ -955,4 +955,4 @@ You can notice that this time the pipeline spawns the execution of more tasks be
 three samples have been provided instead of one.
 
 This shows the ability of Nextflow to implicitly handle multiple parallel task executions
-given depending the specified pipeline input dataset.
+depending on the specified pipeline input dataset.
