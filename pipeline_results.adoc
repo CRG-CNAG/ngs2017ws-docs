@@ -1,17 +1,28 @@
+
+=Results overview
+
 For each sample the pipeline creates a folder with sample ID name to write results, and produce a number of files. 
 
-Result files for this workshop can be found in the folder with name ENCSR000COQ. There you should see following files:
+Result files for this workshop can be found in the folder with name `ENCSR000COQ/`. There you should see following files:
 
-*final.vcf
+Variant calls::
+
+* final.vcf
 This file contains somatic variants (SNVs) called from RNAseq data. 
 
-*diff.sites_in_files 	
+* diff.sites_in_files 	
 comparison of the SNVs from RNAseq data with the set of known variants
-*known_snps.vcf 	
+
+* known_snps.vcf 	
 SNVs that are common between RNAseq calls and known variants
-*ASE.tsv 	
+
+Allele specific expression quantification::
+* ASE.tsv 	
 allele counts at a positions of SNVs (only for common SNVs)
-*AF.histogram.pdf 	
+
+Allele frequency histogram::
+
+* AF.histogram.pdf 	
 a histogram plot for allele frequency (only for common SNVs)
 
  
