@@ -19,14 +19,14 @@ This file contains all somatic variants (SNVs) called from RNAseq data. You will
 Tabular separated file with comparison between variants obtained from RNAseq and DNA data, "known" variants.
 
 The file is sorted by coordinate position and contains 8 fields:
-. CHROM: chromosome name; 
-. POS1: position of the SNV in file #1 (RNAseq data); 
-. POS2: position of SNV in file #2 (DNA "known" variants);
-. IN_FILE: flag whether SNV is present in the file #1 '1', in the file #2 '2', or in both files 'B';
-. REF1: reference sequence in the file 1;
-. REF2: reference sequence in the file 2;
-. ALT1: alternative sequence in the file 1;
-. ALT2: alternative sequence in the file 2
+ . CHROM: chromosome name; 
+ . POS1: position of the SNV in file #1 (RNAseq data); 
+ . POS2: position of SNV in file #2 (DNA "known" variants);
+ . IN_FILE: flag whether SNV is present in the file #1 '1', in the file #2 '2', or in both files 'B';
+ . REF1: reference sequence in the file 1;
+ . REF2: reference sequence in the file 2;
+ . ALT1: alternative sequence in the file 1;
+ . ALT2: alternative sequence in the file 2
 
 * *_known_snps.vcf_*
 
