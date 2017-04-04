@@ -894,7 +894,7 @@ You should construct the process and run the pipeline in its entirety.
                   -sites ${vcf}
 ----
 
-Congratulations! If you made it this far you now have the all the basics to create your own Nextflow workflows.
+Congratulations! If you made it this far you now have all the basics to create your own Nextflow workflows.
 
 ***
 
