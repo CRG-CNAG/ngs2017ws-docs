@@ -353,8 +353,8 @@ process '1D_prepare_vcf_file' {
 
   script:
   """
-  vcftools --gzvcf $variantsFile -c \ <1>
-           --exclude-bed ${blacklisted} \ <2>
+  vcftools --gzvcf $variantsFile -c \//<1>
+           --exclude-bed ${blacklisted} \//<2>
            --recode | bgzip -c \
            > ${variantsFile.baseName}.filtered.recode.vcf.gz <3>
 
