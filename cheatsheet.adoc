@@ -1,4 +1,4 @@
-= NGS 2017 Workshop Cheatsheet
+= NGS {year} Workshop Cheatsheet
 :sectnums:
 :hide-uri-scheme:
 :nofooter:
@@ -6,6 +6,7 @@
 :stylesdir: ./css
 :stylesheet: crg.css
 :linkcss:
+:year: 2017
 
 :leveloffset: +1
 
