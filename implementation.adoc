@@ -28,36 +28,39 @@ There are four data inputs that we will use in this tutorial:
 We can begin writing the pipeline by creating and editing a text file called `main.nf`
 from the `ngs2017-nf` repository directory with your favourite text editor. In this example we are using `nano`:
 
+[source,cmd]
 ----
-$ cd ngs2017-nf
-$ nano main.nf
+cd ngs2017-nf
+nano main.nf
 ----
 
-Edit this file to specify the input files as script parameters. Using this notation 
-allows you to override them by specifying different values when launching the 
-pipeline execution. 
+Edit this file to specify the input files as script parameters. Using this notation
+allows you to override them by specifying different values when launching the
+pipeline execution.
 
 ----
 /*
  * Define the default parameters <1>
  */
 
-params.genome     = "data/genome.fa" 
+params.genome     = "data/genome.fa"
 params.variants   = "data/known_variants.vcf.gz"
 params.blacklist  = "data/blacklist.bed"
 params.reads      = "data/reads/ENCSR000COQ1_{1,2}.fastq.gz" <2>
 params.results    = "results" <3>
 params.gatk       = "/opt/broad/GenomeAnalysisTK.jar" <4>
 
+println ""
 println "genome   : $params.genome"
 println "reads    : $params.reads"
 println "variants : $params.variants"
 println "blacklist: $params.blacklist"
-println "results  : $params.results" 
-println "gatk     : $params.gatk\n"
+println "results  : $params.results"
+println "gatk     : $params.gatk"
+println ""
 ----
 
-TIP: You can copy the above text by using the kbd:[Cmd+c] keys, then move in the terminal window, 
+TIP: You can copy the above text by using the kbd:[Cmd+c] keys, then move in the terminal window,
 open `nano` and paste the above text by using the kbd:[Cmd+v] keys shortcut.
 
 <1> The `/\*`, `*` and `*/` specify comment lines which are ignored by Nextflow.
@@ -76,7 +79,7 @@ To run the main script use the following command:
 
 [source,cmd]
 ----
-$ nextflow run main.nf
+nextflow run main.nf
 ----
 
 You should see the script execute, print the input parameter and then exit.
@@ -84,6 +87,7 @@ You should see the script execute, print the input parameter and then exit.
 ----
 N E X T F L O W  ~  version 0.24.1
 Launching `main.nf` [nauseous_wright] - revision: 83a0a5415a
+
 genome   : data/genome.fa
 reads    : data/reads/ENCSR000COQ1_{1,2}.fastq.gz
 variants : data/known_variants.vcf.gz
@@ -111,19 +115,19 @@ reads_ch        = BLANK
 GATK            = params.gatk
 ----
 
-TIP: The first three should specify file objects containing a single `file` as shown in 
-https://www.nextflow.io/docs/latest/basic.html#processes-and-channels[this] basic example. 
-For the reads channel, use the https://www.nextflow.io/docs/latest/channel.html#fromfilepairs[fromFilePairs] 
-channel factory method. The final one, `GATK` is simply creating a Nextflow variable 
+TIP: The first three should specify file objects containing a single `file` as shown in
+https://www.nextflow.io/docs/latest/basic.html#processes-and-channels[this] basic example.
+For the reads channel, use the https://www.nextflow.io/docs/latest/channel.html#fromfilepairs[fromFilePairs]
+channel factory method. The final one, `GATK` is simply creating a Nextflow variable
 specifying the path of the GATK application file and does not need any special function.
 
 
-Once you think you have data organised, you can again run the pipeline. 
+Once you think you have data organised, you can again run the pipeline.
 However this time, we can use the the `-resume` flag.
 
 [source,cmd]
 ----
-$ nextflow run main.nf -resume
+nextflow run main.nf -resume
 ----
 
 
@@ -135,7 +139,7 @@ details about using the `resume` option.
 
 == Process 1A: Create a FASTA genome index
 
-Now we have our inputs set up we can move onto the processes. In our first process we will 
+Now we have our inputs set up we can move onto the processes. In our first process we will
 create a genome index using http://www.htslib.org/[samtools].
 
 You should implement a process having the following structure:
@@ -155,7 +159,7 @@ the samtools genome index file
 === Problem #2
 Copy the code below and paste it at the end of `main.nf`.
 
-Your aim is to replace `BLANK` placeholder with the  the correct 
+Your aim is to replace `BLANK` placeholder with the  the correct
 variable name of the genome file that you have defined in previous problem.
 
 ----
@@ -193,7 +197,7 @@ Now when we run the pipeline, we see that the process 1A is submitted:
 
 [source,cmd]
 ----
-$ nextflow run main.nf -resume
+nextflow run main.nf -resume
 ----
 
 ----
@@ -310,7 +314,7 @@ TIP: The output of the STAR genomeGenerate command is specified here as `genome_
 
 == Process 1D: Filtered and recoded set of variants
 
-Next on to something a little more tricky. The next process takes two inputs: the variants 
+Next on to something a little more tricky. The next process takes two inputs: the variants
 file and the blacklist file.
 
 It should output a channel named `prepared_vcf_ch` which emitting a tuple of two files.
@@ -500,8 +504,8 @@ Copy the code below and paste it at the end of `main.nf`.
 You must fill in the four `BLANK_LINE` lines in the input and the one `BLANK_LINE` line in the output.
 
 CAUTION: There is an optional https://www.nextflow.io/docs/latest/process.html#tag[`tag`] line added
-to the start of this process. The https://www.nextflow.io/docs/latest/process.html#tag[`tag`] line 
-allows you to assign a name to a specific task (single execution of a process). 
+to the start of this process. The https://www.nextflow.io/docs/latest/process.html#tag[`tag`] line
+allows you to assign a name to a specific task (single execution of a process).
 This is particularly useful when there are many samples/replicates which pass through the same process.
 
 
@@ -552,9 +556,9 @@ recalibrate reads from each replicate using GATK
 
 *input*: +
 the genome fasta file +
-the genome index made with samtools + 
-the genome dictionary made with picard + 
-a set containg replicate id, aligned bam file and aligned bam file index from process 3 + 
+the genome index made with samtools +
+the genome dictionary made with picard +
+a set containg replicate id, aligned bam file and aligned bam file index from process 3 +
 a set containing the filtered/recoded VCF file and the tab index (TBI) file from process 1D +
 
 *output*: +
@@ -625,7 +629,7 @@ Now we are ready to perform the variant calling with GATK.
 
 == Process 5: GATK Variant Calling
 
-This steps call variants with GATK HaplotypeCaller. You can find details of the specific 
+This steps call variants with GATK HaplotypeCaller. You can find details of the specific
 GATK HaplotypeCaller parameters https://software.broadinstitute.org/gatk/documentation/tooldocs/current/org_broadinstitute_gatk_tools_walkers_haplotypecaller_HaplotypeCaller.php[here].
 
 You should implement a process having the following structure:
@@ -648,12 +652,12 @@ a set containing the sample id the resulting variant calling file (vcf)
 
 === Problem #9
 
-In this problem we will introduce the use of a channel operator in the input section. 
-The https://www.nextflow.io/docs/latest/operator.html#grouptuple[groupTuple] operator 
+In this problem we will introduce the use of a channel operator in the input section.
+The https://www.nextflow.io/docs/latest/operator.html#grouptuple[groupTuple] operator
 groups together the tuples emitted by a channel which share a common key.
 
-CAUTION: Note that in process 4, we used the sampleID (not replicateID) as the first element 
-of the set in the output. Now we combine the replicates by grouping them on the sample ID. 
+CAUTION: Note that in process 4, we used the sampleID (not replicateID) as the first element
+of the set in the output. Now we combine the replicates by grouping them on the sample ID.
 It follows from this that process 4 is run one time per replicate and process 5 is run one time per sample.
 
 Fill in the `BLANKS` as before.
@@ -705,7 +709,7 @@ We must process the VCF result to prepare variants file for allele specific expr
 
 You should implement a processes having the following structure:
 
-.1st process 
+.1st process
 *name*: +
 6A_post_process_vcf
 
@@ -719,7 +723,7 @@ a set containing the filtered/recoded VCF file and the tab index (TBI) file from
 *output*: +
 a set containing the sample id, the variant calling file (vcf) and a file containing common SNPs
 
-.2nd process 
+.2nd process
 *name*: +
 6B_prepare_vcf_for_ase
 
@@ -794,8 +798,8 @@ The final step is the GATK ASEReadCounter.
 
 === Problem #11
 
-We have seen the basics of using processes in Nextflow. Yet one of the standout 
-features of Nextflow is the operations that can be performed on 
+We have seen the basics of using processes in Nextflow. Yet one of the standout
+features of Nextflow is the operations that can be performed on
 channels outside of processes. See https://www.nextflow.io/docs/latest/operator.html[here]
 for details on the specific operators.
 
@@ -814,11 +818,11 @@ The `vcf_for_ASE` channel emits tuples having the following structure: +
 ( sample_id, output.vcf )
 ----
 
-In the first operation, the BAMs are grouped together by sample id. 
+In the first operation, the BAMs are grouped together by sample id.
 
-Next, this resulting channel is merged with the VCFs (vcf_for_ASE) having the same sample id. 
+Next, this resulting channel is merged with the VCFs (vcf_for_ASE) having the same sample id.
 
-We must take the merged channel and creates a channel named `grouped_vcf_bam_bai_ch` emitting the following tuples: 
+We must take the merged channel and creates a channel named `grouped_vcf_bam_bai_ch` emitting the following tuples:
 
 [source,cmd]
 ----
@@ -856,7 +860,7 @@ CAUTION: `left` and `right` above are arbitary names. From the phase operator do
 
 == Process 6C: Allele-Specific Expression analysis with GATK ASEReadCounter
 
-Now we are ready for the final process. 
+Now we are ready for the final process.
 
 You should implement a process having the following structure:
 
@@ -869,7 +873,7 @@ create a genome dictionary for the genome fasta with Picard tools
 *input*: +
 genome fasta file +
 genome index file from samtools +
-genome dictionary file + 
+genome dictionary file +
 the `grouped_vcf_bam_bai_ch`channel
 
 *output*: +
@@ -893,9 +897,9 @@ Congratulations! If you made it this far you now have the all the basics to crea
 
 ***
 
-== Bonus step 
+== Bonus step
 
-Until now the pipeline has been executed using just a single sample (`ENCSR000COQ1`). 
+Until now the pipeline has been executed using just a single sample (`ENCSR000COQ1`).
 
 Now we can re-execute the pipeline specifying a large set of samples by using the command
 shown below:
@@ -905,11 +909,11 @@ shown below:
 $ nextflow run main.nf -resume --reads 'data/reads/ENCSR000C*_{1,2}.fastq.gz'
 ----
 
-It will print an output similar to the one below: 
+It will print an output similar to the one below:
 
 ----
 N E X T F L O W  ~  version 0.24.1
-Launching `main.nf` [backstabbing_nightingale] - revision: 1187e44c7a 
+Launching `main.nf` [backstabbing_nightingale] - revision: 1187e44c7a
 [warm up] executor > local
 [c6/75e3f4] Submitted process > 1A_prepare_genome_samtools (genome)
 [7b/44e5d6] Submitted process > 1C_prepare_star_genome_index (genome)
@@ -947,8 +951,8 @@ Launching `main.nf` [backstabbing_nightingale] - revision: 1187e44c7a
 [25/92875a] Submitted process > 6C_ASE_knownSNPs (ENCSR000COQ)
 ----
 
-You can notice that this time the pipeline spawns the execution of more tasks because 
-three samples have been provided instead of one. 
+You can notice that this time the pipeline spawns the execution of more tasks because
+three samples have been provided instead of one.
 
-This shows the ability of Nextflow to implicitly handle multiple parallel task executions 
+This shows the ability of Nextflow to implicitly handle multiple parallel task executions
 given depending the specified pipeline input dataset.
