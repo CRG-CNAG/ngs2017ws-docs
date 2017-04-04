@@ -87,12 +87,16 @@ GNU nano is a text editor for Unix-like operating systems using a command line i
 | Move down one page
 | kbd:[Ctrl+y]
 | Move up one page
-| kbd:[Alt+\]
+| kbd:[Ctrl+w] kbd:[Ctrl+y]
 | Go to the beginning of the file
-| kbd:[Alt+/]
+| kbd:[Ctrl+w] kbd:[Ctrl+v]
 | Go to the end of the file
-| kbd:[Alt+g]
-| Go to a target line number
+// | kbd:[Alt+\]
+// | Go to the beginning of the file
+// | kbd:[Alt+/]
+// | Go to the end of the file
+// | kbd:[Alt+g]
+// | Go to a target line number
 // | kbd:[Alt+&#x005d;]
 // | Jump to matching open/close symbol
 // | kbd:[Alt+a] kbd:[Alt+}]
@@ -119,8 +123,10 @@ GNU nano is a text editor for Unix-like operating systems using a command line i
 | Cut from the current cursor position to the end of the current line
 | kbd:[Ctrl+d]
 | Delete the character at the current cursor position
-| kbd:[Alt+t]
-| Cut from the cursor position to the end of the file
+// | kbd:[Ctrl+Shit+6] kbd:[Ctrl+w] kbd:[Ctrl+v] kbd:[Ctrl+k]
+// | Cut from the cursor position to the end of the file
+// | kbd:[Alt+t]
+// | Cut from the cursor position to the end of the file
 // | kbd:[Ctrl+u]
 // | Paste the contents from the clipboard at the current cursor position
 |===
@@ -131,9 +137,9 @@ GNU nano is a text editor for Unix-like operating systems using a command line i
 |===
 | kbd:[Ctrl+w]
 | Search for a target string
-| kbd:[Alt+w]
-| Repeat the last search
-| kbd:[Alt+r]
-| Search and replace
+// | kbd:[Alt+w]
+// | Repeat the last search
+// | kbd:[Alt+r]
+// | Search and replace
 |===
 // end::nano[]
