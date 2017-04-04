@@ -909,7 +909,7 @@ It will print an output similar to the one below:
 
 ----
 N E X T F L O W  ~  version 0.24.1
-Launching `CRG-CNAG/CalliNGS-NF` [backstabbing_nightingale] - revision: 1187e44c7a [master]
+Launching `main.nf` [backstabbing_nightingale] - revision: 1187e44c7a 
 [warm up] executor > local
 [c6/75e3f4] Submitted process > 1A_prepare_genome_samtools (genome)
 [7b/44e5d6] Submitted process > 1C_prepare_star_genome_index (genome)
