@@ -4,6 +4,7 @@
 For each sample the pipeline creates a folder with sample ID name to write results, and produce a number of files. 
 
 Result files for this workshop can be found in the folder with name `ENCSR000COQ/`. 
+
 There you should see following files:
 
 
