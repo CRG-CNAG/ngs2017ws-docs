@@ -18,8 +18,8 @@ To connect to the cloud run the following command which launches the virtual mac
 eval "$(curl -fsSL https://goo.gl/DdVLrZ)" | bash
 ----
 
-TIP: The above command requires the AWS command line tool which is pre-installed in 
-the workshop's laptops. 
+TIP: The above command requires the AWS command line tool which is pre-installed in
+the workshop's laptops.
 
 ----
 ~~ N G S '1 7  -  W O R K S H O P ~~
@@ -140,6 +140,32 @@ Check the content of the freshly cloned repo:
 [source,cmd]
 ----
 tree ngs2017-nf
+----
+----
+ngs2017-nf
+├── bin
+│   └── gghist.R
+├── data
+│   ├── blacklist.bed
+│   ├── genome.fa
+│   ├── known_variants.vcf.gz
+│   └── reads
+│       ├── ENCSR000COQ1_1.fastq.gz
+│       ├── ENCSR000COQ1_2.fastq.gz
+│       ├── ENCSR000COQ2_1.fastq.gz
+│       ├── ENCSR000COQ2_2.fastq.gz
+│       ├── ENCSR000COR1_1.fastq.gz
+│       ├── ENCSR000COR1_2.fastq.gz
+│       ├── ENCSR000COR2_1.fastq.gz
+│       ├── ENCSR000COR2_2.fastq.gz
+│       ├── ENCSR000CPO1_1.fastq.gz
+│       ├── ENCSR000CPO1_2.fastq.gz
+│       ├── ENCSR000CPO2_1.fastq.gz
+│       └── ENCSR000CPO2_2.fastq.gz
+├── launch-ec2.sh
+└── nextflow.config
+
+3 directories, 18 files
 ----
 
 == Pulling the Docker image
