@@ -139,7 +139,9 @@ details about using the `resume` option.
 
 ***
 
-== Process 1A: Create a FASTA genome index
+== Process 1A
+[discrete]
+== Create a FASTA genome index
 
 Now we have our inputs set up we can move onto the processes. In our first process we will
 create a genome index using http://www.htslib.org/[samtools].
@@ -211,7 +213,9 @@ Launching `main.nf` [adoring_wilson] - revision: 89dbc97b8e
 ----
 
 ***
-== Process 1B: Create a FASTA genome sequence dictionary with Picard for GATK
+== Process 1B
+[discrete]
+== Create a FASTA genome sequence dictionary with Picard for GATK
 
 Our first process created the genome index for GATK using samtools. For the next process we must do something very similar, this time creating a genome sequence dictionary using https://broadinstitute.github.io/picard/[Picard].
 
@@ -264,7 +268,9 @@ NOTE: `.baseName` returns the filename without the file suffix. If `"${genome}"`
 
 ***
 
-== Process 1C: Create STAR genome index file
+== Process 1C
+[discrete]
+== Create STAR genome index file
 
 Next we must create a genome index for the https://github.com/alexdobin/STAR[STAR] mapping software.
 
@@ -314,7 +320,9 @@ process '1C_prepare_star_genome_index' {
 
 TIP: The output of the STAR genomeGenerate command is specified here as `genome_dir`.
 
-== Process 1D: Filtered and recoded set of variants
+== Process 1D
+[discrete]
+== Filtered and recoded set of variants
 
 Next on to something a little more tricky. The next process takes two inputs: the variants
 file and the blacklist file.
@@ -387,7 +395,9 @@ Congratulations! Part 1 is now complete.
 
 We have all the data prepared and into channels ready for the more serious steps
 
-== Process 2: STAR Mapping
+== Process 2
+[discrete]
+== STAR Mapping
 
 In this process, for each sample, we align the reads to our genome using the STAR index we created previously.
 
@@ -475,7 +485,9 @@ TIP: The final command produces an bam index which is the full filename with an 
 The next step is a filtering step using GATK. For each sample, we split all the reads that contain
 N characters in their http://genome.sph.umich.edu/wiki/SAM#What_is_a_CIGAR.3F[CIGAR] string.
 
-== Process 3: GATK Split on N
+== Process 3
+[discrete]
+== GATK Split on N
 
 The process creates k+1 new reads (where k is the number of N cigar elements)
 that correspond to the segments of the original read beside/between
@@ -544,7 +556,9 @@ TIP: The GATK command above automatically creates a bam index (.bai) of the spli
 
 Next we perform a Base Quality Score Recalibration step using GATK.
 
-== Process 4: GATK Recalibrate
+== Process 4
+[discrete]
+== GATK Recalibrate
 
 This step uses GATK to detect systematic errors in the base quality scores, select unique alignments and then index the resulting bam file with samtools. You can find details of the specific GATK BaseRecalibrator parameters https://software.broadinstitute.org/gatk/gatkdocs/3.6-0/org_broadinstitute_gatk_tools_walkers_bqsr_BaseRecalibrator.php[here].
 
@@ -629,7 +643,9 @@ Now we are ready to perform the variant calling with GATK.
 
 
 
-== Process 5: GATK Variant Calling
+== Process 5
+[discrete]
+== GATK Variant Calling
 
 This steps call variants with GATK HaplotypeCaller. You can find details of the specific
 GATK HaplotypeCaller parameters https://software.broadinstitute.org/gatk/documentation/tooldocs/current/org_broadinstitute_gatk_tools_walkers_haplotypecaller_HaplotypeCaller.php[here].
@@ -702,7 +718,9 @@ process '5_rnaseq_call_variants' {
 ***
 
 
-== Processes 6A and 6B: ASE & RNA Editing
+== Processes 6A and 6B
+[discrete]
+== ASE & RNA Editing
 
 In the final steps we will create processes for Allele-Specific Expression and RNA Editing Analysis.
 
@@ -861,7 +879,9 @@ CAUTION: `left` and `right` above are arbitary names. From the phase operator do
 
 ***
 
-== Process 6C: Allele-Specific Expression analysis with GATK ASEReadCounter
+== Process 6C
+[discrete]
+== Allele-Specific Expression analysis with GATK ASEReadCounter
 
 Now we are ready for the final process.
 

@@ -4,7 +4,7 @@
 :hide-uri-scheme:
 :nofooter:
 :icons: font
-:toclevels: 3
+:toclevels: 2
 ifeval::["{backend}" == "html5"]
 :stylesdir: ./css
 :stylesheet: crg.css
