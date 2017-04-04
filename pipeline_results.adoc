@@ -10,23 +10,27 @@ There you should see following files:
 
 Variant calls::
 
-* final.vcf
+* *_final.vcf_*
+
 This file contains all somatic variants (SNVs) called from RNAseq data. You will see variants that pass all filters, with the 'PASS' keyword in the 7th field of the vcf file (filter status), and also those that has not passed one or few filters.
 
+* *_diff.sites_in_files_*
 
-* diff.sites_in_files 	
 Tabular separated file with comparison between variants obtained from RNAseq and DNA data, "known" variants
 
-* known_snps.vcf 	
+* *_known_snps.vcf_*
+
 Variants that are common between RNAseq and DNA calls, "known" variants
 
 Allele specific expression quantification::
-* ASE.tsv 	
+**_ASE.tsv_*
+
 Tabular separated file with allele counts at a positions of SNVs (only for common SNVs,those from file known_snps.vcf)
 
 Allele frequency histogram::
 
-* AF.histogram.pdf 	
+* *_AF.histogram.pdf_*
+
 a histogram plot for allele frequency (only for common SNVs)
 
  
