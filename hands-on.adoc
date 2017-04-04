@@ -31,8 +31,8 @@ The practical session will go through the step by step implementation of a pipel
 
 Slides of the first part of the workshop can be found at the following links:
 
-* link:workshop.introduction.pdf[Introduction]
-* link:workshop.nextflow.pdf[Nextflow]
+* link:workshop.introduction.pdf[Introduction^]
+* link:workshop.nextflow.pdf[Nextflow^]
 
 == Cheatsheet
 
