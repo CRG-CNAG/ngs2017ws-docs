@@ -23,7 +23,7 @@ Tabular separated file with comparison between variants obtained from RNAseq and
 Variants that are common between RNAseq and DNA calls, "known" variants
 
 Allele specific expression quantification::
-**_ASE.tsv_*
+* *_ASE.tsv_*
 
 Tabular separated file with allele counts at a positions of SNVs (only for common SNVs,those from file known_snps.vcf)
 
