@@ -60,8 +60,8 @@ println "gatk     : $params.gatk"
 println ""
 ----
 
-TIP: You can copy the above text by using the kbd:[Cmd+c] keys, then move in the terminal window,
-open `nano` and paste the above text by using the kbd:[Cmd+v] keys shortcut.
+TIP: You can copy the above text by using the kbd:[Cmd+C] keys, then move in the terminal window,
+open `nano` and paste the above text by using the kbd:[Cmd+V] keys shortcut.
 
 <1> The `/\*`, `*` and `*/` specify comment lines which are ignored by Nextflow.
 
@@ -73,7 +73,7 @@ open `nano` and paste the above text by using the kbd:[Cmd+v] keys shortcut.
 
 Once you have the default parameters in the `main.nf` file, you can save and run the main script for the first time.
 
-TIP: With `nano` you can save and the file with `Ctrl+O`, then `Enter`, followed by `Ctrl+X`.
+TIP: With `nano` you can save and close the file with kbd:[Ctrl+O], then kbd:[Enter], followed by kbd:[Ctrl+X].
 
 To run the main script use the following command:
 
@@ -99,7 +99,9 @@ gatk     : /opt/broad/GenomeAnalysisTK.jar
 ***
 === Problem #1
 Great, now we need to transform the parameters into proper file handlers and https://www.nextflow.io/docs/latest/channel.html[channel] variables.
-To do that open the `main.nf` file and copy the lines below.
+To do that open the `main.nf` file and copy the lines below at the end of the file.
+
+TIP: In `nano` you can move to the end of the file using kbd:[Ctrl+W] and then kbd:[Ctrl+V].
 
 This time you must fill the `BLANK` spaces with the correct function and parameter.
 
