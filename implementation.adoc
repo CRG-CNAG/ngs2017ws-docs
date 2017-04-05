@@ -709,10 +709,9 @@ process '5_rnaseq_call_variants' {
 
 In the final steps we will create processes for Allele-Specific Expression and RNA Editing Analysis.
 
-
 We must process the VCF result to prepare variants file for allele specific expression (ASE) analysis. We will implement both processes togther.
 
-You should implement a processes having the following structure:
+You should implement two processes having the following structure:
 
 .1st process
 Name::
@@ -876,7 +875,7 @@ Name::
 6C_ASE_knownSNPs
 
 Command::
-create a genome dictionary for the genome fasta with Picard tools
+calculate allele counts at a set of positions with GATK tools
 
 Input::
 genome fasta file +
