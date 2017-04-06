@@ -4,18 +4,18 @@
 ----
 process '4_rnaseq_gatk_recalibrate' {
   tag "$replicateId" <1>
-    
-  input: 
+
+  input:
       file genome from genome_file <2>
       file index from genome_index_ch <3>
       file dict from genome_dict_ch <4>
-      set replicateId, file(bam), file(index) from splitted_bam_ch <5>
+      set replicateId, file(bam), file(bai) from splitted_bam_ch <5>
       set file(variants_file), file(variants_file_index) from prepared_vcf_ch <6>
 
   output:
       set sampleId, file("${replicateId}.final.uniq.bam"), file("${replicateId}.final.uniq.bam.bai") into (final_output_ch, bam_for_ASE_ch) <7>
-  
-  script: 
+
+  script:
   sampleId = replicateId.replaceAll(/[12]$/,'')
   """
   # Indel Realignment and Base Recalibration
@@ -29,7 +29,7 @@ process '4_rnaseq_gatk_recalibrate' {
                   -R ${genome} -I ${bam} \
                   --downsampling_type NONE \
                   -nct ${task.cpus} \
-                  -o final.rnaseq.grp 
+                  -o final.rnaseq.grp
 
   java -jar $GATK -T PrintReads \
                   -R ${genome} -I ${bam} \

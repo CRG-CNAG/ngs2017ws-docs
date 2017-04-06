@@ -9,7 +9,7 @@ process '3_rnaseq_gatk_splitNcigar' {
       file genome from genome_file  <2>
       file index from genome_index_ch  <3>
       file genome_dict from genome_dict_ch  <4>
-      set replicateId, file(bam), file(index) from aligned_bam_ch  <5>
+      set replicateId, file(bam), file(bai) from aligned_bam_ch  <5>
 
   output:
       set replicateId, file('split.bam'), file('split.bai') into splitted_bam_ch  <6>
